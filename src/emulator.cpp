@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
-//#include "Keyboard/ps2Keyboard.h"
+#include "ps2Keyboard.h"
 //#include "Emulator/z80main.h"
 //#include "Emulator/z80snapshot.h"
 //#include "Emulator/z80emu/z80emu.h"
