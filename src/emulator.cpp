@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "ps2Keyboard.h"
-//#include "Emulator/z80main.h"
+#include "z80main.h"
 //#include "Emulator/z80snapshot.h"
 //#include "Emulator/z80emu/z80emu.h"
 #include "keyboard.h"
@@ -18,7 +18,7 @@ uint8_t _buffer16K_2[0x4000];
 static SpectrumScreenData _spectrumScreenData;
 
 // Used in saveState / restoreState
-//static SpectrumScreenData* _savedScreenData = (SpectrumScreenData*)&_buffer16K_2[0x4000 - sizeof(SpectrumScreenData)];
+static SpectrumScreenData* _savedScreenData = (SpectrumScreenData*)&_buffer16K_2[0x4000 - sizeof(SpectrumScreenData)];
 
 // Spectrum screen band
 static VideoSettings _spectrumVideoSettings {
@@ -42,12 +42,15 @@ Screen DebugScreen(_videoSettings, SPECTRUM_BAND_HEIGHT, DEBUG_BAND_HEIGHT);
 
 VideoController ScreenController(&MainScreen, &DebugScreen);
 
-/*
+static PS2Controller* KeyboardController;
+
 static bool _showingKeyboard;
+static bool _helpShown;
+
+/*
 static bool _settingDateTime;
 static uint32_t _frames;
 static char* _newDateTime = (char*)_buffer16K_2;
-static bool _helpShown;
 */
 
 void startVideo()
@@ -56,6 +59,28 @@ void startVideo()
 	DebugScreen.Clear();
 
     ScreenController.StartVideo(QVGA_320x240_60Hz);
+}
+
+void startKeyboard()
+{
+	//Mouse::quickCheckHardware();
+	KeyboardController = new PS2Controller();
+	KeyboardController->begin(PS2Preset::KeyboardPort0, KbdMode::NoVirtualKeys);
+	Ps2_Initialize(KeyboardController);
+}
+
+void saveState()
+{
+	*_savedScreenData = _spectrumScreenData;
+}
+
+void clearHelp()
+{
+	DebugScreen.HideCursor();
+	DebugScreen.SetAttribute(0x3F10); // white on blue
+	DebugScreen.Clear();
+
+	_helpShown = false;
 }
 
 void showHelp()
@@ -70,5 +95,98 @@ void showHelp()
 	DebugScreen.PrintAt(0, 3, "F10 - show keyboard layout");
 	DebugScreen.PrintAt(0, 4, "F12 - show registers");
 
-	//_helpShown = true;
+	_helpShown = true;
+}
+
+void restoreHelp()
+{
+	if (_helpShown)
+	{
+		showHelp();
+	}
+	else
+	{
+		clearHelp();
+	}
+}
+
+void restoreState(bool restoreScreen)
+{
+	if (restoreScreen)
+	{
+		_spectrumScreenData = *_savedScreenData;
+	}
+
+	restoreHelp();
+}
+
+bool showKeyboardLoop()
+{
+	if (!_showingKeyboard)
+	{
+		return false;
+	}
+
+	int32_t scanCode = Ps2_GetScancode();
+	if (scanCode == 0 || (scanCode & 0xFF00) != 0x00)
+	{
+		return true;
+	}
+
+	_showingKeyboard = false;
+	restoreState(true);
+	return false;
+}
+
+void showKeyboardSetup()
+{
+	saveState();
+	_showingKeyboard = true;
+
+	DebugScreen.SetAttribute(0x3F10); // white on blue
+	DebugScreen.Clear();
+	DebugScreen.PrintAlignCenter(2, "Press any key to return");
+
+	MainScreen.ShowScreenshot(spectrumKeyboard);
+
+	_spectrumScreenData.BorderColor = 0; // Black
+}
+
+void EmulatorTaskMain(void *unused)
+{
+	// Setup
+	startVideo();
+	startKeyboard();
+	zx_setup(&MainScreen);
+	showHelp();
+
+	// Loop
+	while (true)
+	{
+		if (showKeyboardLoop())
+		{
+			return;
+		}
+
+		int32_t result = zx_loop();
+		switch (result)
+		{
+		case KEY_ESC:
+			//clearHelp();
+			break;
+
+		case KEY_F1:
+			//toggleHelp();
+			break;
+			
+		case KEY_F5:
+			zx_reset();
+			showHelp();
+			break;
+
+		case KEY_F10:
+			showKeyboardSetup();
+			break;
+		}	
+	}
 }

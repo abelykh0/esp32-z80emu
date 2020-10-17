@@ -27,7 +27,6 @@ extern SpectrumScreen MainScreen;
 extern uint8_t _buffer16K_1[0x4000];
 extern uint8_t _buffer16K_2[0x4000];
 
-void startVideo();
-void showHelp();
+void EmulatorTaskMain(void *unused);
 
 #endif /* __EMULATOR_H__ */

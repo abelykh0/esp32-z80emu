@@ -4,17 +4,14 @@
 #include "emulator.h"
 #include "bubblebobble.h"
 
+TaskHandle_t mainTaskHandle;
+
 void setup()
 {
-  Serial.begin(115200); 
-  Serial.write("in setup()\r\n");
+    Serial.begin(115200); 
+    Serial.write("in setup()\r\n");
 
-  //mainTaskHandle = xTaskGetCurrentTaskHandle();
-
-  startVideo();
-
-	MainScreen.ShowScreenshot((const uint8_t*)bubblebobble);
-  showHelp();
+    xTaskCreatePinnedToCore(&EmulatorTaskMain, "emulatorTask", 1024 * 4, NULL, 5, &mainTaskHandle, tskNO_AFFINITY);
 }
 
 void loop()
