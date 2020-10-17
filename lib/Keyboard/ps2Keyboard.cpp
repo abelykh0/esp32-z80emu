@@ -1,23 +1,64 @@
 #include <ctype.h>
+#include <map>
 
 #include "ps2keyboard.h"
+#include "ScanCodeLayout.h"
 
-static fabgl::Keyboard* _keyboard;
+using namespace fabgl;
+
+static Keyboard* _keyboard;
+
+// Used to convert virtual key back to scan code
+static std::map<VirtualKey, uint32_t> _virtualKeyMap;
 
 void Ps2_Initialize(fabgl::PS2Controller* controller)
 {
 	_keyboard = controller->keyboard();
+
+	// Used to convert virtual key back to scan code
+	const KeyboardLayout* layout = _keyboard->getLayout();
+	for (VirtualKeyDef keyDef: layout->scancodeToVK)
+	{
+		_virtualKeyMap[keyDef.virtualKey] = keyDef.scancode;
+	}
+	for (VirtualKeyDef keyDef: layout->exScancodeToVK)
+	{
+		_virtualKeyMap[keyDef.virtualKey] = keyDef.scancode;
+	}
+	for (AltVirtualKeyDef keyDef: layout->alternateVK)
+	{
+		_virtualKeyMap[keyDef.virtualKey] = _virtualKeyMap[keyDef.reqVirtualKey];
+	}
 }
 
 int32_t Ps2_GetScancode()
 {
-	int scanCode = _keyboard->getNextScancode(1);
-	if (scanCode == 0xF0)
+	if (!_keyboard->virtualKeyAvailable())
 	{
-		scanCode <<= 8;
-		scanCode |= _keyboard->getNextScancode(1);
+		return 0;
 	}
-	return scanCode;
+
+	bool keyDown;
+	VirtualKey virtualKey = _keyboard->getNextVirtualKey(&keyDown, 0);
+
+    Serial.print("virtualKey = ");
+	Serial.println((int)virtualKey);
+    Serial.print(",");
+	Serial.println((int)keyDown);
+
+	auto pos = _virtualKeyMap.find(virtualKey);
+	if (pos == _virtualKeyMap.end()) 
+	{
+		return 0;
+	} 
+	
+	uint32_t result = pos->second;
+	if (!keyDown)
+	{
+		result |= 0xF000;
+	}
+
+	return result;
 }
 
 /*

@@ -65,7 +65,7 @@ void startKeyboard()
 {
 	//Mouse::quickCheckHardware();
 	KeyboardController = new PS2Controller();
-	KeyboardController->begin(PS2Preset::KeyboardPort0, KbdMode::NoVirtualKeys);
+	KeyboardController->begin(PS2Preset::KeyboardPort0);
 	Ps2_Initialize(KeyboardController);
 }
 
@@ -208,6 +208,8 @@ void EmulatorTaskMain(void *unused)
 	// Loop
 	while (true)
 	{
+		delay(1);
+
 		if (showKeyboardLoop())
 		{
 			continue;
