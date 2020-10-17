@@ -152,6 +152,51 @@ void showKeyboardSetup()
 	_spectrumScreenData.BorderColor = 0; // Black
 }
 
+void showTitle(const char* title)
+{
+	DebugScreen.SetAttribute(0x3F00); // white on black
+	DebugScreen.PrintAlignCenter(0, title);
+	DebugScreen.SetAttribute(0x3F10); // white on blue
+}
+
+void showRegisters()
+{
+	DebugScreen.SetAttribute(0x3F10); // white on blue
+	DebugScreen.Clear();
+	showTitle("Registers. ESC - clear");
+
+    char* buf = (char*)_buffer16K_1;
+
+    sprintf(buf, "PC %04x  AF %04x  AF' %04x  I %02x",
+        _zxCpu.pc, _zxCpu.registers.word[Z80_AF],
+        _zxCpu.alternates[Z80_AF], _zxCpu.i);
+    DebugScreen.PrintAlignCenter(2, buf);
+    sprintf(buf, "SP %04x  BC %04x  BC' %04x  R %02x",
+        _zxCpu.registers.word[Z80_SP], _zxCpu.registers.word[Z80_BC],
+        _zxCpu.alternates[Z80_BC], _zxCpu.r);
+    DebugScreen.PrintAlignCenter(3, buf);
+    sprintf(buf, "IX %04x  DE %04x  DE' %04x  IM %x",
+        _zxCpu.registers.word[Z80_IX], _zxCpu.registers.word[Z80_DE],
+        _zxCpu.alternates[Z80_DE], _zxCpu.im);
+    DebugScreen.PrintAlignCenter(4, buf);
+    sprintf(buf, "IY %04x  HL %04x  HL' %04x      ",
+        _zxCpu.registers.word[Z80_IY], _zxCpu.registers.word[Z80_HL],
+        _zxCpu.alternates[Z80_HL]);
+    DebugScreen.PrintAlignCenter(5, buf);
+}
+
+void toggleHelp()
+{
+	if (_helpShown)
+	{
+		clearHelp();
+	}
+	else
+	{
+		showHelp();
+	}
+}
+
 void EmulatorTaskMain(void *unused)
 {
 	// Setup
@@ -165,18 +210,18 @@ void EmulatorTaskMain(void *unused)
 	{
 		if (showKeyboardLoop())
 		{
-			return;
+			continue;
 		}
 
 		int32_t result = zx_loop();
 		switch (result)
 		{
 		case KEY_ESC:
-			//clearHelp();
+			showHelp();
 			break;
 
 		case KEY_F1:
-			//toggleHelp();
+			toggleHelp();
 			break;
 			
 		case KEY_F5:
@@ -186,6 +231,10 @@ void EmulatorTaskMain(void *unused)
 
 		case KEY_F10:
 			showKeyboardSetup();
+			break;
+
+		case KEY_F12:
+			showRegisters();
 			break;
 		}	
 	}
