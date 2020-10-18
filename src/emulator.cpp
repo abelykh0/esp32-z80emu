@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "ps2Keyboard.h"
 #include "z80main.h"
+#include "FileSystem.h"
 //#include "Emulator/z80snapshot.h"
 //#include "Emulator/z80emu/z80emu.h"
 #include "keyboard.h"
@@ -197,8 +198,22 @@ void toggleHelp()
 	}
 }
 
+void showErrorMessage(const char* errorMessage)
+{
+	DebugScreen.SetAttribute(0x0310); // red on blue
+	DebugScreen.PrintAlignCenter(2, errorMessage);
+	DebugScreen.SetAttribute(0x3F10); // white on blue
+}
+
 void EmulatorTaskMain(void *unused)
 {
+	// Initialize FFAT
+    if (!FFat.begin())
+    {
+        Serial.println("FFat Mount Failed");
+        return;
+    }
+
 	// Setup
 	startVideo();
 	startKeyboard();
@@ -225,7 +240,14 @@ void EmulatorTaskMain(void *unused)
 		case KEY_F1:
 			toggleHelp();
 			break;
-			
+
+		case KEY_F3:
+			if (!loadSnapshotSetup())
+			{
+				showErrorMessage("Error when loading from SD card");
+			}
+			break;
+
 		case KEY_F5:
 			zx_reset();
 			showHelp();
