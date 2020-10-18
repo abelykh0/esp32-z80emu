@@ -8,6 +8,9 @@ using namespace fabgl;
 
 static Keyboard* _keyboard;
 
+static bool _isLeftShiftPressed;
+static bool _isRightShiftPressed;
+
 // Used to convert virtual key back to scan code
 static std::map<VirtualKey, uint32_t> _virtualKeyMap;
 
@@ -41,10 +44,12 @@ int32_t Ps2_GetScancode()
 	bool keyDown;
 	VirtualKey virtualKey = _keyboard->getNextVirtualKey(&keyDown, 0);
 
+/*
     Serial.print("virtualKey = ");
-	Serial.println((int)virtualKey);
+	Serial.print((int)virtualKey);
     Serial.print(",");
 	Serial.println((int)keyDown);
+*/
 
 	auto pos = _virtualKeyMap.find(virtualKey);
 	if (pos == _virtualKeyMap.end()) 
@@ -61,7 +66,6 @@ int32_t Ps2_GetScancode()
 	return result;
 }
 
-/*
 char Ps2_ConvertScancode(int32_t scanCode)
 {
 	char result;
@@ -295,4 +299,3 @@ char Ps2_ConvertScancode(int32_t scanCode)
 
 	return result;
 }
-*/

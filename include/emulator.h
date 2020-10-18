@@ -29,4 +29,8 @@ extern uint8_t _buffer16K_2[0x4000];
 
 void EmulatorTaskMain(void *unused);
 
+void showTitle(const char* title);
+void saveState();
+void restoreState(bool restoreScreen);
+
 #endif /* __EMULATOR_H__ */
