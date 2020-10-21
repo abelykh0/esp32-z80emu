@@ -298,7 +298,7 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 		else
 		{
 			// Move forward without reading
-			bool readResult = file.seek(file.size() + pageSize, SeekMode::SeekCur);
+			bool readResult = file.seek(file.position() + pageSize);
 			if (readResult != true)
 			{
 				return false;
@@ -406,7 +406,7 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 		else
 		{
 			// Move forward without reading
-			bool readResult = file.seek(file.size() + pageSize, SeekMode::SeekCur);
+			bool readResult = file.seek(file.position() + pageSize);
 			if (readResult != true)
 			{
 				return false;
