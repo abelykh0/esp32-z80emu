@@ -1,9 +1,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "FS.h"
 #include "Ff.h"
-#include "FFat.h"
 
 #include "FileSystem.h"
 #include "Emulator.h"
@@ -23,6 +21,14 @@ static int16_t _fileCount;
 static bool _loadingSnapshot = false;
 static bool _savingSnapshot = false;
 static char* _snapshotName = (char*)&_buffer16K_1[2];
+
+static fs::FS* _fileSystem;
+
+
+void FileSystemInitialize(fs::FS* fileSystem)
+{
+    _fileSystem = fileSystem;
+}
 
 FRESULT mount()
 {
@@ -94,7 +100,7 @@ void SetSelection(uint8_t selectedFile)
 		if (extension != nullptr)
 		{
 			strncpy(extension, ".scr", 4);
-			file = FFat.open(scrFileName, FILE_READ);
+			file = _fileSystem->open(scrFileName, FILE_READ);
 			if (file)
 			{
 				if (!LoadScreenshot(file, _buffer16K_1))
@@ -108,7 +114,7 @@ void SetSelection(uint8_t selectedFile)
 
 		if (!scrFileFound)
 		{
-			file = FFat.open(fileName, FILE_READ);
+			file = _fileSystem->open(fileName, FILE_READ);
 			if (file)
 			{
 				if (!LoadScreenFromZ80Snapshot(file, _buffer16K_1))
@@ -128,7 +134,7 @@ void loadSnapshot(const TCHAR* fileName)
 	FRESULT fr = mount();
 	if (fr == FR_OK)
 	{
-		File file = FFat.open(fileName, FILE_READ);
+		File file = _fileSystem->open(fileName, FILE_READ);
 		LoadZ80Snapshot(file, _buffer16K_1, _buffer16K_2);
 		file.close();
 
@@ -142,7 +148,7 @@ bool saveSnapshot(const TCHAR* fileName)
 	FRESULT fr = mount();
 	if (fr == FR_OK)
 	{
-		File file = FFat.open(fileName, FILE_WRITE);
+		File file = _fileSystem->open(fileName, FILE_WRITE);
 /*
 		if (fr == FR_EXIST)
 		{
@@ -276,7 +282,7 @@ bool saveSnapshotLoop()
 	return true;
 }
 
-bool loadSnapshotSetup()
+bool loadSnapshotSetup(const char* path)
 {
 	saveState();
 
@@ -296,22 +302,28 @@ bool loadSnapshotSetup()
 	_fileCount = 0;
 	bool result = true;
 
-    File root = FFat.open("/");
-    File file = root.openNextFile(); // TODO "*.z80"
-	if (file)
+    File root = _fileSystem->open(path);
+	if (root)
 	{
-		for (int fileIndex = 0; fileIndex < maxFileCount && file.name()[0];
-				fileIndex++)
+        int fileIndex = 0;
+		while (fileIndex < maxFileCount)
 		{
-			strncpy(_fileNames[fileIndex], file.name(), FF_MAX_LFN + 1);
-			_fileCount++;
-
 			File file = root.openNextFile();
 			if (!file)
 			{
 				result = false;
 				break;
 			}
+
+            // TODO *.z80
+            if (file.isDirectory())
+            {
+                continue;
+            }
+
+			strncpy(_fileNames[fileIndex], file.name(), FF_MAX_LFN + 1);
+			_fileCount++;
+            fileIndex++;
 		}
 	}
 	else

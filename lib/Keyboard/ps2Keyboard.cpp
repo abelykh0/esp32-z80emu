@@ -26,7 +26,7 @@ void Ps2_Initialize(fabgl::PS2Controller* controller)
 	}
 	for (VirtualKeyDef keyDef: layout->exScancodeToVK)
 	{
-		_virtualKeyMap[keyDef.virtualKey] = keyDef.scancode;
+		_virtualKeyMap[keyDef.virtualKey] = 0xE000 | keyDef.scancode;
 	}
 	for (AltVirtualKeyDef keyDef: layout->alternateVK)
 	{
@@ -58,6 +58,7 @@ int32_t Ps2_GetScancode()
 	} 
 	
 	uint32_t result = pos->second;
+	result = ((result << 8) & 0xFF0000) | (result & 0xFF);
 	if (!keyDown)
 	{
 		result |= 0xF000;

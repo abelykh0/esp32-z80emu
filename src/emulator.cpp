@@ -4,12 +4,14 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
+#include "SD.h"
 #include "ps2Keyboard.h"
 #include "z80main.h"
 #include "FileSystem.h"
 //#include "Emulator/z80snapshot.h"
 //#include "Emulator/z80emu/z80emu.h"
 #include "keyboard.h"
+#include "z80snapshot.h"
 
 uint8_t _buffer16K_1[0x4000];
 uint8_t _buffer16K_2[0x4000];
@@ -54,13 +56,6 @@ static uint32_t _frames;
 static char* _newDateTime = (char*)_buffer16K_2;
 */
 
-void startVideo()
-{
-	MainScreen.Clear();
-	DebugScreen.Clear();
-
-    ScreenController.StartVideo(QVGA_320x240_60Hz);
-}
 
 void startKeyboard()
 {
@@ -205,27 +200,47 @@ void showErrorMessage(const char* errorMessage)
 	DebugScreen.SetAttribute(0x3F10); // white on blue
 }
 
+union t
+{
+    int l;
+    byte a[4];
+    short s[2]; 
+};
+
 void EmulatorTaskMain(void *unused)
 {
-	// Initialize FFAT
-    if (!FFat.begin())
+    SPI.begin(14, 2, 12);
+    if (!SD.begin(13)) 
     {
-        Serial.println("FFat Mount Failed");
+        Serial.println("Card Mount Failed");
         return;
     }
+    FileSystemInitialize(&SD);
 
 	// Setup
-	startVideo();
 	startKeyboard();
-	zx_setup(&MainScreen);
 	showHelp();
+
+	zx_setup(&MainScreen);
+    File bubblebobble = SD.open("/Bubble Bobble.z80");
+    zx::LoadZ80Snapshot(bubblebobble, _buffer16K_1, _buffer16K_2);
+    //zx::LoadScreenFromZ80Snapshot(bubblebobble, _buffer16K_1);
+    bubblebobble.close();
+
+    ScreenController.StartVideo(QVGA_320x240_60Hz);
 
 	// Loop
 	while (true)
 	{
 		delay(1);
+//continue;
 
 		if (showKeyboardLoop())
+		{
+			continue;
+		}
+
+		if (loadSnapshotLoop())
 		{
 			continue;
 		}
@@ -242,7 +257,7 @@ void EmulatorTaskMain(void *unused)
 			break;
 
 		case KEY_F3:
-			if (!loadSnapshotSetup())
+			if (!loadSnapshotSetup("/"))
 			{
 				showErrorMessage("Error when loading from SD card");
 			}
