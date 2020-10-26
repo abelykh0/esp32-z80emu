@@ -222,10 +222,6 @@ void EmulatorTaskMain(void *unused)
 	showHelp();
 
 	zx_setup(&MainScreen);
-    File bubblebobble = SD.open("/Bubble Bobble.z80");
-    zx::LoadZ80Snapshot(bubblebobble, _buffer16K_1, _buffer16K_2);
-    //zx::LoadScreenFromZ80Snapshot(bubblebobble, _buffer16K_1);
-    bubblebobble.close();
 
     ScreenController.StartVideo(QVGA_320x240_60Hz);
 

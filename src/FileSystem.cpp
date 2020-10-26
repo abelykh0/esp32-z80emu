@@ -23,29 +23,56 @@ static bool _savingSnapshot = false;
 static char* _snapshotName = (char*)&_buffer16K_1[2];
 
 static fs::FS* _fileSystem;
+static const char* _rootFolder;
+static int _rootFolderLength;
 
-
-void FileSystemInitialize(fs::FS* fileSystem)
-{
-    _fileSystem = fileSystem;
-}
-
-FRESULT mount()
+static FRESULT mount()
 {
 	return FR_OK;
 }
 
-void unmount()
+static void unmount()
 {
 }
 
-void GetFileCoord(uint8_t fileIndex, uint8_t* x, uint8_t* y)
+static void GetFileCoord(uint8_t fileIndex, uint8_t* x, uint8_t* y)
 {
 	*x = fileIndex / (DEBUG_ROWS - 1) * (FILE_COLUMNWIDTH + 1);
 	*y = 1 + fileIndex % (DEBUG_ROWS - 1);
 }
 
-TCHAR* TruncateFileName(TCHAR* fileName)
+static TCHAR* GetFileName(TCHAR* fileName)
+{
+	TCHAR* result = (TCHAR*)_buffer16K_1;
+    strncpy(result, _rootFolder, _rootFolderLength);
+	strncpy(result + _rootFolderLength, fileName, FF_MAX_LFN);
+    return result;
+}
+
+static TCHAR* FileExtension(TCHAR* fileName)
+{
+	TCHAR* result = (TCHAR*)_buffer16K_1;
+	strncpy(result, fileName, FF_MAX_LFN);
+
+	result[FF_MAX_LFN - 1] = '\0';
+	char* extension = strrchr(result, '.');
+    if (extension != nullptr)
+    {
+        for(int i = 0; extension[i]; i++)
+        {
+            extension[i] = tolower(extension[i]);
+        }
+    }
+    else
+    {
+    	result[0] = '\0';
+        extension = result;
+    }
+
+    return extension;
+}
+
+static TCHAR* TruncateFileName(TCHAR* fileName)
 {
 	int maxLength = DEBUG_COLUMNS / FILE_COLUMNS - 1;
 	TCHAR* result = (TCHAR*) _buffer16K_1;
@@ -61,7 +88,7 @@ TCHAR* TruncateFileName(TCHAR* fileName)
 	return result;
 }
 
-void noScreenshot()
+static void noScreenshot()
 {
 	MainScreen.Clear();
 	MainScreen.SetAttribute(0x0310); // red on blue
@@ -69,7 +96,7 @@ void noScreenshot()
 	MainScreen.SetAttribute(0x3F10); // white on blue
 }
 
-void SetSelection(uint8_t selectedFile)
+static void SetSelection(uint8_t selectedFile)
 {
 	if (_fileCount == 0)
 	{
@@ -91,25 +118,28 @@ void SetSelection(uint8_t selectedFile)
 		File file;
 		bool scrFileFound = false;
 
-		TCHAR* fileName = _fileNames[selectedFile];
+		TCHAR* fileName = GetFileName(_fileNames[selectedFile]);
 
 		// Try to open file with the same name and .SCR extension
-		TCHAR* scrFileName = (TCHAR*) _buffer16K_1;
+		TCHAR* scrFileName = (TCHAR*)&_buffer16K_1[_rootFolderLength + FF_MAX_LFN + 1];
 		strncpy(scrFileName, fileName, FF_MAX_LFN + 1);
 		TCHAR* extension = strrchr(scrFileName, '.');
 		if (extension != nullptr)
 		{
 			strncpy(extension, ".scr", 4);
-			file = _fileSystem->open(scrFileName, FILE_READ);
-			if (file)
-			{
-				if (!LoadScreenshot(file, _buffer16K_1))
-				{
-					noScreenshot();
-				}
-				file.close();
-				scrFileFound = true;
-			}
+            if (_fileSystem->exists(scrFileName))
+            {
+                file = _fileSystem->open(scrFileName, FILE_READ);
+                if (file)
+                {
+                    if (!LoadScreenshot(file, _buffer16K_1))
+                    {
+                        noScreenshot();
+                    }
+                    file.close();
+                    scrFileFound = true;
+                }
+            }
 		}
 
 		if (!scrFileFound)
@@ -129,7 +159,7 @@ void SetSelection(uint8_t selectedFile)
 	}
 }
 
-void loadSnapshot(const TCHAR* fileName)
+static void loadSnapshot(const TCHAR* fileName)
 {
 	FRESULT fr = mount();
 	if (fr == FR_OK)
@@ -142,7 +172,7 @@ void loadSnapshot(const TCHAR* fileName)
 	}
 }
 
-bool saveSnapshot(const TCHAR* fileName)
+static bool saveSnapshot(const TCHAR* fileName)
 {
 	bool result = false;
 	FRESULT fr = mount();
@@ -184,6 +214,11 @@ static int fileCompare(const void* a, const void* b)
 	}
 
 	return strncmp(file1, file2, FF_MAX_LFN + 1);
+}
+
+void FileSystemInitialize(fs::FS* fileSystem)
+{
+    _fileSystem = fileSystem;
 }
 
 bool saveSnapshotSetup()
@@ -284,6 +319,9 @@ bool saveSnapshotLoop()
 
 bool loadSnapshotSetup(const char* path)
 {
+    _rootFolder = path;
+    _rootFolderLength = strlen(path);
+
 	saveState();
 
 	DebugScreen.SetAttribute(0x3F10); // white on blue
@@ -315,13 +353,18 @@ bool loadSnapshotSetup(const char* path)
 				break;
 			}
 
-            // TODO *.z80
             if (file.isDirectory())
             {
                 continue;
             }
 
-			strncpy(_fileNames[fileIndex], file.name(), FF_MAX_LFN + 1);
+            // *.z80
+            if (strncmp(FileExtension((TCHAR*)file.name()), ".z80", 4) != 0)
+            {
+                continue;
+            }
+
+			strncpy(_fileNames[fileIndex], file.name() + _rootFolderLength, FF_MAX_LFN + 1);
 			_fileCount++;
             fileIndex++;
 		}
@@ -411,7 +454,7 @@ bool loadSnapshotLoop()
 
 	case KEY_ENTER:
 	case KEY_KP_ENTER:
-		loadSnapshot(_fileNames[_selectedFile]);
+		loadSnapshot(GetFileName(_fileNames[_selectedFile]));
 		_loadingSnapshot = false;
 		restoreState(false);
 		return false;
