@@ -209,6 +209,15 @@ union t
 
 void EmulatorTaskMain(void *unused)
 {
+/*
+    if (!FFat.begin())
+    {
+        Serial.println("FFat Mount Failed");
+        return;
+    }
+    FileSystemInitialize(&FFat);
+*/
+
     SPI.begin(14, 2, 12);
     if (!SD.begin(13)) 
     {
