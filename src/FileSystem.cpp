@@ -349,7 +349,7 @@ bool loadSnapshotSetup(const char* path)
 			File file = root.openNextFile();
 			if (!file)
 			{
-				result = false;
+				result = _fileCount > 0;
 				break;
 			}
 
@@ -378,22 +378,22 @@ bool loadSnapshotSetup(const char* path)
 	if (_fileCount > 0)
 	{
 		qsort(_fileNames, _fileCount, FF_MAX_LFN + 1, fileCompare);
-	}
 
-	for (int y = 1; y < DEBUG_ROWS; y++)
-	{
-		DebugScreen.PrintAt(FILE_COLUMNWIDTH, y, "\xB3"); // │
-		DebugScreen.PrintAt(FILE_COLUMNWIDTH * 2 + 1, y, "\xB3"); // │
-	}
+        for (int y = 1; y < DEBUG_ROWS; y++)
+        {
+            DebugScreen.PrintAt(FILE_COLUMNWIDTH, y, "\xB3"); // │
+            DebugScreen.PrintAt(FILE_COLUMNWIDTH * 2 + 1, y, "\xB3"); // │
+        }
 
-	uint8_t x, y;
-	for (int fileIndex = 0; fileIndex < _fileCount; fileIndex++)
-	{
-		GetFileCoord(fileIndex, &x, &y);
-		DebugScreen.PrintAt(x + 1, y, TruncateFileName(_fileNames[fileIndex]));
-	}
+        uint8_t x, y;
+        for (int fileIndex = 0; fileIndex < _fileCount; fileIndex++)
+        {
+            GetFileCoord(fileIndex, &x, &y);
+            DebugScreen.PrintAt(x + 1, y, TruncateFileName(_fileNames[fileIndex]));
+        }
 
-	SetSelection(_selectedFile);
+        SetSelection(_selectedFile);	
+    }
 
 	// Unmount file system
 	unmount();
