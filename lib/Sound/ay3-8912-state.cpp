@@ -1,20 +1,44 @@
 #include "ay3-8912-state.h"
-#include "pitchtonote.h"
 #include "volume.h"
-#include "midimessage.h"
+#include "fabgl.h"
+
+using namespace fabgl;
+
+static SoundGenerator _soundGenerator;
+static SquareWaveformGenerator _channel[3];
 
 namespace Sound
 {
 
+void Ay3_8912_state::Initialize()
+{
+    _soundGenerator.setVolume(126);
+    _soundGenerator.play(true);
+	for (int8_t channel = 0; channel < 3; channel++)
+	{
+        _soundGenerator.attach(&_channel[channel]);
+        _channel[channel].enable(true);
+        _channel[channel].setVolume(0);
+	}
+}
+
+void Ay3_8912_state::Stop()
+{
+	for (int8_t channel = 0; channel < 3; channel++)
+	{
+        _channel[channel].setVolume(0);
+	}
+}
+
 void Ay3_8912_state::updated()
 {
-	uint8_t oldChannelNote[3];
+	uint16_t oldChannelFrequency[3];
 	uint8_t oldChannelVolume[3];
 
 	for (int8_t channel = 0; channel < 3; channel++)
 	{
 		uint8_t channelVolume = this->channelVolume[channel];
-		oldChannelNote[channel] = channelVolume ? this->channelNote[channel] : 0xFF;
+		oldChannelFrequency[channel] = channelVolume ? this->channelFrequency[channel] : 0xFFFF;
 		oldChannelVolume[channel] = channelVolume;
 	}
 
@@ -25,17 +49,17 @@ void Ay3_8912_state::updated()
 	case 0:
 	case 1:
 		pitch = ((this->coarsePitchChannelA << 8) | this->finePitchChannelA) & 0x0FFF;
-		this->channelNote[0] = pitchToNote[pitch];
+		this->channelFrequency[0] = pitch;
 		break;
 	case 2:
 	case 3:
 		pitch = ((this->coarsePitchChannelB << 8) | this->finePitchChannelB) & 0x0FFF;
-		this->channelNote[1] = pitchToNote[pitch];
+		this->channelFrequency[1] = pitch;
 		break;
 	case 4:
 	case 5:
 		pitch = ((this->coarsePitchChannelC << 8) | this->finePitchChannelC) & 0x0FFF;
-		this->channelNote[2] = pitchToNote[pitch];
+		this->channelFrequency[2] = pitch;
 		break;
 	case 6:
 		// noisePitch - ignored for now
@@ -72,28 +96,19 @@ void Ay3_8912_state::updated()
 	{
 		if (this->channelVolume[channel] != oldChannelVolume[channel])
 		{
-			if (this->channelVolume[channel] > 0)
-			{
-				midiMessage(MIDI_PROGRAM_CHANGE, channel, MIDI_INSTRUMENT_LEAD1, 0);
-			}
-
-			midiMessage(MIDI_CONTROL_CHANGE, channel, MIDI_CC_VOLUME, this->channelVolume[channel]);
+            _channel[channel].setVolume(this->channelVolume[channel]);
 		}
 
 		if (this->channelVolume[channel] == 0)
 		{
-			if (oldChannelNote[channel] != 0xFF)
-			{
-				midiMessage(MIDI_NOTE_OFF, 0, oldChannelNote[channel], 0);
-			}
+            _channel[channel].setVolume(0);
 
 			continue;
 		}
 
-		if (this->channelNote[channel] != oldChannelNote[channel])
+		if (this->channelFrequency[channel] != oldChannelFrequency[channel])
 		{
-			midiMessage(MIDI_NOTE_OFF, 0, oldChannelNote[channel], 0);
-			midiMessage(MIDI_NOTE_ON, 0, this->channelNote[channel], 0x70);
+            _channel[channel].setFrequency(this->channelFrequency[channel]);
 		}
 	}
 }

@@ -28,12 +28,15 @@ public:
 
 	// Status
 	uint8_t selectedRegister = 0xFF;
-	uint8_t channelNote[3] = { 0xFF, 0xFF, 0xFF };
 	uint8_t channelVolume[3] = { 0xFF, 0xFF, 0xFF };
+	uint16_t channelFrequency[3] = { 0xFFFF, 0xFFFF, 0xFFFF };
 
 	void selectRegister(uint8_t registerNumber);
 	void setRegisterData(uint8_t data);
 	uint8_t getRegisterData();
+
+    void Initialize();
+    void Stop();
 
 private:
 	void updated();

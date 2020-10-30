@@ -10,7 +10,7 @@
 #define RAM_AVAILABLE 0xC000
 
 SpectrumScreen* _spectrumScreen;
-//Sound::Ay3_8912_state _ay3_8912;
+Sound::Ay3_8912_state _ay3_8912;
 uint8_t RamBuffer[RAM_AVAILABLE];
 Z80_STATE _zxCpu;
 
@@ -52,6 +52,7 @@ void zx_setup(SpectrumScreen* spectrumScreen)
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 #endif
+    _ay3_8912.Initialize();
 
     zx_reset();
 }
@@ -220,7 +221,7 @@ extern "C" uint8_t input(uint8_t portLow, uint8_t portHigh)
 			}
         }
     }
-/*
+
     // Sound (AY-3-8912)
     if (portLow == 0xFD)
     {
@@ -230,7 +231,7 @@ extern "C" uint8_t input(uint8_t portLow, uint8_t portHigh)
         	return _ay3_8912.getRegisterData();
         }
     }
-*/
+
     uint8_t data = zx_data;
     data |= (0xe0); /* Set bits 5-7 - as reset above */
     data &= ~0x40;
@@ -268,7 +269,7 @@ extern "C" void output(uint8_t portLow, uint8_t portHigh, uint8_t data)
         indata[0x20] = data;
     }
     break;
-/*
+
     case 0xF5:
     {
         // Sound (AY-3-8912)
@@ -296,7 +297,7 @@ extern "C" void output(uint8_t portLow, uint8_t portHigh, uint8_t data)
         }
     }
     break;
-*/
+
     default:
         zx_data = data;
         break;

@@ -266,6 +266,11 @@ void EmulatorTaskMain(void *unused)
 			{
 				showErrorMessage("Error when loading from SD card");
 			}
+            else
+            {
+                // stop sound
+                _ay3_8912.Stop();
+            }
 			break;
 
 		case KEY_F5:
