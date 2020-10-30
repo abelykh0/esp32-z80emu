@@ -232,7 +232,7 @@ void EmulatorTaskMain(void *unused)
 
 	zx_setup(&MainScreen);
 
-    ScreenController.StartVideo(QVGA_320x240_60Hz);
+    ScreenController.StartVideo(RESOLUTION);
 
 	// Loop
 	while (true)
