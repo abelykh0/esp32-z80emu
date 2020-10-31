@@ -36,7 +36,8 @@ public:
 	uint8_t getRegisterData();
 
     void Initialize();
-    void Stop();
+    void StopSound();
+    void ResumeSound();
 
 private:
 	void updated();

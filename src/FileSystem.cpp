@@ -6,6 +6,7 @@
 #include "FileSystem.h"
 #include "Emulator.h"
 #include "ps2Keyboard.h"
+#include "z80main.h"
 #include "z80snapshot.h"
 
 using namespace zx;
@@ -223,6 +224,8 @@ void FileSystemInitialize(fs::FS* fileSystem)
 
 bool saveSnapshotSetup()
 {
+    _ay3_8912.StopSound();
+
 	DebugScreen.SetAttribute(0x3F10); // white on blue
 	DebugScreen.Clear();
 
@@ -231,6 +234,7 @@ bool saveSnapshotSetup()
 	FRESULT fr = mount();
 	if (fr != FR_OK)
 	{
+        _ay3_8912.ResumeSound();
 		return false;
 	}
 
@@ -250,6 +254,7 @@ bool saveSnapshotLoop()
 {
 	if (!_savingSnapshot)
 	{
+        _ay3_8912.ResumeSound();
 		return false;
 	}
 
@@ -282,6 +287,7 @@ bool saveSnapshotLoop()
 		{
 			_savingSnapshot = false;
 			restoreState(false);
+            _ay3_8912.ResumeSound();
 			return false;
 		}
 		else
@@ -297,6 +303,7 @@ bool saveSnapshotLoop()
 	case KEY_ESC:
 		_savingSnapshot = false;
 		restoreState(false);
+        _ay3_8912.ResumeSound();
 		return false;
 
 	default:
@@ -320,6 +327,8 @@ bool saveSnapshotLoop()
 
 bool loadSnapshotSetup(const char* path)
 {
+    _ay3_8912.StopSound();
+
     _rootFolder = path;
     _rootFolderLength = strlen(path);
 
@@ -334,6 +343,7 @@ bool loadSnapshotSetup(const char* path)
 	FRESULT fr = mount();
 	if (fr != FR_OK)
 	{
+        _ay3_8912.ResumeSound();
 		return false;
 	}
 
@@ -373,6 +383,7 @@ bool loadSnapshotSetup(const char* path)
 	else
 	{
 		result = false;
+        _ay3_8912.ResumeSound();
 	}
 
 	// Sort files alphabetically
@@ -458,11 +469,13 @@ bool loadSnapshotLoop()
 		loadSnapshot(GetFileName(_fileNames[_selectedFile]));
 		_loadingSnapshot = false;
 		restoreState(false);
+        _ay3_8912.ResumeSound();
 		return false;
 
 	case KEY_ESC:
 		_loadingSnapshot = false;
 		restoreState(true);
+        _ay3_8912.ResumeSound();
 		return false;
 	}
 

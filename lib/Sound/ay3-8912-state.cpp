@@ -22,12 +22,14 @@ void Ay3_8912_state::Initialize()
 	}
 }
 
-void Ay3_8912_state::Stop()
+void Ay3_8912_state::StopSound()
 {
-	for (int8_t channel = 0; channel < 3; channel++)
-	{
-        _channel[channel].setVolume(0);
-	}
+    _soundGenerator.play(false);
+}
+
+void Ay3_8912_state::ResumeSound()
+{
+    _soundGenerator.play(true);
 }
 
 void Ay3_8912_state::updated()

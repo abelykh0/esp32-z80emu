@@ -274,7 +274,11 @@ void EmulatorTaskMain(void *unused)
 	case KEY_F2:
 		if (!saveSnapshotSetup())
 		{
+#ifdef SDCARD
 			showErrorMessage("Cannot initialize SD card");
+#else
+			showErrorMessage("Cannot initialize flash file system");
+#endif
 		}
 		break;
 #endif
@@ -282,13 +286,12 @@ void EmulatorTaskMain(void *unused)
 		case KEY_F3:
 			if (!loadSnapshotSetup("/"))
 			{
+#ifdef SDCARD
 				showErrorMessage("Error when loading from SD card");
+#else
+				showErrorMessage("Error when loading from flash");
+#endif
 			}
-            else
-            {
-                // stop sound
-                _ay3_8912.Stop();
-            }
 			break;
 
 		case KEY_F5:
