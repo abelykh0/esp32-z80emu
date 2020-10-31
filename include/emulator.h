@@ -3,9 +3,8 @@
 
 #include "Screen.h"
 #include "SpectrumScreen.h"
-//#include "fatfs.h"
 
-using namespace Display;
+#define SDCARD
 
 /*
 #define RESOLUTION QVGA_320x240_60Hz
@@ -30,6 +29,8 @@ typedef struct
 	uint16_t Attributes[32 * 24];
 	uint8_t  BorderColor;
 } SpectrumScreenData;
+
+using namespace Display;
 
 extern Screen DebugScreen;
 extern SpectrumScreen MainScreen;

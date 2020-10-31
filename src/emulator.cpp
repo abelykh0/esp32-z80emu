@@ -8,8 +8,6 @@
 #include "ps2Keyboard.h"
 #include "z80main.h"
 #include "FileSystem.h"
-//#include "Emulator/z80snapshot.h"
-//#include "Emulator/z80emu/z80emu.h"
 #include "keyboard.h"
 #include "z80snapshot.h"
 
@@ -85,11 +83,17 @@ void showHelp()
 	DebugScreen.SetAttribute(0x3F10); // white on blue
 	DebugScreen.Clear();
 
-	DebugScreen.PrintAt(0, 0, "F1  - show / hide help");
-	DebugScreen.PrintAt(0, 1, "F3  - load snapshot from flash");
-	DebugScreen.PrintAt(0, 2, "F5  - reset");
-	DebugScreen.PrintAt(0, 3, "F10 - show keyboard layout");
-	DebugScreen.PrintAt(0, 4, "F12 - show registers");
+    int y = 0;
+	DebugScreen.PrintAt(0, y++, "F1  - show / hide help");
+#ifdef SDCARD
+	DebugScreen.PrintAt(0, y++, "F2  - save snapshot to SD card");
+	DebugScreen.PrintAt(0, y++, "F3  - load snapshot from SD card");
+#else
+	DebugScreen.PrintAt(0, y++, "F3  - load snapshot from flash");
+#endif
+	DebugScreen.PrintAt(0, y++, "F5  - reset");
+	DebugScreen.PrintAt(0, y++, "F10 - show keyboard layout");
+	DebugScreen.PrintAt(0, y++, "F12 - show registers");
 
 	_helpShown = true;
 }
@@ -209,15 +213,8 @@ union t
 
 void EmulatorTaskMain(void *unused)
 {
-/*
-    if (!FFat.begin())
-    {
-        Serial.println("FFat Mount Failed");
-        return;
-    }
-    FileSystemInitialize(&FFat);
-*/
 
+#ifdef SDCARD
     SPI.begin(14, 2, 12);
     if (!SD.begin(13)) 
     {
@@ -225,6 +222,14 @@ void EmulatorTaskMain(void *unused)
         return;
     }
     FileSystemInitialize(&SD);
+#else
+    if (!FFat.begin())
+    {
+        Serial.println("FFat Mount Failed");
+        return;
+    }
+    FileSystemInitialize(&FFat);
+#endif
 
 	// Setup
 	startKeyboard();
@@ -238,7 +243,6 @@ void EmulatorTaskMain(void *unused)
 	while (true)
 	{
 		delay(1);
-//continue;
 
 		if (showKeyboardLoop())
 		{
@@ -250,6 +254,11 @@ void EmulatorTaskMain(void *unused)
 			continue;
 		}
 
+        if (saveSnapshotLoop())
+        {
+            continue;
+        }
+
 		int32_t result = zx_loop();
 		switch (result)
 		{
@@ -260,6 +269,15 @@ void EmulatorTaskMain(void *unused)
 		case KEY_F1:
 			toggleHelp();
 			break;
+
+#ifdef SDCARD
+	case KEY_F2:
+		if (!saveSnapshotSetup())
+		{
+			showErrorMessage("Cannot initialize SD card");
+		}
+		break;
+#endif
 
 		case KEY_F3:
 			if (!loadSnapshotSetup("/"))

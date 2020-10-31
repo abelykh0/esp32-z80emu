@@ -20,7 +20,7 @@ static int16_t _selectedFile = 0;
 static int16_t _fileCount;
 static bool _loadingSnapshot = false;
 static bool _savingSnapshot = false;
-static char* _snapshotName = (char*)&_buffer16K_1[2];
+static char* _snapshotName = (char*)&_buffer16K_1[FF_MAX_LFN + 1];
 
 static fs::FS* _fileSystem;
 static const char* _rootFolder;
@@ -277,6 +277,7 @@ bool saveSnapshotLoop()
 		DebugScreen.HideCursor();
 		DebugScreen.PrintAt(0, 5, "Saving...                  ");
 		strcat(_snapshotName,".z80");
+        _snapshotName = GetFileName(_snapshotName);
 		if (saveSnapshot(_snapshotName))
 		{
 			_savingSnapshot = false;
