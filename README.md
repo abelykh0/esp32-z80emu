@@ -19,3 +19,5 @@ This project uses the following libraries:
 ## Plans for the future / issues
 * Flickering in some games
 * The speed is 12% faster than it is supposed to be
+* Load files from https://worldofspectrum.org/
+
