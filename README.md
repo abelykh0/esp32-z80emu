@@ -12,9 +12,9 @@ Spectrum ZX 48K emulator on VGA-32 board
 
 ## Third party software
 This project uses the following libraries:
-* To display video using VGA, process PS/2 keyboard, and output sound: https://github.com/fdivitto/FabGL
-* Z80 emulator: https://github.com/anotherlin/z80emu
-* OpenSE Basic: https://spectrumcomputing.co.uk/index.php?cat=96&id=27510
+* (GPL v3.0) To display video using VGA, process PS/2 keyboard, and output sound: https://github.com/fdivitto/FabGL
+* (unsure, MIT?) Z80 emulator: https://github.com/anotherlin/z80emu
+* (GPL v2.0) OpenSE Basic: https://spectrumcomputing.co.uk/index.php?cat=96&id=27510
 
 ## Plans for the future / issues
 * Flickering in some games
