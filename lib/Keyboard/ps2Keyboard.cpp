@@ -2,7 +2,6 @@
 #include <map>
 
 #include "ps2keyboard.h"
-#include "ScanCodeLayout.h"
 
 using namespace fabgl;
 
