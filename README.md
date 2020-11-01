@@ -20,4 +20,6 @@ This project uses the following libraries:
 * Flickering in some games
 * The speed is 12% faster than it is supposed to be
 * Load files from https://worldofspectrum.org/
+* Add Spectrum 128K
+
 
