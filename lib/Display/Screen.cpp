@@ -39,12 +39,12 @@ void Screen::Clear()
 	*this->Settings.BorderColor = (uint8_t) this->_attribute;
 }
 
-uint8_t* Screen::GetPixelPointer(uint16_t line)
+uint8_t* IRAM_ATTR Screen::GetPixelPointer(uint16_t line)
 {
     return &this->Settings.Pixels[line * this->Settings.TextColumns];
 }
 
-uint8_t* Screen::GetPixelPointer(uint16_t line, uint8_t character)
+uint8_t* IRAM_ATTR Screen::GetPixelPointer(uint16_t line, uint8_t character)
 {
 	return this->GetPixelPointer(line) + character;
 }
@@ -152,12 +152,7 @@ void IRAM_ATTR Screen::drawScanline(uint8_t* dest, int scanLine)
     {
     	this->_frames++;
     }
-/*
-	if ((scaledLine + this->_frames) % 4 != 0)
-	{
-		return;
-	}
-*/
+
     uint8_t borderColor = *this->Settings.BorderColor;
    
     borderColor = this->Controller->createRawPixel(borderColor);
@@ -165,7 +160,10 @@ void IRAM_ATTR Screen::drawScanline(uint8_t* dest, int scanLine)
     if (scaledLine < this->_verticalBorder
     	|| scaledLine >= (unsigned)(this->Height - this->_verticalBorder))
     {
-        memset(dest, borderColor, this->_hResolution * 2);
+        for (int x = 0; x < this->_hResolution; x++)
+        {
+            dest[x] = borderColor;
+        }
     }
     else
     {
@@ -181,7 +179,6 @@ void IRAM_ATTR Screen::drawScanline(uint8_t* dest, int scanLine)
         uint16_t* colors = (uint16_t*)&this->Settings.Attributes[vline / 8 * this->Settings.TextColumns];
         int column = this->_horizontalBorder;
 		for (uint8_t* charBits = bitmap; charBits < bitmap + this->Settings.TextColumns; charBits++)
-		//for (uint8_t* charBits = bitmap; charBits < bitmap + 5; charBits++)
 		{
 			uint8_t colorValue;
 			uint8_t pixels = *charBits;

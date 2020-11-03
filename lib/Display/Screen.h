@@ -28,8 +28,8 @@ private:
     bool _isCursorVisible;
 
 protected:
-	virtual uint8_t* GetPixelPointer(uint16_t line);
-	virtual uint8_t* GetPixelPointer(uint16_t line, uint8_t character);
+	virtual IRAM_ATTR uint8_t* GetPixelPointer(uint16_t line);
+	virtual IRAM_ATTR uint8_t* GetPixelPointer(uint16_t line, uint8_t character);
 
     uint16_t _hResolution;
     uint16_t _hResolutionNoBorder;

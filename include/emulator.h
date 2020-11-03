@@ -4,7 +4,7 @@
 #include "Screen.h"
 #include "SpectrumScreen.h"
 
-#define SDCARD
+//#define SDCARD
 
 /*
 #define RESOLUTION QVGA_320x240_60Hz
