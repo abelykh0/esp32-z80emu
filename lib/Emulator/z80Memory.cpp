@@ -205,10 +205,11 @@ void ZxSpectrumMemory::FromBuffer(uint8_t bank, uint8_t* data)
         memcpy(SpectrumMemory.Ram2, data, 0x4000);
         break;
 
-#ifdef ZX128K
     case 0:
         memcpy(SpectrumMemory.Ram0, data, 0x4000);
         break;
+
+#ifdef ZX128K
 
     case 1:
         memcpy(SpectrumMemory.Ram1, data, 0x4000);
@@ -263,11 +264,11 @@ void ZxSpectrumMemory::ToBuffer(uint8_t bank, uint8_t* data)
         memcpy(SpectrumMemory.Ram2, data, 0x4000);
         break;
 
-#ifdef ZX128K
     case 0:
         memcpy(SpectrumMemory.Ram0, data, 0x4000);
         break;
 
+#ifdef ZX128K
     case 1:
         memcpy(SpectrumMemory.Ram1, data, 0x4000);
         break;

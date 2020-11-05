@@ -253,18 +253,35 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 		uint8_t* memory;
 		switch (pageNumber)
 		{
-		case 8:
-            // 48K : 4000-7fff; 128K : page 5
+        case 5:
+#ifdef ZX128K
+        case 7:
+#endif
 			memory = buffer2;
 			break;
-		case 4:
-            // 48K : 8000-bfff; 128K : page 1
-            memory = SpectrumMemory.Ram2;
-			break;
-		case 5:
-            // 48K : c000-ffff; 128K : page 2
+
+		case 0:
             memory = SpectrumMemory.Ram0;
 			break;
+		case 2:
+            memory = SpectrumMemory.Ram2;
+			break;
+
+#ifdef ZX128K
+		case 1:
+            memory = SpectrumMemory.Ram1;
+			break;
+		case 3:
+            memory = SpectrumMemory.Ram3;
+			break;
+		case 4:
+            memory = SpectrumMemory.Ram4;
+			break;
+		case 6:
+            memory = SpectrumMemory.Ram6;
+			break;
+#endif
+
 		default:
 			memory = nullptr;
 			break;
@@ -290,10 +307,11 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 
 			DecompressPage(buffer1, pageSize, isCompressed, 0, memory);
 
-			if (pageNumber == 8)
+			if (pageNumber == 5 || pageNumber == 7)
 			{
                 // 48K : 4000-7fff; 128K : page 5
-                SpectrumMemory.FromBuffer(5, memory);
+                // 128K : page 7
+                SpectrumMemory.FromBuffer(pageNumber, memory);
 			}
 		}
 		else
@@ -373,7 +391,7 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 			pageSize = 0x4000;
 		}
 
-		if (pageNumber == 8)
+		if (pageNumber == 5)
 		{
 			// This page contains screenshoot
 
@@ -582,29 +600,60 @@ void GetPageInfo(uint8_t* buffer, bool is128Mode, uint8_t pagingState, uint8_t* 
 	*pageSize |= buffer[1] << 8;
 	*pageNumber = buffer[2];
 
+#ifdef ZX128K
+	if (!is128Mode)
+	{
+        // 48K snapshot
+
+		switch (*pageNumber)
+		{
+		case 4:
+			// 48K : 0x8000..0xBFFF
+            *pageNumber = 2;
+			break;
+		case 5:
+			// 48K : 0xC000..0xFFFF
+            *pageNumber = 0;
+			break;
+		case 8:
+			// 48K : 0x4000..0x7FFF
+            *pageNumber = 5;
+			break;
+		}
+	}
+    else
+    {
+        // 128K snapshot
+
+        *pageNumber -= 3;
+    }
+#else
 	if (is128Mode)
 	{
 		switch (*pageNumber)
 		{
 		case 8:
 			// 0x4000..0x7FFF
+            *pageNumber = 5;
 			break;
 		case 4:
 			// 0x8000..0xBFFF
+            *pageNumber = 2;
 			break;
 		default:
 			if (*pageNumber == (pagingState & 0x03) + 3)
 			{
-				*pageNumber = 5; // 0xC000..0xFFFF
+				*pageNumber = 0; // 0xC000..0xFFFF
 			}
 			else
 			{
 				// skip it
-				*pageNumber = 0;
+				*pageNumber = -1;
 			}
 			break;
 		}
 	}
+#endif
 }
 
 uint8_t CountEqualBytes(uint8_t* address, uint8_t* maxAddress)
