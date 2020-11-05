@@ -105,6 +105,7 @@ uint16_t CompressPage(uint8_t* page, uint8_t* destMemory);
 void ReadState(FileHeader* header);
 void SaveState(FileHeader* header);
 void GetPageInfo(uint8_t* buffer, bool is128Mode, uint8_t pagingState, uint8_t* pageNumber, uint16_t* pageSize);
+void ShowScreenshot(uint8_t* buffer);
 
 bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4000])
 {
@@ -253,13 +254,16 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 		switch (pageNumber)
 		{
 		case 8:
+            // 48K : 4000-7fff; 128K : page 5
 			memory = buffer2;
 			break;
 		case 4:
-			//memory = &RamBuffer[0x8000 - 0x5B00];
+            // 48K : 8000-bfff; 128K : page 1
+            memory = SpectrumMemory.Ram2;
 			break;
 		case 5:
-			//memory = &RamBuffer[0xC000 - 0x5B00];
+            // 48K : c000-ffff; 128K : page 2
+            memory = SpectrumMemory.Ram0;
 			break;
 		default:
 			memory = nullptr;
@@ -288,11 +292,8 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 
 			if (pageNumber == 8)
 			{
-				// 0x4000..0x5AFF
-				//_spectrumScreen->ShowScreenshot(memory);
-
-				// 0x5B00..0x7FFF
-				//memcpy(RamBuffer, &memory[0x1B00], 0x2500);
+                // 48K : 4000-7fff; 128K : page 5
+                SpectrumMemory.FromBuffer(5, memory);
 			}
 		}
 		else
@@ -399,8 +400,10 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 			{
 				pageSize = 6912;
 			}
+
 			DecompressPage(buffer1, pageSize, isCompressed, 6912, buffer2);
-			//_spectrumScreen->ShowScreenshot(buffer2);
+            ShowScreenshot(buffer2);
+
 			return true;
 		}
 		else
@@ -452,7 +455,8 @@ bool zx::LoadScreenshot(File file, uint8_t buffer1[0x4000])
 		buffer += bytesRead;
 	} while (remainingBytes > 0);
 
-	//_spectrumScreen->ShowScreenshot(buffer1);
+    ShowScreenshot(buffer1);
+
 	return true;
 }
 
@@ -532,7 +536,7 @@ void ReadState(FileHeader* header)
 	_zxCpu.pc = header->PC;
 
 	uint8_t borderColor = (header->Flags1 & 0x0E) >> 1;
-	//*_spectrumScreen->Settings.BorderColor = _spectrumScreen->FromSpectrumColor(
+	//MainScreen->Settings.BorderColor = _spectrumScreen->FromSpectrumColor(
 	//		borderColor) >> 8;
 }
 
@@ -673,4 +677,13 @@ uint16_t CompressPage(uint8_t* page, uint8_t* destMemory)
 	}
 
 	return size;
+}
+
+void ShowScreenshot(uint8_t* buffer)
+{
+    memcpy(SpectrumMemory.MainScreenData.Pixels, buffer, 0x1800);
+    for (uint32_t i = 0x1800; i < 0x1AFF; i++)
+    {
+        SpectrumMemory.WriteByte(5, i, buffer[i]);
+    }
 }

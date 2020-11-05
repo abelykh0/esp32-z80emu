@@ -56,6 +56,8 @@ public:
     uint8_t ReadByte(uint8_t bank, uint16_t addr);
     void WriteByte(uint16_t addr, uint8_t data);
     uint8_t ReadByte(uint16_t addr);
+    void FromBuffer(uint8_t bank, uint8_t* data);
+    void ToBuffer(uint8_t bank, uint8_t* data);
 	static uint16_t FromSpectrumColor(uint8_t sinclairColor);
 	static uint8_t ToSpectrumColor(uint16_t color);
 };

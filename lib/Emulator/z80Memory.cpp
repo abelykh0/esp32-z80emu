@@ -9,11 +9,11 @@ void ZxSpectrumMemory::Initialize()
     // Due to a technical limitation, the maximum statically allocated DRAM usage is 160KB
     // The remaining 160KB (for a total of 320KB of DRAM) can only be allocated at runtime as heap
 #ifdef ZX128K
-    uint8_t* Ram1 = (uint8_t*)malloc(0x4000);
-    uint8_t* Ram3 = (uint8_t*)malloc(0x4000);
-    uint8_t* Ram4 = (uint8_t*)malloc(0x4000);
-    uint8_t* Ram6 = (uint8_t*)malloc(0x4000);
-    uint8_t* Ram7 = (uint8_t*)malloc(0x2500); // the rest in _shadowScreenData
+    this->Ram1 = (uint8_t*)malloc(0x4000);
+    this->Ram3 = (uint8_t*)malloc(0x4000);
+    this->Ram4 = (uint8_t*)malloc(0x4000);
+    this->Ram6 = (uint8_t*)malloc(0x4000);
+    this->Ram7 = (uint8_t*)malloc(0x2500); // the rest in _shadowScreenData
 #endif
 }
 
@@ -56,35 +56,35 @@ void ZxSpectrumMemory::WriteByte(uint8_t bank, uint16_t addr, uint8_t data)
                 this->MainScreenData.Attributes[addr - (uint16_t)0x1800] = ZxSpectrumMemory::FromSpectrumColor(data);
                 break;
             case 0x1B00 ... 0x3FFF:
-                offset = addr - (uint16_t)0x5B00;
+                offset = addr - (uint16_t)0x1B00;
                 SpectrumMemory.Ram5[offset] = data;
                 break;
         }
         break;
 
     case 2:
-        SpectrumMemory.Ram2[offset] = data;
+        SpectrumMemory.Ram2[addr] = data;
         break;
 
 #ifdef ZX128K
     case 0:
-        SpectrumMemory.Ram0[offset] = data;
+        SpectrumMemory.Ram0[addr] = data;
         break;
 
     case 1:
-        SpectrumMemory.Ram1[offset] = data;
+        SpectrumMemory.Ram1[addr] = data;
         break;
 
     case 3:
-        SpectrumMemory.Ram3[offset] = data;
+        SpectrumMemory.Ram3[addr] = data;
         break;
 
     case 4:
-        SpectrumMemory.Ram4[offset] = data;
+        SpectrumMemory.Ram4[addr] = data;
         break;
 
     case 6:
-        SpectrumMemory.Ram6[offset] = data;
+        SpectrumMemory.Ram6[addr] = data;
         break;
 
     case 7:
@@ -134,28 +134,28 @@ uint8_t ZxSpectrumMemory::ReadByte(uint8_t bank, uint16_t addr)
         break;
 
     case 2:
-        result = SpectrumMemory.Ram2[offset];
+        result = SpectrumMemory.Ram2[addr];
         break;
 
 #ifdef ZX128K
     case 0:
-        result = SpectrumMemory.Ram0[offset];
+        result = SpectrumMemory.Ram0[addr];
         break;
 
     case 1:
-        result = SpectrumMemory.Ram1[offset];
+        result = SpectrumMemory.Ram1[addr];
         break;
 
     case 3:
-        result = SpectrumMemory.Ram3[offset];
+        result = SpectrumMemory.Ram3[addr];
         break;
 
     case 4:
-        result = SpectrumMemory.Ram4[offset];
+        result = SpectrumMemory.Ram4[addr];
         break;
 
     case 6:
-        result = SpectrumMemory.Ram6[offset];
+        result = SpectrumMemory.Ram6[addr];
         break;
 
     case 7:
@@ -176,9 +176,128 @@ uint8_t ZxSpectrumMemory::ReadByte(uint8_t bank, uint16_t addr)
         }
         break;
 #endif
+        default:
+            result = 0xFF;
+            break;
     }
 
     return result;
+}
+
+void ZxSpectrumMemory::FromBuffer(uint8_t bank, uint8_t* data)
+{
+    switch (bank)
+    {
+    case 5:
+		// Video RAM
+		memcpy(this->MainScreenData.Pixels, data, 0x1800);
+		for (uint32_t i = 0x1800; i < 0x1AFF; i++)
+		{
+            this->WriteByte(bank, i, data[i]);
+		}
+
+        // The rest
+		memcpy(this->Ram5, &data[0x1B00], 0x2500);
+
+        break;
+
+    case 2:
+        memcpy(SpectrumMemory.Ram2, data, 0x4000);
+        break;
+
+#ifdef ZX128K
+    case 0:
+        memcpy(SpectrumMemory.Ram0, data, 0x4000);
+        break;
+
+    case 1:
+        memcpy(SpectrumMemory.Ram1, data, 0x4000);
+        break;
+
+    case 3:
+        memcpy(SpectrumMemory.Ram3, data, 0x4000);
+        break;
+
+    case 4:
+        memcpy(SpectrumMemory.Ram4, data, 0x4000);
+        break;
+
+    case 6:
+        memcpy(SpectrumMemory.Ram6, data, 0x4000);
+        break;
+
+    case 7:
+		// Video RAM
+		memcpy(this->ShadowScreenData.Pixels, data, 0x1800);
+		for (uint32_t i = 0x1800; i < 0x1AFF; i++)
+		{
+            this->WriteByte(bank, i, data[i]);
+		}
+
+        // The rest
+		memcpy(this->Ram7, &data[0x1B00], 0x2500);
+
+        break;
+    }
+#endif
+}
+
+void ZxSpectrumMemory::ToBuffer(uint8_t bank, uint8_t* data)
+{
+    switch (bank)
+    {
+    case 5:
+		// Video RAM
+		memcpy(data, this->MainScreenData.Pixels, 0x1800);
+		for (uint32_t i = 0x1800; i < 0x1AFF; i++)
+		{
+            this->WriteByte(bank, i, data[i]);
+		}
+
+        // The rest
+		memcpy(this->Ram5, &data[0x1B00], 0x2500);
+
+        break;
+
+    case 2:
+        memcpy(SpectrumMemory.Ram2, data, 0x4000);
+        break;
+
+#ifdef ZX128K
+    case 0:
+        memcpy(SpectrumMemory.Ram0, data, 0x4000);
+        break;
+
+    case 1:
+        memcpy(SpectrumMemory.Ram1, data, 0x4000);
+        break;
+
+    case 3:
+        memcpy(SpectrumMemory.Ram3, data, 0x4000);
+        break;
+
+    case 4:
+        memcpy(SpectrumMemory.Ram4, data, 0x4000);
+        break;
+
+    case 6:
+        memcpy(SpectrumMemory.Ram6, data, 0x4000);
+        break;
+
+    case 7:
+		// Video RAM
+		memcpy(this->ShadowScreenData.Pixels, data, 0x1800);
+		for (uint32_t i = 0x1800; i < 0x1AFF; i++)
+		{
+            this->WriteByte(bank, i, data[i]);
+		}
+
+        // The rest
+		memcpy(this->Ram7, &data[0x1B00], 0x2500);
+
+        break;
+    }
+#endif
 }
 
 uint16_t ZxSpectrumMemory::FromSpectrumColor(uint8_t sinclairColor)
