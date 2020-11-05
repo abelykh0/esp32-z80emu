@@ -3,15 +3,13 @@
 
 #include "z80main.h"
 #include "z80input.h"
+#include "z80Memory.h"
 #include "ps2Keyboard.h"
 
 //#define BEEPER
 #define CYCLES_PER_STEP 69888
-#define RAM_AVAILABLE 0xC000
 
-SpectrumScreen* _spectrumScreen;
 Sound::Ay3_8912_state _ay3_8912;
-uint8_t RamBuffer[RAM_AVAILABLE];
 Z80_STATE _zxCpu;
 
 static CONTEXT _zxContext;
@@ -21,6 +19,7 @@ static int _next_total = 0;
 static uint8_t zx_data = 0;
 static uint8_t frames = 0;
 static uint32_t _ticks = 0;
+static SpectrumScreen* _spectrumScreen;
 
 extern "C"
 {
@@ -53,6 +52,8 @@ void zx_setup(SpectrumScreen* spectrumScreen)
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 #endif
     _ay3_8912.Initialize();
+
+    SpectrumMemory.Initialize();
 
     zx_reset();
 }
@@ -128,32 +129,29 @@ int32_t zx_loop()
 extern "C" uint8_t readbyte(uint16_t addr)
 {
     uint8_t res;
-    if (addr >= (uint16_t)0x5B00)
+    uint16_t offset;
+    switch (addr)
     {
-        uint16_t offset = addr - (uint16_t)0x5B00;
-        if (offset < RAM_AVAILABLE)
-        {
-            res = RamBuffer[offset];
-        }
-        else
-        {
-            res = 0;
-        }
+        case 0x0000 ... 0x3fff:
+            res = ROM[addr];
+            break;
+        case 0x4000 ... 0x7FFF:
+            // Always bank 5
+            offset = addr - (uint16_t)0x4000;
+            res = SpectrumMemory.ReadByte(5, offset);
+            break;
+        case 0x8000 ... 0xBFFF:
+            // Always bank 2
+            offset = addr - (uint16_t)0x8000;
+            res = SpectrumMemory.ReadByte(2, offset);
+            break;
+        case 0xC000 ... 0xFFFF:
+            // Selected page
+            offset = addr - (uint16_t)0xC000;
+            res = SpectrumMemory.ReadByte(offset);
+            break;
     }
-    else if (addr >= (uint16_t)0x5800)
-    {
-        // Screen Attributes
-        res = _spectrumScreen->ToSpectrumColor(_spectrumScreen->Settings.Attributes[addr - (uint16_t)0x5800]);
-    }
-    else if (addr >= (uint16_t)0x4000)
-    {
-        // Screen pixels
-        res = _spectrumScreen->Settings.Pixels[addr - (uint16_t)0x4000];
-    }
-    else
-    {
-        res = ROM[addr];
-    }
+
     return res;
 }
 
@@ -164,23 +162,27 @@ extern "C" uint16_t readword(uint16_t addr)
 
 extern "C" void writebyte(uint16_t addr, uint8_t data)
 {
-    if (addr >= (uint16_t)0x5B00)
+    uint16_t offset;
+    switch (addr)
     {
-        uint16_t offset = addr - (uint16_t)0x5B00;
-        if (offset < RAM_AVAILABLE)
-        {
-            RamBuffer[offset] = data;
-        }
-    }
-    else if (addr >= (uint16_t)0x5800)
-    {
-        // Screen Attributes
-    	_spectrumScreen->Settings.Attributes[addr - (uint16_t)0x5800] = _spectrumScreen->FromSpectrumColor(data);
-    }
-    else if (addr >= (uint16_t)0x4000)
-    {
-        // Screen pixels
-    	_spectrumScreen->Settings.Pixels[addr - (uint16_t)0x4000] = data;
+        case 0x0000 ... 0x3fff:
+            // Cannot write to ROM
+            break;
+        case 0x4000 ... 0x7FFF:
+            // Always bank 5
+            offset = addr - (uint16_t)0x4000;
+            SpectrumMemory.WriteByte(5, offset, data);
+            break;
+        case 0x8000 ... 0xBFFF:
+            // Always bank 2
+            offset = addr - (uint16_t)0x8000;
+            SpectrumMemory.WriteByte(2, offset, data);
+            break;
+        case 0xC000 ... 0xFFFF:
+            // Selected page
+            offset = addr - (uint16_t)0xC000;
+            SpectrumMemory.WriteByte(offset, data);
+            break;
     }
 }
 
@@ -248,7 +250,7 @@ extern "C" void output(uint8_t portLow, uint8_t portHigh, uint8_t data)
         uint8_t borderColor = (data & 0x07);
     	if ((indata[0x20] & 0x07) != borderColor)
     	{
-            *_spectrumScreen->Settings.BorderColor = _spectrumScreen->FromSpectrumColor(borderColor) >> 8;
+            *_spectrumScreen->Settings.BorderColor = ZxSpectrumMemory::FromSpectrumColor(borderColor) >> 8;
     	}
 
 #ifdef BEEPER

@@ -4,7 +4,7 @@
 #include "Screen.h"
 #include "SpectrumScreen.h"
 
-//#define SDCARD
+#define SDCARD
 
 /*
 #define RESOLUTION QVGA_320x240_60Hz
@@ -23,19 +23,12 @@
 #define DEBUG_BAND_HEIGHT (DEBUG_ROWS * 8)
 #define SPECTRUM_BAND_HEIGHT (SCREEN_HEIGHT - DEBUG_BAND_HEIGHT)
 
-typedef struct
-{
-	uint8_t  Pixels[32 * 8 * 24];
-	uint16_t Attributes[32 * 24];
-	uint8_t  BorderColor;
-} SpectrumScreenData;
-
 using namespace Display;
 
 extern Screen DebugScreen;
 extern SpectrumScreen MainScreen;
-extern uint8_t _buffer16K_1[0x4000];
-extern uint8_t _buffer16K_2[0x4000];
+extern uint8_t _buffer16K_1[];
+extern uint8_t _buffer16K_2[];
 
 void EmulatorTaskMain(void *unused);
 

@@ -5,7 +5,7 @@
 #include "z80snapshot.h"
 #include "z80main.h"
 #include "z80emu/z80emu.h"
-#include "SpectrumScreen.h"
+#include "z80Memory.h"
 
 /*
  Offset  Length  Description
@@ -135,22 +135,22 @@ bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4
 			buffer = buffer2;
 
 			// 0x4000..0x5AFF
-			memcpy(buffer, _spectrumScreen->Settings.Pixels, _spectrumScreen->_pixelCount);
-			for (uint32_t i = 0; i < _spectrumScreen->_attributeCount; i++)
-			{
-				buffer[_spectrumScreen->_pixelCount + i] = _spectrumScreen->ToSpectrumColor(
-						_spectrumScreen->Settings.Attributes[i]);
-			}
+			//memcpy(buffer, _spectrumScreen->Settings.Pixels, _spectrumScreen->_pixelCount);
+			//for (uint32_t i = 0; i < _spectrumScreen->_attributeCount; i++)
+			//{
+			//	buffer[_spectrumScreen->_pixelCount + i] = _spectrumScreen->ToSpectrumColor(
+			//			_spectrumScreen->Settings.Attributes[i]);
+			//}
 
 			// 0x5B00..0x7FFF
-			memcpy(&buffer[0x1B00], RamBuffer, 0x2500);
+			//memcpy(&buffer[0x1B00], RamBuffer, 0x2500);
 
 			break;
 		case 4:
-			buffer = &RamBuffer[0x8000 - 0x5B00];
+			//buffer = &RamBuffer[0x8000 - 0x5B00];
 			break;
 		case 5:
-			buffer = &RamBuffer[0xC000 - 0x5B00];
+			//buffer = &RamBuffer[0xC000 - 0x5B00];
 			break;
 		}
 
@@ -256,10 +256,10 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 			memory = buffer2;
 			break;
 		case 4:
-			memory = &RamBuffer[0x8000 - 0x5B00];
+			//memory = &RamBuffer[0x8000 - 0x5B00];
 			break;
 		case 5:
-			memory = &RamBuffer[0xC000 - 0x5B00];
+			//memory = &RamBuffer[0xC000 - 0x5B00];
 			break;
 		default:
 			memory = nullptr;
@@ -289,10 +289,10 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 			if (pageNumber == 8)
 			{
 				// 0x4000..0x5AFF
-				_spectrumScreen->ShowScreenshot(memory);
+				//_spectrumScreen->ShowScreenshot(memory);
 
 				// 0x5B00..0x7FFF
-				memcpy(RamBuffer, &memory[0x1B00], 0x2500);
+				//memcpy(RamBuffer, &memory[0x1B00], 0x2500);
 			}
 		}
 		else
@@ -400,7 +400,7 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 				pageSize = 6912;
 			}
 			DecompressPage(buffer1, pageSize, isCompressed, 6912, buffer2);
-			_spectrumScreen->ShowScreenshot(buffer2);
+			//_spectrumScreen->ShowScreenshot(buffer2);
 			return true;
 		}
 		else
@@ -452,7 +452,7 @@ bool zx::LoadScreenshot(File file, uint8_t buffer1[0x4000])
 		buffer += bytesRead;
 	} while (remainingBytes > 0);
 
-	_spectrumScreen->ShowScreenshot(buffer1);
+	//_spectrumScreen->ShowScreenshot(buffer1);
 	return true;
 }
 
@@ -532,8 +532,8 @@ void ReadState(FileHeader* header)
 	_zxCpu.pc = header->PC;
 
 	uint8_t borderColor = (header->Flags1 & 0x0E) >> 1;
-	*_spectrumScreen->Settings.BorderColor = _spectrumScreen->FromSpectrumColor(
-			borderColor) >> 8;
+	//*_spectrumScreen->Settings.BorderColor = _spectrumScreen->FromSpectrumColor(
+	//		borderColor) >> 8;
 }
 
 void SaveState(FileHeader* header)
@@ -565,7 +565,7 @@ void SaveState(FileHeader* header)
 	// Bit 0  : Bit 7 of the R-register
 	// Bit 1-3: Border color
 	header->Flags1 = (_zxCpu.r & 0x80) >> 7;
-	uint8_t border = _spectrumScreen->ToSpectrumColor(*_spectrumScreen->Settings.BorderColor);
+	uint8_t border = 0;//_spectrumScreen->ToSpectrumColor(*_spectrumScreen->Settings.BorderColor);
 	header->Flags1 |= (border & 0x38) >> 2;
 
 	// Bit 0-1: Interrupt mode (0, 1 or 2)

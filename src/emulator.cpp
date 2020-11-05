@@ -10,13 +10,10 @@
 #include "FileSystem.h"
 #include "keyboard.h"
 #include "z80snapshot.h"
+#include "z80Memory.h"
 
 uint8_t _buffer16K_1[0x4000];
 uint8_t _buffer16K_2[0x4000];
-
-// Spectrum video RAM + border color
-// 256x192 pixels (or 32x24 characters)
-static SpectrumScreenData _spectrumScreenData;
 
 // Used in saveState / restoreState
 static SpectrumScreenData* _savedScreenData = (SpectrumScreenData*)&_buffer16K_2[0x4000 - sizeof(SpectrumScreenData)];
@@ -24,7 +21,9 @@ static SpectrumScreenData* _savedScreenData = (SpectrumScreenData*)&_buffer16K_2
 // Spectrum screen band
 static VideoSettings _spectrumVideoSettings {
 	32, 24, 
-	_spectrumScreenData.Pixels, _spectrumScreenData.Attributes, &_spectrumScreenData.BorderColor
+	SpectrumMemory.MainScreenData.Pixels, 
+    SpectrumMemory.MainScreenData.Attributes, 
+    &SpectrumMemory.MainScreenData.BorderColor
 };
 SpectrumScreen MainScreen(_spectrumVideoSettings, 0, SPECTRUM_BAND_HEIGHT);
 
@@ -48,13 +47,6 @@ static PS2Controller* KeyboardController;
 static bool _showingKeyboard;
 static bool _helpShown;
 
-/*
-static bool _settingDateTime;
-static uint32_t _frames;
-static char* _newDateTime = (char*)_buffer16K_2;
-*/
-
-
 void startKeyboard()
 {
 	//Mouse::quickCheckHardware();
@@ -65,7 +57,7 @@ void startKeyboard()
 
 void saveState()
 {
-	*_savedScreenData = _spectrumScreenData;
+	*_savedScreenData = SpectrumMemory.MainScreenData;
 }
 
 void clearHelp()
@@ -114,7 +106,7 @@ void restoreState(bool restoreScreen)
 {
 	if (restoreScreen)
 	{
-		_spectrumScreenData = *_savedScreenData;
+		SpectrumMemory.MainScreenData = *_savedScreenData;
 	}
 
 	restoreHelp();
@@ -149,7 +141,7 @@ void showKeyboardSetup()
 
 	MainScreen.ShowScreenshot(spectrumKeyboard);
 
-	_spectrumScreenData.BorderColor = 0; // Black
+	SpectrumMemory.MainScreenData.BorderColor = 0; // Black
 }
 
 void showTitle(const char* title)
@@ -203,13 +195,6 @@ void showErrorMessage(const char* errorMessage)
 	DebugScreen.PrintAlignCenter(2, errorMessage);
 	DebugScreen.SetAttribute(0x3F10); // white on blue
 }
-
-union t
-{
-    int l;
-    byte a[4];
-    short s[2]; 
-};
 
 void EmulatorTaskMain(void *unused)
 {
