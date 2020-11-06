@@ -244,6 +244,7 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
     else
     {
         SpectrumMemory.MemoryState.Bits = 0;
+        SpectrumMemory.MemoryState.PagingLock = 1;
     }
 
 	// Get pageSize and pageNumber
