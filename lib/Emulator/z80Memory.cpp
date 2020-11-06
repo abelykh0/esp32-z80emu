@@ -99,7 +99,7 @@ void ZxSpectrumMemory::WriteByte(uint8_t bank, uint16_t addr, uint8_t data)
                 this->ShadowScreenData.Attributes[addr - (uint16_t)0x1800] = this->FromSpectrumColor(data);
                 break;
             case 0x1B00 ... 0x3FFF:
-                offset = addr - (uint16_t)0x5B00;
+                offset = addr - (uint16_t)0x1B00;
                 SpectrumMemory.Ram7[offset] = data;
                 break;
         }
@@ -129,6 +129,9 @@ uint8_t ZxSpectrumMemory::ReadByte(uint8_t bank, uint16_t addr)
             case 0x1B00 ... 0x3FFF:
                 offset = addr - (uint16_t)0x1B00;
                 result = SpectrumMemory.Ram5[offset];
+                break;
+            default:
+                result = 0xFF;
                 break;
         }
         break;
@@ -170,8 +173,11 @@ uint8_t ZxSpectrumMemory::ReadByte(uint8_t bank, uint16_t addr)
                 result = ZxSpectrumMemory::ToSpectrumColor(this->ShadowScreenData.Attributes[addr - (uint16_t)0x1800]);
                 break;
             case 0x1B00 ... 0x3FFF:
-                offset = addr - (uint16_t)0x5B00;
+                offset = addr - (uint16_t)0x1B00;
                 result = SpectrumMemory.Ram7[offset];
+                break;
+            default:
+                result = 0xFF;
                 break;
         }
         break;
