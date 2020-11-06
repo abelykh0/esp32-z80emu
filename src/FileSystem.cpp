@@ -153,6 +153,7 @@ static void SetSelection(uint8_t selectedFile)
 					noScreenshot();
 				}
 				file.close();
+                _ay3_8912.Clear();
 			}
 		}
 

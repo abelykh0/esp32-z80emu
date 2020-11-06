@@ -355,7 +355,13 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 	}
 
 	// Note: this requires little-endian processor
-	FileHeader* header = (FileHeader*) buffer1;
+	FileHeader* header = (FileHeader*)buffer1;
+
+    if (header->AdditionalBlockLength < 23)
+    {
+        // Invalid file format
+        return false; 
+    }
 
 	bool is128Mode;
 	if (header->AdditionalBlockLength < 54)
@@ -377,6 +383,15 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 	{
 		return false;
 	}
+
+    if (is128Mode && bytesRead == 54)
+    {
+        SpectrumMemory.MemoryState.Bits = buffer1[53];
+    }
+    else
+    {
+        SpectrumMemory.MemoryState.Bits = 0;
+    }
 
 	// Get pageSize and pageNumber
 	uint16_t pageSize;

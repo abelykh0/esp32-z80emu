@@ -32,6 +32,34 @@ void Ay3_8912_state::ResumeSound()
     _soundGenerator.play(true);
 }
 
+void Ay3_8912_state::Clear()
+{
+	this->finePitchChannelA = 0xFF;
+	this->coarsePitchChannelA = 0xFF;
+	this->finePitchChannelB = 0xFF;
+	this->coarsePitchChannelB = 0xFF;
+	this->finePitchChannelC = 0xFF;
+	this->coarsePitchChannelC = 0xFF;
+	this->noisePitch = 0xFF;
+	this->mixer = 0xFF;
+	this->volumeChannelA = 0xFF;
+	this->volumeChannelB = 0xFF;
+	this->volumeChannelC = 0xFF;
+	this->envelopeFineDuration = 0xFF;
+	this->envelopeCoarseDuration = 0xFF;
+	this->envelopeShape = 0xFF;
+	this->ioPortA = 0xFF;
+
+	// Status
+	this->selectedRegister = 0xFF;
+    for (int channel = 0; channel < 3; channel++)
+    {
+	    this->channelVolume[channel] = 0xFF;
+	    this->channelFrequency[channel] = 0xFFFF;
+        _channel[channel].setVolume(0);
+    }
+}
+
 void Ay3_8912_state::updated()
 {
 	uint16_t oldChannelFrequency[3];

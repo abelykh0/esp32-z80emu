@@ -38,6 +38,7 @@ public:
     void Initialize();
     void StopSound();
     void ResumeSound();
+    void Clear();
 
 private:
 	void updated();
