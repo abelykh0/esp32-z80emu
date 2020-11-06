@@ -237,6 +237,15 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 		return false;
 	}
 
+    if (is128Mode && bytesRead == 54)
+    {
+        SpectrumMemory.MemoryState.Bits = buffer1[53];
+    }
+    else
+    {
+        SpectrumMemory.MemoryState.Bits = 0;
+    }
+
 	// Get pageSize and pageNumber
 	uint16_t pageSize;
 	uint8_t pageNumber;
@@ -383,15 +392,6 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 	{
 		return false;
 	}
-
-    if (is128Mode && bytesRead == 54)
-    {
-        SpectrumMemory.MemoryState.Bits = buffer1[53];
-    }
-    else
-    {
-        SpectrumMemory.MemoryState.Bits = 0;
-    }
 
 	// Get pageSize and pageNumber
 	uint16_t pageSize;
