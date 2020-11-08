@@ -570,8 +570,8 @@ void ReadState(FileHeader* header)
 	_zxCpu.pc = header->PC;
 
 	uint8_t borderColor = (header->Flags1 & 0x0E) >> 1;
-	//MainScreen->Settings.BorderColor = _spectrumScreen->FromSpectrumColor(
-	//		borderColor) >> 8;
+    SpectrumMemory.MainScreenData.BorderColor = ZxSpectrumMemory::FromSpectrumColor(
+	    borderColor) >> 8;
 }
 
 void SaveState(FileHeader* header)
@@ -603,7 +603,7 @@ void SaveState(FileHeader* header)
 	// Bit 0  : Bit 7 of the R-register
 	// Bit 1-3: Border color
 	header->Flags1 = (_zxCpu.r & 0x80) >> 7;
-	uint8_t border = 0;//_spectrumScreen->ToSpectrumColor(*_spectrumScreen->Settings.BorderColor);
+	uint8_t border =  ZxSpectrumMemory::ToSpectrumColor(SpectrumMemory.MainScreenData.BorderColor);
 	header->Flags1 |= (border & 0x38) >> 2;
 
 	// Bit 0-1: Interrupt mode (0, 1 or 2)

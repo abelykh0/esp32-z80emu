@@ -298,7 +298,24 @@ extern "C" void output(uint8_t portLow, uint8_t portHigh, uint8_t data)
         	break;
 
         case 0x7F:
+            MemorySelect originalState = SpectrumMemory.MemoryState;
         	SpectrumMemory.SetState(data);
+            if (originalState.ShadowScreen != SpectrumMemory.MemoryState.ShadowScreen)
+            {
+                if (SpectrumMemory.MemoryState.ShadowScreen == 1)
+                {
+                    _spectrumScreen->Settings.Pixels = SpectrumMemory.ShadowScreenData.Pixels;
+                    _spectrumScreen->Settings.Attributes = SpectrumMemory.ShadowScreenData.Attributes;
+                    *_spectrumScreen->Settings.BorderColor = SpectrumMemory.ShadowScreenData.BorderColor;
+                }
+                else
+                {
+                    _spectrumScreen->Settings.Pixels = SpectrumMemory.MainScreenData.Pixels;
+                    _spectrumScreen->Settings.Attributes = SpectrumMemory.MainScreenData.Attributes;
+                    *_spectrumScreen->Settings.BorderColor = SpectrumMemory.MainScreenData.BorderColor;
+                }
+            }
+
         	break;
         }
     }
