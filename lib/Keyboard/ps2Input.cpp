@@ -1,11 +1,12 @@
 #include <ctype.h>
 #include <map>
 
-#include "ps2keyboard.h"
+#include "ps2Input.h"
 
 using namespace fabgl;
 
 static Keyboard* _keyboard;
+static Mouse* _mouse;
 
 static bool _isLeftShiftPressed;
 static bool _isRightShiftPressed;
@@ -13,9 +14,10 @@ static bool _isRightShiftPressed;
 // Used to convert virtual key back to scan code
 static std::map<VirtualKey, uint32_t> _virtualKeyMap;
 
-void Ps2_Initialize(fabgl::PS2Controller* controller)
+void Ps2_Initialize(PS2Controller* inputController)
 {
-	_keyboard = controller->keyboard();
+	_keyboard = inputController->keyboard();
+    _mouse = inputController->mouse();
 
 	// Used to convert virtual key back to scan code
 	const KeyboardLayout* layout = _keyboard->getLayout();
@@ -31,6 +33,31 @@ void Ps2_Initialize(fabgl::PS2Controller* controller)
 	{
 		_virtualKeyMap[keyDef.virtualKey] = _virtualKeyMap[keyDef.reqVirtualKey];
 	}
+}
+
+bool Ps2_isMouseAvailable()
+{
+    return _mouse != nullptr && _mouse->isMouseAvailable();
+}
+
+uint8_t Ps2_getMouseButtons()
+{
+    uint8_t result = 0xFF;
+    MouseButtons buttons = _mouse->status().buttons;
+    result &= buttons.right ? 0xFE : 0xFF;
+    result &= buttons.left ? 0xFD : 0xFF;
+    result &= buttons.middle ? 0xFB : 0xFF;
+    return result;
+}
+
+uint8_t Ps2_getMouseX()
+{
+    return _mouse->status().X >> 8;
+}
+
+uint8_t Ps2_getMouseY()
+{
+    return _mouse->status().Y >> 8;
 }
 
 int32_t Ps2_GetScancode()

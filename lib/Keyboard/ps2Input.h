@@ -1,5 +1,5 @@
-#ifndef _PS2KEYBOARD_H_
-#define _PS2KEYBOARD_H_
+#ifndef _PS2INPUT_H_
+#define _PS2INPUT_H_
 
 /* Single Byte Key Codes */
 #define KEY_NUM      0x77
@@ -128,7 +128,7 @@
 
 #include "fabgl.h"
 
-void Ps2_Initialize(fabgl::PS2Controller* controller);
+void Ps2_Initialize(fabgl::PS2Controller* inputController);
 
 #ifdef __cplusplus
 extern "C" {
@@ -137,6 +137,11 @@ extern "C" {
 #include <stdint.h>
 int32_t Ps2_GetScancode();
 char Ps2_ConvertScancode(int32_t scanCode);
+
+bool Ps2_isMouseAvailable();
+uint8_t Ps2_getMouseButtons();
+uint8_t Ps2_getMouseX();
+uint8_t Ps2_getMouseY();
 
 #ifdef __cplusplus
 }

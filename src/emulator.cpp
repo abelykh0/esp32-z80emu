@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "SD.h"
-#include "ps2Keyboard.h"
+#include "ps2Input.h"
 #include "z80main.h"
 #include "FileSystem.h"
 #include "keyboard.h"
@@ -42,17 +42,17 @@ Screen DebugScreen(_videoSettings, SPECTRUM_BAND_HEIGHT, DEBUG_BAND_HEIGHT);
 
 VideoController ScreenController(&MainScreen, &DebugScreen);
 
-static PS2Controller* KeyboardController;
+static PS2Controller* InputController;
 
 static bool _showingKeyboard;
 static bool _helpShown;
 
 void startKeyboard()
 {
-	//Mouse::quickCheckHardware();
-	KeyboardController = new PS2Controller();
-	KeyboardController->begin(PS2Preset::KeyboardPort0);
-	Ps2_Initialize(KeyboardController);
+	Mouse::quickCheckHardware();
+	InputController = new PS2Controller();
+	InputController->begin(PS2Preset::KeyboardPort0_MousePort1);
+	Ps2_Initialize(InputController);
 }
 
 void saveState()

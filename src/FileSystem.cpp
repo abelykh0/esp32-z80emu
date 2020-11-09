@@ -5,7 +5,7 @@
 
 #include "FileSystem.h"
 #include "Emulator.h"
-#include "ps2Keyboard.h"
+#include "ps2Input.h"
 #include "z80main.h"
 #include "z80snapshot.h"
 

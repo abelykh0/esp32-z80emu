@@ -1,6 +1,6 @@
 
 #include "z80input.h"
-#include "ps2Keyboard.h"
+#include "ps2Input.h"
 
 uint8_t indata[128];
 

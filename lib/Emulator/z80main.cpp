@@ -4,7 +4,7 @@
 #include "z80main.h"
 #include "z80input.h"
 #include "z80Memory.h"
-#include "ps2Keyboard.h"
+#include "ps2Input.h"
 
 //#define BEEPER
 #define CYCLES_PER_STEP 69888
@@ -231,6 +231,20 @@ extern "C" uint8_t input(uint8_t portLow, uint8_t portHigh)
         {
         case 0xFF:
         	return _ay3_8912.getRegisterData();
+        }
+    }
+
+    // Kempston Mouse
+    if (portLow == 0xDF && Ps2_isMouseAvailable())
+    {
+        switch (portHigh)
+        {
+        case 0xFA:
+        	return Ps2_getMouseButtons();
+        case 0xFB:
+        	return Ps2_getMouseX();
+        case 0xFF:
+        	return Ps2_getMouseY();
         }
     }
 
