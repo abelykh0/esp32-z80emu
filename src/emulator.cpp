@@ -23,7 +23,7 @@ static VideoSettings _spectrumVideoSettings {
 	32, 24, 
 	SpectrumMemory.MainScreenData.Pixels, 
     SpectrumMemory.MainScreenData.Attributes, 
-    &SpectrumMemory.MainScreenData.BorderColor
+    &SpectrumMemory.BorderColor
 };
 SpectrumScreen MainScreen(_spectrumVideoSettings, 0, SPECTRUM_BAND_HEIGHT);
 
@@ -141,7 +141,7 @@ void showKeyboardSetup()
 
 	MainScreen.ShowScreenshot(spectrumKeyboard);
 
-	SpectrumMemory.MainScreenData.BorderColor = 0; // Black
+	SpectrumMemory.BorderColor = 0; // Black
 }
 
 void showTitle(const char* title)

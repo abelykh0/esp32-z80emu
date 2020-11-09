@@ -26,13 +26,13 @@ typedef struct
 {
 	uint8_t  Pixels[32 * 8 * 24];
 	uint16_t Attributes[32 * 24];
-	uint8_t  BorderColor;
 } SpectrumScreenData;
 
 class ZxSpectrumMemory
 {
 public:
     MemorySelect MemoryState;
+	uint8_t  BorderColor;
 
     uint8_t Ram0[0x4000];
     uint8_t Ram2[0x4000];
