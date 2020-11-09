@@ -18,7 +18,7 @@ void Ps2_Initialize(PS2Controller* inputController)
 {
 	_keyboard = inputController->keyboard();
     _mouse = inputController->mouse();
-    _mouse->setupAbsolutePositioner(256, 256, false);
+    _mouse->setupAbsolutePositioner(0x100 << 1, 0x100 << 1, false);
 
 	// Used to convert virtual key back to scan code
 	const KeyboardLayout* layout = _keyboard->getLayout();
@@ -60,12 +60,12 @@ uint8_t Ps2_getMouseButtons()
 
 uint8_t Ps2_getMouseX()
 {
-    return (uint8_t)_mouse->status().X;
+    return (uint8_t)(_mouse->status().X >> 1);
 }
 
 uint8_t Ps2_getMouseY()
 {
-    return 0xFF - (uint8_t)_mouse->status().Y;
+    return 0xFF - (uint8_t)(_mouse->status().Y >> 1);
 }
 
 int32_t Ps2_GetScancode()
