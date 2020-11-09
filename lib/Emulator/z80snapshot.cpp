@@ -104,7 +104,7 @@ void DecompressPage(uint8_t *page, uint16_t pageLength, bool isCompressed,
 uint16_t CompressPage(uint8_t* page, uint8_t* destMemory);
 void ReadState(FileHeader* header);
 void SaveState(FileHeader* header);
-void GetPageInfo(uint8_t* buffer, bool is128Mode, uint8_t pagingState, uint8_t* pageNumber, uint16_t* pageSize);
+void GetPageInfo(uint8_t* buffer, bool is128Mode, uint8_t pagingState, int8_t* pageNumber, uint16_t* pageSize);
 void ShowScreenshot(uint8_t* buffer);
 
 bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4000])
@@ -249,7 +249,7 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 
 	// Get pageSize and pageNumber
 	uint16_t pageSize;
-	uint8_t pageNumber;
+	int8_t pageNumber;
 	GetPageInfo(&buffer1[bytesToRead - 3], is128Mode, pagingState, &pageNumber, &pageSize);
 
 	do
@@ -396,7 +396,7 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 
 	// Get pageSize and pageNumber
 	uint16_t pageSize;
-	uint8_t pageNumber;
+	int8_t pageNumber;
 	GetPageInfo(&buffer1[bytesToRead - 3], is128Mode, pagingState, &pageNumber, &pageSize);
 
 	do
@@ -610,7 +610,7 @@ void SaveState(FileHeader* header)
 	header->Flags2 = _zxCpu.im & 0x03;
 }
 
-void GetPageInfo(uint8_t* buffer, bool is128Mode, uint8_t pagingState, uint8_t* pageNumber, uint16_t* pageSize)
+void GetPageInfo(uint8_t* buffer, bool is128Mode, uint8_t pagingState, int8_t* pageNumber, uint16_t* pageSize)
 {
 	*pageSize = buffer[0];
 	*pageSize |= buffer[1] << 8;
