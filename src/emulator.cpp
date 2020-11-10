@@ -286,7 +286,7 @@ void EmulatorTaskMain(void *unused)
 
 #ifdef SDCARD
 	case KEY_F2:
-		if (!saveSnapshotSetup())
+		if (!saveSnapshotSetup("/"))
 		{
 #ifdef SDCARD
 			showErrorMessage("Cannot initialize SD card");

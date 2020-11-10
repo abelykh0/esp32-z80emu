@@ -55,6 +55,7 @@ static TCHAR* GetFileName(TCHAR* fileName)
 	TCHAR* result = (TCHAR*)_buffer16K_1;
     strncpy(result, _rootFolder, _rootFolderLength);
 	strncpy(result + _rootFolderLength, fileName, FF_MAX_LFN);
+
     return result;
 }
 
@@ -231,9 +232,12 @@ void FileSystemInitialize(fs::FS* fileSystem)
     _fileSystem = fileSystem;
 }
 
-bool saveSnapshotSetup()
+bool saveSnapshotSetup(const char* path)
 {
     _ay3_8912.StopSound();
+
+    _rootFolder = path;
+    _rootFolderLength = strlen(path);
 
 	DebugScreen.SetAttribute(0x3F10); // white on blue
 	DebugScreen.Clear();
@@ -275,6 +279,7 @@ bool saveSnapshotLoop()
 
 	scanCode = ((scanCode & 0xFF0000) >> 8 | (scanCode & 0xFF));
 	uint8_t x = DebugScreen._cursor_x;
+    TCHAR* fileName;
 	switch (scanCode)
 	{
 	case KEY_BACKSPACE:
@@ -290,9 +295,9 @@ bool saveSnapshotLoop()
 	case KEY_KP_ENTER:
 		DebugScreen.HideCursor();
 		DebugScreen.PrintAt(0, 5, "Saving...                  ");
-		strcat(_snapshotName,".z80");
-        _snapshotName = GetFileName(_snapshotName);
-		if (saveSnapshot(_snapshotName))
+        fileName = GetFileName(_snapshotName);
+		strcat(fileName,".z80");
+		if (saveSnapshot(fileName))
 		{
 			_savingSnapshot = false;
 			restoreState(false);

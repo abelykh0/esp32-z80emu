@@ -8,7 +8,7 @@ void FileSystemInitialize(fs::FS* fileSystem);
 bool loadSnapshotSetup(const char* path);
 bool loadSnapshotLoop();
 
-bool saveSnapshotSetup();
+bool saveSnapshotSetup(const char* path);
 bool saveSnapshotLoop();
 
 bool ReadFromFile(const char* fileName, uint8_t* buffer, size_t size);
