@@ -31,7 +31,7 @@ static int _rootFolderLength;
 static FRESULT mount()
 {
 #ifdef SDCARD
-	return SD.begin(13) ? FR_OK : FR_NOT_READY;
+	return SD.begin(13, SPI, 20000000U) ? FR_OK : FR_NOT_READY;
 #else
 	return FR_OK;
 #endif
