@@ -248,6 +248,7 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 
     if (!is128Mode)
     {
+        SpectrumMemory.MemoryState.RomSelect = 1;
         SpectrumMemory.MemoryState.PagingLock = 1;
     }
 
