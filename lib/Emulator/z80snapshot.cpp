@@ -123,36 +123,64 @@ bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4
 		return false;
 	}
 
-	uint8_t pages[] = { 4, 5, 8 };
+    uint8_t pageCount;
+    uint8_t pagesToSave[8];
+    if (SpectrumMemory.MemoryState.PagingLock == 1)
+    {
+        // Save 48K snaphot
 
-	for (int i = 0; i < 3; i++)
+        pageCount = 3;
+        pagesToSave[0] = 5;
+        pagesToSave[1] = 2;
+        pagesToSave[2] = SpectrumMemory.MemoryState.RamBank;
+    }
+    else
+    {
+        // Save 128K snaphot
+
+        pageCount = 8;
+    	for (int i = 0; i < pageCount; i++)
+        {
+            pagesToSave[i] = i;
+        }
+    }
+
+	for (int i = 0; i < pageCount; i++)
 	{
-		uint8_t pageNumber = pages[i];
+        uint8_t pageNumber = pagesToSave[i];
 		uint8_t* buffer = nullptr;
 
 		switch (pageNumber)
 		{
-		case 8:
+		case 5:
+#ifdef ZX128K
+        case 7:
+#endif
 			buffer = buffer2;
+            SpectrumMemory.ToBuffer(pageNumber, buffer);
+			break;
 
-			// 0x4000..0x5AFF
-			//memcpy(buffer, _spectrumScreen->Settings.Pixels, _spectrumScreen->_pixelCount);
-			//for (uint32_t i = 0; i < _spectrumScreen->_attributeCount; i++)
-			//{
-			//	buffer[_spectrumScreen->_pixelCount + i] = _spectrumScreen->ToSpectrumColor(
-			//			_spectrumScreen->Settings.Attributes[i]);
-			//}
+		case 0:
+			buffer = SpectrumMemory.Ram0;
+			break;
+		case 2:
+			buffer = SpectrumMemory.Ram2;
+			break;
 
-			// 0x5B00..0x7FFF
-			//memcpy(&buffer[0x1B00], RamBuffer, 0x2500);
-
+#ifdef ZX128K
+		case 1:
+			buffer = SpectrumMemory.Ram1;
+			break;
+		case 3:
+			buffer = SpectrumMemory.Ram3;
 			break;
 		case 4:
-			//buffer = &RamBuffer[0x8000 - 0x5B00];
+			buffer = SpectrumMemory.Ram4;
 			break;
-		case 5:
-			//buffer = &RamBuffer[0xC000 - 0x5B00];
+		case 6:
+			buffer = SpectrumMemory.Ram6;
 			break;
+#endif
 		}
 
 		uint16_t pageSize = CompressPage(buffer, buffer1);
@@ -171,7 +199,26 @@ bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4
 			*buffer = (pageSize & 0xFF00) >> 8;
 		}
 		buffer++;
-		*buffer = pageNumber;
+
+        if (pageCount == 3)
+        {
+            switch (pageNumber)
+            {
+            case 2:
+    		    *buffer = 4;
+                break;
+            case 5:
+    		    *buffer = 8;
+                break;
+            default:
+    		    *buffer = 5;
+                break;
+            }
+        }
+        else
+        {
+		    *buffer = pageNumber + 3;
+        }
 
 		bytesWritten = file.write(buffer2, 3);
 		if (bytesWritten != 3)
