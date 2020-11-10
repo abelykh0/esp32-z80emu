@@ -1,6 +1,5 @@
 #include "z80Memory.h"
-
-#include "SpectrumScreen.h"
+#include "main_ROM.h"
 
 ZxSpectrumMemory SpectrumMemory;
 
@@ -8,7 +7,11 @@ void ZxSpectrumMemory::Initialize()
 {
     // Due to a technical limitation, the maximum statically allocated DRAM usage is 160KB
     // The remaining 160KB (for a total of 320KB of DRAM) can only be allocated at runtime as heap
+
+    this->Rom0 = (uint8_t*)ROM;
+
 #ifdef ZX128K
+    this->Rom1 = this->Rom0;
     this->Ram1 = (uint8_t*)malloc(0x4000);
     this->Ram3 = (uint8_t*)malloc(0x4000);
     this->Ram4 = (uint8_t*)malloc(0x4000);

@@ -31,7 +31,7 @@ static int _rootFolderLength;
 static FRESULT mount()
 {
 #ifdef SDCARD
-	return SD.begin(13, SPI, 20000000U) ? FR_OK : FR_NOT_READY;
+	return SD.begin(13, SPI, 20000000U, "/sd", 1) ? FR_OK : FR_NOT_READY;
 #else
 	return FR_OK;
 #endif
@@ -500,4 +500,26 @@ bool loadSnapshotLoop()
 	SetSelection(_selectedFile);
 
 	return true;
+}
+
+bool ReadFromFile(const char* fileName, uint8_t* buffer, size_t size)
+{
+	FRESULT fr = mount();
+	if (fr != FR_OK)
+	{
+		return false;
+	}
+
+    bool result = false;
+    File file = _fileSystem->open(fileName, FILE_READ);
+    if (file)
+    {
+        size_t bytesRead = file.read(buffer, size);
+        result = (bytesRead == size);
+        file.close();
+    }
+
+	unmount();
+
+    return result;
 }

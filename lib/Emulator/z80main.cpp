@@ -133,7 +133,14 @@ extern "C" uint8_t readbyte(uint16_t addr)
     switch (addr)
     {
         case 0x0000 ... 0x3fff:
-            res = ROM[addr];
+            if (SpectrumMemory.MemoryState.RomSelect == 0)
+            {
+                res = SpectrumMemory.Rom0[addr];
+            }
+            else
+            {
+                res = SpectrumMemory.Rom1[addr];
+            }
             break;
         case 0x4000 ... 0x7FFF:
             // Always bank 5

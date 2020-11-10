@@ -11,4 +11,6 @@ bool loadSnapshotLoop();
 bool saveSnapshotSetup();
 bool saveSnapshotLoop();
 
+bool ReadFromFile(const char* fileName, uint8_t* buffer, size_t size);
+
 #endif /* __SDCARD_H__ */

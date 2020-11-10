@@ -34,6 +34,7 @@ public:
     MemorySelect MemoryState;
 	uint8_t  BorderColor;
 
+    uint8_t* Rom0;
     uint8_t Ram0[0x4000];
     uint8_t Ram2[0x4000];
     SpectrumScreenData MainScreenData;
@@ -42,6 +43,7 @@ public:
 #ifdef ZX128K
     // Due to a technical limitation, the maximum statically allocated DRAM usage is 160KB
     // The remaining 160KB (for a total of 320KB of DRAM) can only be allocated at runtime as heap
+    uint8_t* Rom1;
     uint8_t* Ram1;
     uint8_t* Ram3;
     uint8_t* Ram4;

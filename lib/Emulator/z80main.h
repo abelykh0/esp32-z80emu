@@ -2,7 +2,6 @@
 #define __ZXMAIN_INCLUDED__
 
 #include "z80user.h"
-#include "main_ROM.h"
 #include "SpectrumScreen.h"
 #include "ay3-8912-state.h"
 

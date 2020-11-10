@@ -11,6 +11,7 @@
 #include "keyboard.h"
 #include "z80snapshot.h"
 #include "z80Memory.h"
+#include "main_ROM.h"
 
 uint8_t _buffer16K_1[0x4000];
 uint8_t _buffer16K_2[0x4000];
@@ -196,9 +197,42 @@ void showErrorMessage(const char* errorMessage)
 	DebugScreen.SetAttribute(0x3F10); // white on blue
 }
 
+bool ReadRomFromFiles()
+{
+    if (SpectrumMemory.Rom0 == (uint8_t*)ROM)
+    {
+        SpectrumMemory.Rom0 = (uint8_t*)malloc(0x4000);
+#ifdef ZX128K
+        SpectrumMemory.Rom1 = (uint8_t*)malloc(0x4000);
+#endif
+    }
+
+    bool result;
+#ifdef ZX128K
+    result = ReadFromFile("/roms/128-0.rom", SpectrumMemory.Rom0, 0x4000);
+    if (result)
+    {
+        result = ReadFromFile("/roms/128-1.rom", SpectrumMemory.Rom1, 0x4000);
+    }
+#else
+    result = ReadFromFile("/roms/48.rom", SpectrumMemory.Rom0, 0x4000);
+#endif
+
+    if (!result)
+    {
+        free(SpectrumMemory.Rom0);
+        SpectrumMemory.Rom0 = (uint8_t*)ROM;
+#ifdef ZX128K
+        free(SpectrumMemory.Rom1);
+        SpectrumMemory.Rom1 = SpectrumMemory.Rom0;
+#endif
+    }
+
+    return result;
+}
+
 void EmulatorTaskMain(void *unused)
 {
-
 #ifdef SDCARD
     SPI.begin(14, 2, 12);
     FileSystemInitialize(&SD);
@@ -214,8 +248,8 @@ void EmulatorTaskMain(void *unused)
 	// Setup
 	startKeyboard();
 	showHelp();
-
 	zx_setup(&MainScreen);
+    ReadRomFromFiles();
 
     ScreenController.StartVideo(RESOLUTION);
 
