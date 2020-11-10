@@ -201,11 +201,6 @@ void EmulatorTaskMain(void *unused)
 
 #ifdef SDCARD
     SPI.begin(14, 2, 12);
-    if (!SD.begin(13)) 
-    {
-        Serial.println("Card Mount Failed");
-        return;
-    }
     FileSystemInitialize(&SD);
 #else
     if (!FFat.begin())

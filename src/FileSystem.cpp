@@ -8,6 +8,7 @@
 #include "ps2Input.h"
 #include "z80main.h"
 #include "z80snapshot.h"
+#include "SD.h"
 
 using namespace zx;
 
@@ -29,11 +30,18 @@ static int _rootFolderLength;
 
 static FRESULT mount()
 {
+#ifdef SDCARD
+	return SD.begin(13) ? FR_OK : FR_NOT_READY;
+#else
 	return FR_OK;
+#endif
 }
 
 static void unmount()
 {
+#ifdef SDCARD
+	SD.end();
+#endif
 }
 
 static void GetFileCoord(uint8_t fileIndex, uint8_t* x, uint8_t* y)
