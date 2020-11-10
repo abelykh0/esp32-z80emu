@@ -5,10 +5,11 @@ Spectrum ZX 48K emulator on VGA-32 board
 [VGA32 v1.4 Board](http://www.lilygo.cn/prod_view.aspx?TypeId=50033&Id=1083)
 
 ## What it can do
-* Emulate Spectrum ZX 48K
+* Emulate Spectrum ZX 128K
 * Load snapshot in .Z80 format from SD card
-* Save snapshot in .Z80 format to SD card
+* Save snapshot in .Z80 format to SD card (only 48K)
 * Output some sounds (only from AY3-8912)
+* Kempston mouse
 
 ## Third party software
 This project uses the following libraries:
@@ -17,9 +18,8 @@ This project uses the following libraries:
 * (GPL v2.0) OpenSE Basic: https://spectrumcomputing.co.uk/index.php?cat=96&id=27510
 
 ## Plans for the future / issues
+* Save snapshot in .Z80 format to SD card (128K)
+* Load ROMs from SD card (fall back to OpenSE Basic if not present)
 * Flickering in some games
 * The speed is 12% faster than it is supposed to be
-* Load files from https://worldofspectrum.org/
-* Add Spectrum 128K
-
-
+* Load files from https://spectrumcomputing.co.uk/
