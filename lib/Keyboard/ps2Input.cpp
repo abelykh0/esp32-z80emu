@@ -92,10 +92,9 @@ int32_t Ps2_GetScancode()
 	} 
 	
 	uint32_t result = pos->second;
-	result = ((result << 8) & 0xFF0000) | (result & 0xFF);
 	if (!keyDown)
 	{
-		result |= 0xF000;
+    	result = ((result << 8) & 0xFF0000) | 0xF000 | (result & 0xFF);
 	}
 
 	return result;
