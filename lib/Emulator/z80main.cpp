@@ -7,7 +7,12 @@
 #include "ps2Input.h"
 
 //#define BEEPER
+
+#ifdef ZX128K
+#define CYCLES_PER_STEP 70908
+#else
 #define CYCLES_PER_STEP 69888
+#endif
 
 Sound::Ay3_8912_state _ay3_8912;
 Z80_STATE _zxCpu;
