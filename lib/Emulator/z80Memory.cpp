@@ -261,7 +261,7 @@ void ZxSpectrumMemory::ToBuffer(uint8_t bank, uint8_t* data)
 		memcpy(data, this->MainScreenData.Pixels, 0x1800);
 		for (uint32_t i = 0x1800; i < 0x1AFF; i++)
 		{
-            this->WriteByte(bank, i, data[i]);
+            data[i] = this->ReadByte(bank, i);
 		}
 
         // The rest
@@ -299,7 +299,7 @@ void ZxSpectrumMemory::ToBuffer(uint8_t bank, uint8_t* data)
 		memcpy(this->ShadowScreenData.Pixels, data, 0x1800);
 		for (uint32_t i = 0x1800; i < 0x1AFF; i++)
 		{
-            this->WriteByte(bank, i, data[i]);
+            data[i] = this->ReadByte(bank, i);
 		}
 
         // The rest

@@ -115,20 +115,14 @@ bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4
 
 	memset(&buffer1[sizeof(FileHeader)], 0, header->AdditionalBlockLength - 4);
 
-	UINT bytesWritten;
-	UINT bytesToWrite = sizeof(FileHeader) + header->AdditionalBlockLength - 4;
-	bytesWritten = file.write(buffer1, bytesToWrite);
-	if (bytesWritten != bytesToWrite)
-	{
-		return false;
-	}
-
     uint8_t pageCount;
     uint8_t pagesToSave[8];
-    if (SpectrumMemory.MemoryState.PagingLock == 1)
+    if (SpectrumMemory.MemoryState.PagingLock == 1
+        && SpectrumMemory.MemoryState.RomSelect == 1)
     {
         // Save 48K snaphot
 
+        header->HardwareMode = 0;
         pageCount = 3;
         pagesToSave[0] = 5;
         pagesToSave[1] = 2;
@@ -138,12 +132,21 @@ bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4
     {
         // Save 128K snaphot
 
+        header->HardwareMode = 4;
         pageCount = 8;
     	for (int i = 0; i < pageCount; i++)
         {
             pagesToSave[i] = i;
         }
     }
+
+	UINT bytesWritten;
+	UINT bytesToWrite = sizeof(FileHeader) + header->AdditionalBlockLength - 4;
+	bytesWritten = file.write(buffer1, bytesToWrite);
+	if (bytesWritten != bytesToWrite)
+	{
+		return false;
+	}
 
 	for (int i = 0; i < pageCount; i++)
 	{
@@ -284,17 +287,13 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 		return false;
 	}
 
-    if (is128Mode && bytesRead == 54)
+    if (is128Mode)
     {
-        SpectrumMemory.MemoryState.Bits = buffer1[53];
+        SpectrumMemory.MemoryState.Bits = header->PagingState;
     }
     else
     {
         SpectrumMemory.MemoryState.Bits = 0;
-    }
-
-    if (!is128Mode)
-    {
         SpectrumMemory.MemoryState.RomSelect = 1;
         SpectrumMemory.MemoryState.PagingLock = 1;
     }
