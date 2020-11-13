@@ -1,12 +1,8 @@
 #include "wifi.h"
 #include "arduino.h"
-#include "FS.h"
-#include "FFat.h"
-
 #include "emulator.h"
-#include "bubblebobble.h"
 
-TaskHandle_t mainTaskHandle;
+static TaskHandle_t mainTaskHandle;
 
 void setup()
 {
