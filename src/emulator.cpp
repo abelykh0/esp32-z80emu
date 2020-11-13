@@ -30,8 +30,8 @@ SpectrumScreen MainScreen(_spectrumVideoSettings, 0, SPECTRUM_BAND_HEIGHT);
 
 // Debug screen video RAM
 // DEBUG_COLUMNS x DEBUG_ROWS characters
-static uint8_t  _debugPixels[52 * 8 * DEBUG_ROWS]; // number of text columns must be divisible by 4
-static uint16_t _debugAttributes[52 * DEBUG_ROWS]; // number of text columns must be divisible by 4
+static uint8_t  _debugPixels[((DEBUG_COLUMNS + 4 - 1) / 4 * 4) * 8 * DEBUG_ROWS]; // number of text columns must be divisible by 4
+static uint16_t _debugAttributes[((DEBUG_COLUMNS + 4 - 1) / 4 * 4) * DEBUG_ROWS]; // number of text columns must be divisible by 4
 static uint8_t  _debugBorderColor;
 
 // Debug band
