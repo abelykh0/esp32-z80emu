@@ -221,14 +221,30 @@ bool ReadRomFromFiles()
     if (!result)
     {
         free(SpectrumMemory.Rom0);
-        SpectrumMemory.Rom0 = (uint8_t*)ROM;
 #ifdef ZX128K
         free(SpectrumMemory.Rom1);
-        SpectrumMemory.Rom1 = SpectrumMemory.Rom0;
 #endif
+        SpectrumMemory.Rom0 = (uint8_t*)ROM;
+        SpectrumMemory.Rom1 = SpectrumMemory.Rom0;
     }
 
     return result;
+}
+
+void ResetSystem()
+{
+    if (SpectrumMemory.Rom0 != (uint8_t*)ROM)
+    {
+        free(SpectrumMemory.Rom0);
+#ifdef ZX128K
+        free(SpectrumMemory.Rom1);
+#endif
+        SpectrumMemory.Rom0 = (uint8_t*)ROM;
+        SpectrumMemory.Rom1 = SpectrumMemory.Rom0;
+    }
+
+    ReadRomFromFiles();
+    zx_reset();
 }
 
 void EmulatorTaskMain(void *unused)
@@ -309,7 +325,7 @@ void EmulatorTaskMain(void *unused)
 			break;
 
 		case KEY_F5:
-			zx_reset();
+            ResetSystem();
 			showHelp();
 			break;
 
