@@ -1,5 +1,5 @@
 # esp32-z80emu
-Spectrum ZX 48K emulator on VGA-32 board
+Spectrum ZX 128K emulator on VGA-32 board
 
 ## Hardware
 [VGA32 v1.4 Board](http://www.lilygo.cn/prod_view.aspx?TypeId=50033&Id=1083)
