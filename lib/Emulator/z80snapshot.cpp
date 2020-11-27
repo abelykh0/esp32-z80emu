@@ -77,7 +77,7 @@ struct FileHeader
 	uint8_t F;
 	uint16_t BC;
 	uint16_t HL;
-	uint16_t Version;
+	uint16_t PC;
 	uint16_t SP;
 	uint8_t InterruptRegister;
 	uint8_t RefreshRegister;
@@ -94,12 +94,12 @@ struct FileHeader
 	uint8_t IFF2;
 	uint8_t Flags2;
 	uint16_t AdditionalBlockLength;
-	uint16_t PC;
+	uint16_t PCVersion2;
 	uint8_t HardwareMode;
 	uint8_t PagingState;
 }__attribute__((packed));
 
-void DecompressPage(uint8_t *page, uint16_t pageLength, bool isCompressed,
+uint16_t DecompressPage(uint8_t *page, uint16_t pageLength, bool isCompressed,
 		uint16_t maxSize, uint8_t* destMemory);
 uint16_t CompressPage(uint8_t* page, uint8_t* destMemory);
 void ReadState(FileHeader* header);
@@ -255,7 +255,7 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 	size_t bytesRead;
 	UINT bytesToRead;
 
-	bytesToRead = sizeof(FileHeader);
+	bytesToRead = 30;
 	bytesRead = file.read(buffer1, bytesToRead);
 	if (bytesRead != bytesToRead)
 	{
@@ -263,29 +263,57 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 	}
 
 	// Note: this requires little-endian processor
-	FileHeader* header = (FileHeader*) buffer1;
-	ReadState(header);
+	FileHeader* header = (FileHeader*)buffer1;
 
-	bool is128Mode;
-	if (header->AdditionalBlockLength < 54)
-	{
-		// version 2
-		is128Mode = (header->HardwareMode >= 3);
-	}
-	else
-	{
-		// version 3
-		is128Mode = (header->HardwareMode >= 4);
-	}
+    bool is128Mode;
+    uint8_t pagingState;
+    bool isVersion1;
+    if (header->PC != 0)
+    {
+        // version 1
+        is128Mode = false;
+        pagingState = 0;
+        isVersion1 = true;
 
-	uint8_t pagingState = header->PagingState;
+    	ReadState(header);
+    }
+    else
+    {
+        bytesToRead = 6;
+        bytesRead = file.read(&buffer1[30], bytesToRead);
+        if (bytesRead != bytesToRead)
+        {
+            return false;
+        }
 
-	bytesToRead = header->AdditionalBlockLength - 4 + 3;
-	bytesRead = file.read(buffer1, bytesToRead);
-	if (bytesRead != bytesToRead)
-	{
-		return false;
-	}
+        if (header->AdditionalBlockLength == 23)
+        {
+            // version 2
+            is128Mode = (header->HardwareMode >= 3);
+        }
+        else if (header->AdditionalBlockLength == 54 || header->AdditionalBlockLength == 55)
+        {
+            // version 3
+            is128Mode = (header->HardwareMode >= 4);
+        }
+        else
+        {
+            // Invalid
+            return false;
+        }
+
+        pagingState = header->PagingState;
+
+    	ReadState(header);
+
+        bytesToRead = header->AdditionalBlockLength - 4 + 3;
+        bytesRead = file.read(buffer1, bytesToRead);
+        if (bytesRead != bytesToRead)
+        {
+            return false;
+        }
+        isVersion1 = false;
+    }
 
     if (is128Mode)
     {
@@ -298,109 +326,177 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
         SpectrumMemory.MemoryState.PagingLock = 1;
     }
 
-	// Get pageSize and pageNumber
-	uint16_t pageSize;
-	int8_t pageNumber;
-	GetPageInfo(&buffer1[bytesToRead - 3], is128Mode, pagingState, &pageNumber, &pageSize);
+    bool isCompressed;
+    if (isVersion1)
+    {
+        isCompressed = (header->Flags1 & 0x20) != 0;
+Serial.println(isCompressed);
 
-	do
-	{
-		bool isCompressed = (pageSize != 0xFFFF);
-		if (!isCompressed)
-		{
-			pageSize = 0x4000;
-		}
+        uint8_t* buffer = buffer1;
+        int bytesToRead = 0x4000;
+        for (int pageIndex = 0; pageIndex < 3; pageIndex++)
+        {
+            uint8_t* memory;
+            switch (pageIndex)
+            {
+                case 0:
+                    memory = buffer2;
+                    break;
+                case 1:
+                    memory = SpectrumMemory.Ram2;
+                    break;
+                case 2:
+                    memory = SpectrumMemory.Ram0;
+                    break;
+            }
 
-		uint8_t* memory;
-		switch (pageNumber)
-		{
-        case 5:
-#ifdef ZX128K
-        case 7:
-#endif
-			memory = buffer2;
-			break;
+Serial.println("before file.read");
+            bytesRead = file.read(buffer, bytesToRead);
+Serial.print("bytesRead=");
+Serial.println(bytesRead);
+            if (!isCompressed && bytesRead != bytesToRead)
+            {
+                return false;
+            }
+            buffer += bytesRead;
 
-		case 0:
-            memory = SpectrumMemory.Ram0;
-			break;
-		case 2:
-            memory = SpectrumMemory.Ram2;
-			break;
+Serial.println("before DecompressPage");
+            uint16_t usedBytes = DecompressPage(buffer1, 0x4000, isCompressed, 0x3FFF, memory);
 
-#ifdef ZX128K
-		case 1:
-            memory = SpectrumMemory.Ram1;
-			break;
-		case 3:
-            memory = SpectrumMemory.Ram3;
-			break;
-		case 4:
-            memory = SpectrumMemory.Ram4;
-			break;
-		case 6:
-            memory = SpectrumMemory.Ram6;
-			break;
-#endif
+            if (isCompressed)
+            {
+                uint16_t unusedBytes = 0x4000 - usedBytes; // part of next page(s)
+Serial.print("unusedBytes=");
+Serial.println(unusedBytes);
+                bytesToRead = usedBytes;
+Serial.print("bytesToRead=");
+Serial.println(bytesToRead);
+                for (int i = 0; i < unusedBytes; i++)
+                {
+                    buffer1[i] = buffer1[i + usedBytes];
+                }
+                buffer = &buffer1[unusedBytes];
+            }
+            else
+            {
+                buffer = buffer1;
+                bytesToRead = 0x4000;
+            }
+Serial.println(pageIndex);
 
-		default:
-			memory = nullptr;
-			break;
-		}
+            if (pageIndex == 0)
+            {
+                // 48K : 4000-7fff
+                SpectrumMemory.FromBuffer(5, memory);
+            }
+        }
+    }
+    else
+    {
+        // Get pageSize and pageNumber
+        uint16_t pageSize;
+        int8_t pageNumber;
+        GetPageInfo(&buffer1[bytesToRead - 3], is128Mode, pagingState, &pageNumber, &pageSize);
 
-		if (memory != nullptr)
-		{
-			// Read page into tempBuffer
-			uint8_t* buffer = buffer1;
-			int remainingBytesInPage = pageSize;
-			do
-			{
-				bytesToRead = remainingBytesInPage < FF_MIN_SS ? remainingBytesInPage : FF_MIN_SS;
-				bytesRead = file.read(buffer, bytesToRead);
-				if (bytesRead != bytesToRead)
-				{
-					return false;
-				}
+        do
+        {
+            isCompressed = (pageSize != 0xFFFF);
+            if (!isCompressed)
+            {
+                pageSize = 0x4000;
+            }
 
-				remainingBytesInPage -= bytesRead;
-				buffer += bytesRead;
-			} while (remainingBytesInPage > 0);
+            uint8_t* memory;
+            switch (pageNumber)
+            {
+            case 5:
+    #ifdef ZX128K
+            case 7:
+    #endif
+                memory = buffer2;
+                break;
 
-			DecompressPage(buffer1, pageSize, isCompressed, 0, memory);
+            case 0:
+                memory = SpectrumMemory.Ram0;
+                break;
+            case 2:
+                memory = SpectrumMemory.Ram2;
+                break;
 
-			if (pageNumber == 5 || pageNumber == 7)
-			{
-                // 48K : 4000-7fff; 128K : page 5
-                // 128K : page 7
-                SpectrumMemory.FromBuffer(pageNumber, memory);
-			}
-		}
-		else
-		{
-			// Move forward without reading
-			bool readResult = file.seek(file.position() + pageSize);
-			if (readResult != true)
-			{
-				return false;
-			}
-		}
+    #ifdef ZX128K
+            case 1:
+                memory = SpectrumMemory.Ram1;
+                break;
+            case 3:
+                memory = SpectrumMemory.Ram3;
+                break;
+            case 4:
+                memory = SpectrumMemory.Ram4;
+                break;
+            case 6:
+                memory = SpectrumMemory.Ram6;
+                break;
+    #endif
 
-		bytesRead = file.read(buffer1, 3);
-		if (bytesRead <= 0)
-		{
-			return false;
-		}
+            default:
+                memory = nullptr;
+                break;
+            }
 
-		if (bytesRead == 3)
-		{
-			GetPageInfo(buffer1, is128Mode, pagingState, &pageNumber, &pageSize);
-		}
-		else
-		{
-			pageSize = 0;
-		}
+            if (memory != nullptr)
+            {
+                // Read page into tempBuffer
+                uint8_t* buffer = buffer1;
+                int remainingBytesInPage = pageSize;
+                do
+                {
+                    bytesToRead = remainingBytesInPage < FF_MIN_SS ? remainingBytesInPage : FF_MIN_SS;
+                    bytesRead = file.read(buffer, bytesToRead);
+                    if (bytesRead != bytesToRead)
+                    {
+                        return false;
+                    }
 
-	} while (pageSize > 0);
+                    remainingBytesInPage -= bytesRead;
+                    buffer += bytesRead;
+                } while (remainingBytesInPage > 0);
+
+                DecompressPage(buffer1, pageSize, isCompressed, 0, memory);
+
+                if (pageNumber == 5 || pageNumber == 7)
+                {
+                    // 48K : 4000-7fff; 128K : page 5
+                    // 128K : page 7
+                    SpectrumMemory.FromBuffer(pageNumber, memory);
+                }
+            }
+            else
+            {
+                // Move forward without reading
+                bool readResult = file.seek(file.position() + pageSize);
+                if (readResult != true)
+                {
+                    return false;
+                }
+            }
+
+            bytesRead = file.read(buffer1, 3);
+            if (bytesRead <= 0)
+            {
+                return false;
+            }
+
+            if (bytesRead == 3)
+            {
+                GetPageInfo(buffer1, is128Mode, pagingState, &pageNumber, &pageSize);
+            }
+            else
+            {
+                pageSize = 0;
+            }
+
+        } while (pageSize > 0);
+    }
 
 	return true;
 }
@@ -545,7 +641,7 @@ bool zx::LoadScreenshot(File file, uint8_t buffer1[0x4000])
 	return true;
 }
 
-void DecompressPage(uint8_t *page, uint16_t pageLength, bool isCompressed,
+uint16_t DecompressPage(uint8_t *page, uint16_t pageLength, bool isCompressed,
 		uint16_t maxSize, uint8_t* destMemory)
 {
 	uint16_t size = 0;
@@ -557,7 +653,7 @@ void DecompressPage(uint8_t *page, uint16_t pageLength, bool isCompressed,
 			if (page[i] == 0x00 && page[i + 1] == 0xED && page[i + 2] == 0xED
 					&& page[i + 3] == 0x00)
 			{
-				break;
+				return i + 4;
 			}
 
 			if (isCompressed && page[i] == 0xED && page[i + 1] == 0xED)
@@ -573,7 +669,8 @@ void DecompressPage(uint8_t *page, uint16_t pageLength, bool isCompressed,
 					size++;
 					if (maxSize > 0 && size >= maxSize)
 					{
-						return;
+Serial.println("in the middle of repeat");
+						return i + 1;
 					}
 				}
 
@@ -587,9 +684,11 @@ void DecompressPage(uint8_t *page, uint16_t pageLength, bool isCompressed,
 		size++;
 		if (maxSize > 0 && size >= maxSize)
 		{
-			return;
+			return i + 1;
 		}
 	}
+
+    return pageLength;
 }
 
 void ReadState(FileHeader* header)
@@ -618,7 +717,7 @@ void ReadState(FileHeader* header)
 	_zxCpu.registers.word[Z80_IX] = header->IX;
 	_zxCpu.iff1 = header->InterruptFlipFlop;
 	_zxCpu.iff2 = header->IFF2;
-	_zxCpu.pc = header->PC;
+	_zxCpu.pc = header->PC == 0 ? header->PCVersion2 : header->PC;
 
 	uint8_t borderColor = (header->Flags1 & 0x0E) >> 1;
     SpectrumMemory.BorderColor = ZxSpectrumMemory::FromSpectrumColor(
@@ -627,7 +726,7 @@ void ReadState(FileHeader* header)
 
 void SaveState(FileHeader* header)
 {
-	header->Version = 0;
+	header->PC = 0;
 	header->HardwareMode = 0;
 	header->PagingState = 0;
 	header->AdditionalBlockLength = 54;
@@ -649,7 +748,7 @@ void SaveState(FileHeader* header)
 	header->IX = _zxCpu.registers.word[Z80_IX];
 	header->InterruptFlipFlop = _zxCpu.iff1;
 	header->IFF2 = _zxCpu.iff2;
-	header->PC = _zxCpu.pc;
+	header->PCVersion2 = _zxCpu.pc;
 
 	// Bit 0  : Bit 7 of the R-register
 	// Bit 1-3: Border color
