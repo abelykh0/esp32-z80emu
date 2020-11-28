@@ -14,7 +14,7 @@
  1       1       F register
  2       2       BC register pair (LSB, i.e. C, first)
  4       2       HL register pair
- 6       2       0 to signal a version 2 or 3
+ 6       2       PC (version 1) or 0 to signal a version 2 or 3
  8       2       Stack pointer
  10      1       Interrupt register
  11      1       Refresh register (Bit 7 is not significant!)
@@ -320,7 +320,6 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
     if (isVersion1)
     {
         isCompressed = (header->Flags1 & 0x20) != 0;
-Serial.println(isCompressed);
 
         uint8_t* buffer = buffer1;
         int bytesToRead = 0x4000;
@@ -340,27 +339,19 @@ Serial.println(isCompressed);
                     break;
             }
 
-Serial.println("before file.read");
             bytesRead = file.read(buffer, bytesToRead);
-Serial.print("bytesRead=");
-Serial.println(bytesRead);
             if (!isCompressed && bytesRead != bytesToRead)
             {
                 return false;
             }
             buffer += bytesRead;
 
-Serial.println("before DecompressPage");
             uint16_t usedBytes = DecompressPage(buffer1, 0x4000, isCompressed, 0x4000, memory);
 
             if (isCompressed)
             {
                 uint16_t unusedBytes = 0x4000 - usedBytes; // part of next page(s)
-Serial.print("unusedBytes=");
-Serial.println(unusedBytes);
                 bytesToRead = usedBytes;
-Serial.print("bytesToRead=");
-Serial.println(bytesToRead);
                 for (int i = 0; i < unusedBytes; i++)
                 {
                     buffer1[i] = buffer1[i + usedBytes];
@@ -372,7 +363,6 @@ Serial.println(bytesToRead);
                 buffer = buffer1;
                 bytesToRead = 0x4000;
             }
-Serial.println(pageIndex);
 
             if (pageIndex == 0)
             {
@@ -437,19 +427,12 @@ Serial.println(pageIndex);
             {
                 // Read page into tempBuffer
                 uint8_t* buffer = buffer1;
-                int remainingBytesInPage = pageSize;
-                do
+                bytesToRead = pageSize;
+                bytesRead = file.read(buffer, bytesToRead);
+                if (bytesRead != bytesToRead)
                 {
-                    bytesToRead = remainingBytesInPage < FF_MIN_SS ? remainingBytesInPage : FF_MIN_SS;
-                    bytesRead = file.read(buffer, bytesToRead);
-                    if (bytesRead != bytesToRead)
-                    {
-                        return false;
-                    }
-
-                    remainingBytesInPage -= bytesRead;
-                    buffer += bytesRead;
-                } while (remainingBytesInPage > 0);
+                    return false;
+                }
 
                 DecompressPage(buffer1, pageSize, isCompressed, 0, memory);
 
@@ -640,21 +623,13 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 bool zx::LoadScreenshot(File file, uint8_t buffer1[0x4000])
 {
 	size_t bytesRead;
-	int remainingBytes = 6912;
 	uint8_t* buffer = buffer1;
-
-	do
-	{
-		UINT bytesToRead = remainingBytes < FF_MIN_SS ? remainingBytes : FF_MIN_SS;
-		bytesRead = file.read(buffer, bytesToRead);
-		if (bytesRead != bytesToRead)
-		{
-			return false;
-		}
-
-		remainingBytes -= bytesRead;
-		buffer += bytesRead;
-	} while (remainingBytes > 0);
+    UINT bytesToRead = 0x1B00;
+    bytesRead = file.read(buffer, bytesToRead);
+    if (bytesRead != bytesToRead)
+    {
+        return false;
+    }
 
     ShowScreenshot(buffer1);
 
@@ -929,7 +904,7 @@ uint16_t CompressPage(uint8_t* page, uint8_t* destMemory)
 void ShowScreenshot(uint8_t* buffer)
 {
     memcpy(SpectrumMemory.MainScreenData.Pixels, buffer, 0x1800);
-    for (uint32_t i = 0x1800; i < 0x1AFF; i++)
+    for (uint32_t i = 0x1800; i < 0x1B00; i++)
     {
         SpectrumMemory.WriteByte(5, i, buffer[i]);
     }
