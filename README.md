@@ -10,7 +10,7 @@ Spectrum ZX 128K emulator on VGA-32 board
 * Save snapshot in .Z80 format to SD card
 * Output some sounds (only from AY3-8912)
 * Kempston mouse
-* Load ROMs from SD card (/roms/128-0.rom; /roms/128-1.rom. Fall back to OpenSE Basic if not present)
+* Load ROMs from SD card (`/roms/128-0.rom`; `/roms/128-1.rom`. Fall back to OpenSE Basic if not present)
 
 ## Third party software
 This project uses the following libraries:
