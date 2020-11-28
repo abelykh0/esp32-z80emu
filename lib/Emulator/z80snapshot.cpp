@@ -562,21 +562,12 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 
                 // Read page into buffer1
                 uint8_t* buffer = buffer1;
-                int remainingBytesInPage = pageSize;
-                do
+                UINT bytesToRead = pageSize;
+                bytesRead = file.read(buffer, bytesToRead);
+                if (bytesRead != bytesToRead)
                 {
-                    UINT bytesToRead =
-                            remainingBytesInPage < FF_MIN_SS ?
-                                    remainingBytesInPage : FF_MIN_SS;
-                    bytesRead = file.read(buffer, bytesToRead);
-                    if (bytesRead != bytesToRead)
-                    {
-                        return false;
-                    }
-
-                    remainingBytesInPage -= bytesRead;
-                    buffer += bytesRead;
-                } while (remainingBytesInPage > 0);
+                    return false;
+                }
 
                 uint8_t* buffer2 = &buffer1[0x2000];
                 if (pageSize > 0x1B00)
