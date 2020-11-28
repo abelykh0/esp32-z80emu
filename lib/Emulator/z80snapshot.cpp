@@ -351,7 +351,7 @@ Serial.println(bytesRead);
             buffer += bytesRead;
 
 Serial.println("before DecompressPage");
-            uint16_t usedBytes = DecompressPage(buffer1, 0x4000, isCompressed, 0x3FFF, memory);
+            uint16_t usedBytes = DecompressPage(buffer1, 0x4000, isCompressed, 0x4000, memory);
 
             if (isCompressed)
             {
@@ -512,7 +512,7 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
         // version 1
 
         isCompressed = (header->Flags1 & 0x20) != 0;
-        int bytesToRead = 0x4000;
+        int bytesToRead = 0x1B00;
         bytesRead = file.read(buffer1, bytesToRead);
         if (!isCompressed && bytesRead != bytesToRead)
         {
@@ -520,7 +520,7 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
         }
 
         uint8_t* buffer2 = &buffer1[0x2000];
-        DecompressPage(buffer1, 6912, isCompressed, 6911, buffer2);
+        DecompressPage(buffer1, 0x1B00, isCompressed, 0x1B00, buffer2);
         ShowScreenshot(buffer2);
     }
     else
@@ -596,12 +596,12 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
                 } while (remainingBytesInPage > 0);
 
                 uint8_t* buffer2 = &buffer1[0x2000];
-                if (pageSize > 6912)
+                if (pageSize > 0x1B00)
                 {
-                    pageSize = 6912;
+                    pageSize = 0x1B00;
                 }
 
-                DecompressPage(buffer1, pageSize, isCompressed, 6911, buffer2);
+                DecompressPage(buffer1, pageSize, isCompressed, 0x1B00, buffer2);
                 ShowScreenshot(buffer2);
 
                 return true;
