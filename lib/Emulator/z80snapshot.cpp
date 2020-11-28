@@ -504,9 +504,11 @@ Serial.println(pageIndex);
 bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 {
 	size_t bytesRead;
+	UINT bytesToRead;
 
-	bytesRead = file.read(buffer1, sizeof(FileHeader));
-	if (bytesRead != sizeof(FileHeader))
+	bytesToRead = 30;
+	bytesRead = file.read(buffer1, bytesToRead);
+	if (bytesRead != bytesToRead)
 	{
 		return false;
 	}
@@ -514,105 +516,133 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 	// Note: this requires little-endian processor
 	FileHeader* header = (FileHeader*)buffer1;
 
-    if (header->AdditionalBlockLength < 23)
+    bool isCompressed;
+    if (header->PC != 0)
     {
-        // Invalid file format
-        return false; 
+        // version 1
+
+        isCompressed = (header->Flags1 & 0x20) != 0;
+        int bytesToRead = 0x4000;
+        bytesRead = file.read(buffer1, bytesToRead);
+        if (!isCompressed && bytesRead != bytesToRead)
+        {
+            return false;
+        }
+
+        uint8_t* buffer2 = &buffer1[0x2000];
+        DecompressPage(buffer1, 6912, isCompressed, 6911, buffer2);
+        ShowScreenshot(buffer2);
     }
+    else
+    {
+        bool is128Mode;
+        uint8_t pagingState;
 
-	bool is128Mode;
-	if (header->AdditionalBlockLength < 54)
-	{
-		// version 2
-		is128Mode = (header->HardwareMode >= 3);
-	}
-	else
-	{
-		// version 3
-		is128Mode = (header->HardwareMode >= 4);
-	}
+        bytesToRead = 6;
+        bytesRead = file.read(&buffer1[30], bytesToRead);
+        if (bytesRead != bytesToRead)
+        {
+            return false;
+        }
 
-	uint8_t pagingState = header->PagingState;
+        if (header->AdditionalBlockLength == 23)
+        {
+            // version 2
+            is128Mode = (header->HardwareMode >= 3);
+        }
+        else if (header->AdditionalBlockLength == 54 || header->AdditionalBlockLength == 55)
+        {
+            // version 3
+            is128Mode = (header->HardwareMode >= 4);
+        }
+        else
+        {
+            // Invalid
+            return false;
+        }
 
-	UINT bytesToRead = header->AdditionalBlockLength - 4 + 3;
-	bytesRead = file.read(buffer1, bytesToRead);
-	if (bytesRead != bytesToRead)
-	{
-		return false;
-	}
+        pagingState = header->PagingState;
 
-	// Get pageSize and pageNumber
-	uint16_t pageSize;
-	int8_t pageNumber;
-	GetPageInfo(&buffer1[bytesToRead - 3], is128Mode, pagingState, &pageNumber, &pageSize);
+        bytesToRead = header->AdditionalBlockLength - 4 + 3;
+        bytesRead = file.read(buffer1, bytesToRead);
+        if (bytesRead != bytesToRead)
+        {
+            return false;
+        }
 
-	do
-	{
-		bool isCompressed = (pageSize != 0xFFFF);
-		if (!isCompressed)
-		{
-			pageSize = 0x4000;
-		}
+        // Get pageSize and pageNumber
+        uint16_t pageSize;
+        int8_t pageNumber;
+        GetPageInfo(&buffer1[bytesToRead - 3], is128Mode, pagingState, &pageNumber, &pageSize);
 
-		if (pageNumber == 5)
-		{
-			// This page contains screenshoot
+        do
+        {
+            isCompressed = (pageSize != 0xFFFF);
+            if (!isCompressed)
+            {
+                pageSize = 0x4000;
+            }
 
-			// Read page into buffer1
-			uint8_t* buffer = buffer1;
-			int remainingBytesInPage = pageSize;
-			do
-			{
-				UINT bytesToRead =
-						remainingBytesInPage < FF_MIN_SS ?
-								remainingBytesInPage : FF_MIN_SS;
-				bytesRead = file.read(buffer, bytesToRead);
-				if (bytesRead != bytesToRead)
-				{
-					return false;
-				}
+            if (pageNumber == 5)
+            {
+                // This page contains screenshoot
 
-				remainingBytesInPage -= bytesRead;
-				buffer += bytesRead;
-			} while (remainingBytesInPage > 0);
+                // Read page into buffer1
+                uint8_t* buffer = buffer1;
+                int remainingBytesInPage = pageSize;
+                do
+                {
+                    UINT bytesToRead =
+                            remainingBytesInPage < FF_MIN_SS ?
+                                    remainingBytesInPage : FF_MIN_SS;
+                    bytesRead = file.read(buffer, bytesToRead);
+                    if (bytesRead != bytesToRead)
+                    {
+                        return false;
+                    }
 
-			uint8_t* buffer2 = &buffer1[0x2000];
-			if (pageSize > 6912)
-			{
-				pageSize = 6912;
-			}
+                    remainingBytesInPage -= bytesRead;
+                    buffer += bytesRead;
+                } while (remainingBytesInPage > 0);
 
-			DecompressPage(buffer1, pageSize, isCompressed, 6912, buffer2);
-            ShowScreenshot(buffer2);
+                uint8_t* buffer2 = &buffer1[0x2000];
+                if (pageSize > 6912)
+                {
+                    pageSize = 6912;
+                }
 
-			return true;
-		}
-		else
-		{
-			// Move forward without reading
-			bool readResult = file.seek(file.position() + pageSize);
-			if (readResult != true)
-			{
-				return false;
-			}
-		}
+                DecompressPage(buffer1, pageSize, isCompressed, 6911, buffer2);
+                ShowScreenshot(buffer2);
 
-		bytesRead = file.read(buffer1, 3);
-		if (bytesRead <= 0)
-		{
-			return false;
-		}
+                return true;
+            }
+            else
+            {
+                // Move forward without reading
+                bool readResult = file.seek(file.position() + pageSize);
+                if (readResult != true)
+                {
+                    return false;
+                }
+            }
 
-		if (bytesRead == 3)
-		{
-			GetPageInfo(buffer1, is128Mode, pagingState, &pageNumber, &pageSize);
-		}
-		else
-		{
-			pageSize = 0;
-		}
+            bytesRead = file.read(buffer1, 3);
+            if (bytesRead <= 0)
+            {
+                return false;
+            }
 
-	} while (pageSize > 0);
+            if (bytesRead == 3)
+            {
+                GetPageInfo(buffer1, is128Mode, pagingState, &pageNumber, &pageSize);
+            }
+            else
+            {
+                pageSize = 0;
+            }
+
+        } while (pageSize > 0);
+    }
 
 	return true;
 }
