@@ -265,7 +265,7 @@ void ZxSpectrumMemory::ToBuffer(uint8_t bank, uint8_t* data)
 		}
 
         // The rest
-		memcpy(this->Ram5, &data[0x1B00], 0x2500);
+		memcpy(&data[0x1B00], this->Ram5, 0x2500);
 
         break;
 
@@ -303,7 +303,7 @@ void ZxSpectrumMemory::ToBuffer(uint8_t bank, uint8_t* data)
 		}
 
         // The rest
-		memcpy(this->Ram7, &data[0x1B00], 0x2500);
+		memcpy(&data[0x1B00], this->Ram7, 0x2500);
 
         break;
     }
