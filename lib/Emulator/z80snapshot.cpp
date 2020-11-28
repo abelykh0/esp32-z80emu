@@ -757,9 +757,20 @@ void ReadState(FileHeader* header)
 void SaveState(FileHeader* header)
 {
 	header->PC = 0;
-	header->HardwareMode = 0;
-	header->PagingState = 0;
 	header->AdditionalBlockLength = 54;
+
+    if (SpectrumMemory.MemoryState.PagingLock)
+    {
+        // Memory locked - save as 48K snapshot
+        header->HardwareMode = 0;
+        header->PagingState = 0;
+    }
+    else
+    {
+        // Save as 128K snapshot
+        header->HardwareMode = 4;
+        header->PagingState = SpectrumMemory.MemoryState.Bits;
+    }
 
 	header->A = _zxCpu.registers.byte[Z80_A];
 	header->F = _zxCpu.registers.byte[Z80_F];
