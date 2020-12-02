@@ -14,9 +14,11 @@ protected:
 	uint8_t* IRAM_ATTR GetPixelPointer(uint16_t line, uint8_t character) override;
 
 public:
-	SpectrumScreen(VideoSettings settings, uint16_t startLine, uint16_t height);
+	SpectrumScreen(VideoSettings* settings, uint16_t startLine, uint16_t height);
 
 	void ShowScreenshot(const uint8_t* screenshot);
+
+    virtual void Initialize(VideoController* videoController) override;
 };
 
 }

@@ -23,15 +23,12 @@ private:
     void CursorNext();
     void InvertColor();
 
-    uint16_t _horizontalBorder;
-    uint8_t _verticalBorder;
     bool _isCursorVisible;
 
 protected:
 	virtual IRAM_ATTR uint8_t* GetPixelPointer(uint16_t line);
 	virtual IRAM_ATTR uint8_t* GetPixelPointer(uint16_t line, uint8_t character);
 
-    uint16_t _hResolution;
     uint16_t _hResolutionNoBorder;
 
     uint8_t* _font = (uint8_t*)font8x8;
@@ -42,10 +39,8 @@ public:
     uint8_t _cursor_y = 0;
     uint16_t _pixelCount;
     uint16_t _attributeCount;
-    volatile uint32_t _frames = 0;
 
-    VideoSettings Settings;
-	Screen(VideoSettings settings, uint16_t startLine, uint16_t height);
+	Screen(VideoSettings* settings, uint16_t startLine, uint16_t height);
 
 	void Clear();
 	void SetFont(const uint8_t* font);
@@ -59,8 +54,7 @@ public:
 	void PrintAlignRight(uint8_t y, const char *str);
 	void PrintAlignCenter(uint8_t y, const char *str);
 
-    virtual void Initialize(VideoController* videoController);
-    virtual void IRAM_ATTR drawScanline(uint8_t* dest, int scanLine);
+    virtual void Initialize(VideoController* videoController) override;
 
 	virtual ~Screen() = default;
 };

@@ -18,12 +18,13 @@ public:
 
     void StartVideo(char const* modeline);
 
-	void IRAM_ATTR drawScanline(uint8_t* dest, int scanLine);
+    Band* IRAM_ATTR GetBand(int scanLine);
 
 private:
     Band* _band1 = nullptr;
     Band* _band2 = nullptr;
     uint16_t _band2Start;
+    bool _isInitialized = false;
 
 };
 

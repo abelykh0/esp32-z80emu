@@ -26,7 +26,7 @@ static VideoSettings _spectrumVideoSettings {
     SpectrumMemory.MainScreenData.Attributes, 
     &SpectrumMemory.BorderColor
 };
-SpectrumScreen MainScreen(_spectrumVideoSettings, 0, SPECTRUM_BAND_HEIGHT);
+SpectrumScreen MainScreen(&_spectrumVideoSettings, 0, SPECTRUM_BAND_HEIGHT);
 
 // Debug screen video RAM
 // DEBUG_COLUMNS x DEBUG_ROWS characters
@@ -39,7 +39,7 @@ static VideoSettings _videoSettings {
 	DEBUG_COLUMNS, DEBUG_ROWS, 
 	_debugPixels, _debugAttributes,	&_debugBorderColor
 };
-Screen DebugScreen(_videoSettings, SPECTRUM_BAND_HEIGHT, DEBUG_BAND_HEIGHT);
+Screen DebugScreen(&_videoSettings, SPECTRUM_BAND_HEIGHT, DEBUG_BAND_HEIGHT);
 
 VideoController ScreenController(&MainScreen, &DebugScreen);
 

@@ -1,8 +1,26 @@
 #include <string.h>
 #include "VideoController.h"
+#include "DrawScanLine.h"
 
 namespace Display
 {
+
+Band* IRAM_ATTR VideoController::GetBand(int scanLine)
+{
+    if (!this->_isInitialized)
+    {
+        return nullptr;
+    }
+
+    if (scanLine >= this->_band2Start)
+    {
+        return this->_band2;
+    }
+    else
+    {
+        return this->_band1;
+    }
+}
 
 VideoController::VideoController(Band* band1, Band* band2)
 {
@@ -17,18 +35,8 @@ VideoController::VideoController(Band* band1, Band* band2)
     {
         this->_band2Start = this->_band2->StartLine;
     }
-}
 
-void IRAM_ATTR VideoController::drawScanline(uint8_t* dest, int scanLine)
-{
-    if (scanLine >= this->_band2Start)
-    {
-        this->_band2->drawScanline(dest, scanLine);
-    }
-    else
-    {
-        this->_band1->drawScanline(dest, scanLine);
-    }
+    this->setDrawScanlineCallback(drawScanline, this);
 }
 
 void VideoController::StartVideo(char const* modeline)
@@ -41,6 +49,8 @@ void VideoController::StartVideo(char const* modeline)
     {
         this->_band2->Initialize(this);
     }
+
+    this->_isInitialized = true;
 }
 
 uint8_t IRAM_ATTR VideoController::createRawPixel(uint8_t color)

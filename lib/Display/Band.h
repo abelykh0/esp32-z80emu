@@ -2,6 +2,7 @@
 #define _BAND_H
 
 #include <arduino.h>
+#include "VideoSettings.h"
 
 namespace Display
 {
@@ -13,11 +14,17 @@ class Band
 public:
 	uint16_t StartLine;
 	uint16_t Height;
+    uint8_t VerticalBorder;
+    uint16_t HorizontalResolution;
+    uint16_t HorizontalBorder;
+    VideoSettings* Settings;
+
+    volatile uint32_t Frames = 0;
+    uint8_t* (*getPixelPointer)(VideoSettings* settings, uint16_t line);
 
     Band(uint16_t startLine, uint16_t height);
 
     virtual void Initialize(VideoController* videoController);
-	virtual void IRAM_ATTR drawScanline(uint8_t* dest, int scanLine) = 0;
 
 protected:
     VideoController* Controller;
