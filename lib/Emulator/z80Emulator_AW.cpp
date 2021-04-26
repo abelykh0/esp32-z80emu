@@ -13,6 +13,7 @@ extern "C" uint64_t cpu_tick(int num, uint64_t pins, void* user_data);
 
 void z80Emulator::setup(Z80Environment* environment)
 {
+    env = environment;
     z80_desc_t init = { .tick_cb = cpu_tick, .user_data = NULL };
 	z80_init(&_zxCpu, &init);    
 }
