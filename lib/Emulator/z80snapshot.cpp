@@ -4,7 +4,7 @@
 
 #include "z80snapshot.h"
 #include "z80main.h"
-#include "z80emu/z80emu.h"
+#include "z80Emulator.h"
 #include "z80Memory.h"
 
 /*
@@ -685,25 +685,25 @@ void ReadState(FileHeader* header)
 		header->Flags1 = 1;
 	}
 
-	_zxCpu.registers.byte[Z80_A] = header->A;
-	_zxCpu.registers.byte[Z80_F] = header->F;
-	_zxCpu.registers.word[Z80_BC] = header->BC;
-	_zxCpu.registers.word[Z80_HL] = header->HL;
-	_zxCpu.registers.word[Z80_SP] = header->SP;
-	_zxCpu.i = header->InterruptRegister;
-	_zxCpu.r = (header->RefreshRegister & 0x7F)
+	Z80cpu.A = header->A;
+	Z80cpu.F = header->F;
+	Z80cpu.BC = header->BC;
+	Z80cpu.HL = header->HL;
+	Z80cpu.SP = header->SP;
+	Z80cpu.I = header->InterruptRegister;
+	Z80cpu.R = (header->RefreshRegister & 0x7F)
 			| ((header->Flags1 & 0x01) << 7);
-	_zxCpu.im = header->Flags2 & 0x3;
-	_zxCpu.registers.word[Z80_DE] = header->DE;
-	_zxCpu.alternates[Z80_BC] = header->BC_Dash;
-	_zxCpu.alternates[Z80_DE] = header->DE_Dash;
-	_zxCpu.alternates[Z80_HL] = header->HL_Dash;
-	_zxCpu.alternates[Z80_AF] = header->F_Dash | (header->A_Dash << 8);
-	_zxCpu.registers.word[Z80_IY] = header->IY;
-	_zxCpu.registers.word[Z80_IX] = header->IX;
-	_zxCpu.iff1 = header->InterruptFlipFlop;
-	_zxCpu.iff2 = header->IFF2;
-	_zxCpu.pc = header->PC == 0 ? header->PCVersion2 : header->PC;
+	Z80cpu.IM = header->Flags2 & 0x3;
+	Z80cpu.DE = header->DE;
+	Z80cpu.BCx = header->BC_Dash;
+	Z80cpu.DEx = header->DE_Dash;
+	Z80cpu.HLx = header->HL_Dash;
+	Z80cpu.AFx = header->F_Dash | (header->A_Dash << 8);
+	Z80cpu.IY = header->IY;
+	Z80cpu.IX = header->IX;
+	Z80cpu.IFF1 = header->InterruptFlipFlop;
+	Z80cpu.IFF2 = header->IFF2;
+	Z80cpu.PC = header->PC == 0 ? header->PCVersion2 : header->PC;
 
 	uint8_t borderColor = (header->Flags1 & 0x0E) >> 1;
     SpectrumMemory.BorderColor = ZxSpectrumMemory::FromSpectrumColor(
@@ -729,33 +729,33 @@ void SaveState(FileHeader* header)
         header->PagingState = SpectrumMemory.MemoryState.Bits;
     }
 
-	header->A = _zxCpu.registers.byte[Z80_A];
-	header->F = _zxCpu.registers.byte[Z80_F];
-	header->BC = _zxCpu.registers.word[Z80_BC];
-	header->HL = _zxCpu.registers.word[Z80_HL];
-	header->SP = _zxCpu.registers.word[Z80_SP];
-	header->InterruptRegister = _zxCpu.i;
-	header->RefreshRegister = _zxCpu.r;
-	header->DE = _zxCpu.registers.word[Z80_DE];
-	header->BC_Dash = _zxCpu.alternates[Z80_BC];
-	header->DE_Dash = _zxCpu.alternates[Z80_DE];
-	header->HL_Dash = _zxCpu.alternates[Z80_HL];
-	header->F_Dash = _zxCpu.alternates[Z80_AF] & 0xFF;
-	header->A_Dash = (_zxCpu.alternates[Z80_AF] & 0xFF00) >> 8;
-	header->IY = _zxCpu.registers.word[Z80_IY];
-	header->IX = _zxCpu.registers.word[Z80_IX];
-	header->InterruptFlipFlop = _zxCpu.iff1;
-	header->IFF2 = _zxCpu.iff2;
-	header->PCVersion2 = _zxCpu.pc;
+	header->A = Z80cpu.A;
+	header->F = Z80cpu.F;
+	header->BC = Z80cpu.BC;
+	header->HL = Z80cpu.HL;
+	header->SP = Z80cpu.SP;
+	header->InterruptRegister = Z80cpu.I;
+	header->RefreshRegister = Z80cpu.R;
+	header->DE = Z80cpu.DE;
+	header->BC_Dash = Z80cpu.BCx;
+	header->DE_Dash = Z80cpu.DEx;
+	header->HL_Dash = Z80cpu.HLx;
+	header->F_Dash = Z80cpu.AFx & 0xFF;
+	header->A_Dash = (Z80cpu.AFx & 0xFF00) >> 8;
+	header->IY = Z80cpu.IY;
+	header->IX = Z80cpu.IX;
+	header->InterruptFlipFlop = Z80cpu.IFF1;
+	header->IFF2 = Z80cpu.IFF2;
+	header->PCVersion2 = Z80cpu.PC;
 
 	// Bit 0  : Bit 7 of the R-register
 	// Bit 1-3: Border color
-	header->Flags1 = (_zxCpu.r & 0x80) >> 7;
+	header->Flags1 = (Z80cpu.R & 0x80) >> 7;
 	uint8_t border =  ZxSpectrumMemory::ToSpectrumColor(SpectrumMemory.BorderColor);
 	header->Flags1 |= (border & 0x38) >> 2;
 
 	// Bit 0-1: Interrupt mode (0, 1 or 2)
-	header->Flags2 = _zxCpu.im & 0x03;
+	header->Flags2 = Z80cpu.IM & 0x03;
 }
 
 void GetPageInfo(uint8_t* buffer, bool is128Mode, uint8_t pagingState, int8_t* pageNumber, uint16_t* pageSize)

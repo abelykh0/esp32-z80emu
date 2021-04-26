@@ -1,8 +1,17 @@
 #ifndef __EMULATOR_H__
 #define __EMULATOR_H__
 
+#include "z80Emulator.h"
 #include "Screen.h"
 #include "SpectrumScreen.h"
+
+///////////////////////////////////////////////////////////////////////////////
+// CPU core selection
+//
+// one of the following MUST be defined:
+// - CPU_LINKEFONG: use LinKeFong's core
+///////////////////////////////////////////////////////////////////////////////
+#define CPU_LINKEFONG
 
 #define SDCARD
 

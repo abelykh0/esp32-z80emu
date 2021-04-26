@@ -161,20 +161,16 @@ void showRegisters()
     char* buf = (char*)_buffer16K_1;
 
     sprintf(buf, "PC %04x  AF %04x  AF' %04x  I %02x",
-        _zxCpu.pc, _zxCpu.registers.word[Z80_AF],
-        _zxCpu.alternates[Z80_AF], _zxCpu.i);
+        (uint16_t)Z80cpu.PC, (uint16_t)Z80cpu.AF, (uint16_t)Z80cpu.AFx, (uint16_t)Z80cpu.I);
     DebugScreen.PrintAlignCenter(2, buf);
     sprintf(buf, "SP %04x  BC %04x  BC' %04x  R %02x",
-        _zxCpu.registers.word[Z80_SP], _zxCpu.registers.word[Z80_BC],
-        _zxCpu.alternates[Z80_BC], _zxCpu.r);
+        (uint16_t)Z80cpu.SP, (uint16_t)Z80cpu.BC, (uint16_t)Z80cpu.BCx, (uint16_t)Z80cpu.R);
     DebugScreen.PrintAlignCenter(3, buf);
     sprintf(buf, "IX %04x  DE %04x  DE' %04x  IM %x",
-        _zxCpu.registers.word[Z80_IX], _zxCpu.registers.word[Z80_DE],
-        _zxCpu.alternates[Z80_DE], _zxCpu.im);
+        (uint16_t)Z80cpu.IX, (uint16_t)Z80cpu.DE, (uint16_t)Z80cpu.DEx, (uint16_t)Z80cpu.IM);
     DebugScreen.PrintAlignCenter(4, buf);
     sprintf(buf, "IY %04x  HL %04x  HL' %04x      ",
-        _zxCpu.registers.word[Z80_IY], _zxCpu.registers.word[Z80_HL],
-        _zxCpu.alternates[Z80_HL]);
+        (uint16_t)Z80cpu.IY, (uint16_t)Z80cpu.HL, (uint16_t)Z80cpu.HLx);
     DebugScreen.PrintAlignCenter(5, buf);
 }
 
@@ -265,7 +261,9 @@ void EmulatorTaskMain(void *unused)
 	startKeyboard();
 	showHelp();
 	zx_setup(&MainScreen);
+    Serial.write("before ReadRomFromFiles()\r\n");
     ReadRomFromFiles();
+    Serial.write("after ReadRomFromFiles()\r\n");
 
     ScreenController.StartVideo(RESOLUTION);
 
