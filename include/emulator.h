@@ -9,9 +9,13 @@
 // CPU core selection
 //
 // one of the following MUST be defined:
-// - CPU_LINKEFONG: use LinKeFong's core
+// - CPU_LINKEFONG: use Lin Ke-Fong's core           https://github.com/anotherlin/z80emu
+// - CPU_ANDREWEISSFLOG: use Andre Weissflog's core  https://github.com/floooh/chips/
+// - CPU_JLSANCHEZ: use José Luis Sánchez's core     https://github.com/jsanchezv/z80cpp
 ///////////////////////////////////////////////////////////////////////////////
-#define CPU_LINKEFONG
+//#define CPU_LINKEFONG
+#define CPU_ANDREWEISSFLOG
+//#define CPU_JLSANCHEZ
 
 #define SDCARD
 

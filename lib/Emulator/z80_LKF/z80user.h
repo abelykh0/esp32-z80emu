@@ -11,7 +11,7 @@
 #define __Z80USER_INCLUDED__
 
 #include <stdint.h>
-#include "z80emu/z80emu.h"
+#include "z80emu.h"
 
 #ifdef __cplusplus
 extern "C" {

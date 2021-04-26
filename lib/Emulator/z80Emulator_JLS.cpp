@@ -2,28 +2,19 @@
 
 #include "z80Emulator.h"
 
-#ifdef CPU_LINKEFONG
+#ifdef CPU_JLSANCHEZ
 
-#include "z80_LKF/z80emu.h"
-#include "z80_LKF/z80user.h"
+#include "z80_JLS/z80.h"
+#include "z80_JLS/z80operations.h"
 
-static Z80_STATE z80_state;
-static Z80_STATE* state = &z80_state;
-static CONTEXT context;
+static bool interruptPending = false;
+static Z80operations z80Operations;
+static Z80 z80(&z80Operations)
 static Z80Environment* env;
-
-extern "C"
-{
-    uint8_t readbyte(uint16_t addr);
-    uint16_t readword(uint16_t addr);
-    void writebyte(uint16_t addr, uint8_t data);
-    void writeword(uint16_t addr, uint16_t data);
-    uint8_t input(uint8_t portLow, uint8_t portHigh);
-    void output(uint8_t portLow, uint8_t portHigh, uint8_t data);
-}
 
 void z80Emulator::setup(Z80Environment* environment)
 {
+    Z80::create();
     env = environment;
     context.readbyte = readbyte;
     context.readword = readword;
@@ -48,7 +39,7 @@ void z80Emulator::interrupt()
     Z80Interrupt(state, 0xff, &context);
 }
 
-uint8_t z80Emulator::get_A() { return state->registers.byte[Z80_A]; }
+uint8_t z80Emulator::get_A() { return regAF.byte8.hi; }
 void z80Emulator::set_A(uint8_t value) { state->registers.byte[Z80_A] = value; }
 
 uint8_t z80Emulator::get_F() { return state->registers.byte[Z80_F]; }
@@ -120,34 +111,85 @@ void z80Emulator::set_IFF2(uint8_t value) { state->iff2 = value; }
 uint8_t z80Emulator::get_IM() { return (uint8_t)state->im; }
 void z80Emulator::set_IM(uint8_t value) { state->im = value; }
 
-extern "C" uint8_t readbyte(uint16_t addr)
-{
-    return env->ReadByte(addr);
+/* Read opcode from RAM */
+uint8_t Z80operations::fetchOpcode(uint16_t address) {
+    // 3 clocks to fetch opcode from RAM and 1 execution clock
+    if (ADDRESS_IN_LOW_RAM(address))
+        CPU::tstates += CPU::delayContention(CPU::tstates);
+
+    CPU::tstates += 4;
+    return Mem::readbyte(address);
 }
 
-extern "C" uint16_t readword(uint16_t addr)
-{
-    return env->ReadWord(addr);
+/* Read/Write byte from/to RAM */
+uint8_t Z80operations::peek8(uint16_t address) {
+    // 3 clocks for read byte from RAM
+    if (ADDRESS_IN_LOW_RAM(address))
+        CPU::tstates += CPU::delayContention(CPU::tstates);
+
+    CPU::tstates += 3;
+    return Mem::readbyte(address);
+}
+void Z80operations::poke8(uint16_t address, uint8_t value) {
+    // 3 clocks for write byte to RAM
+    if (ADDRESS_IN_LOW_RAM(address))
+        CPU::tstates += CPU::delayContention(CPU::tstates);
+
+    CPU::tstates += 3;
+    Mem::writebyte(address, value);
 }
 
-extern "C" void writebyte(uint16_t addr, uint8_t data)
-{
-    env->WriteByte(addr, data);
+/* Read/Write word from/to RAM */
+uint16_t Z80operations::peek16(uint16_t address) {
+    // Order matters, first read lsb, then read msb, don't "optimize"
+    uint8_t lsb = this->peek8(address);
+    uint8_t msb = this->peek8(address + 1);
+    return (msb << 8) | lsb;
+}
+void Z80operations::poke16(uint16_t address, RegisterPair word) {
+    // Order matters, first write lsb, then write msb, don't "optimize"
+    this->poke8(address, word.byte8.lo);
+    this->poke8(address + 1, word.byte8.hi);
 }
 
-extern "C" void writeword(uint16_t addr, uint16_t data)
-{
-    env->WriteWord(addr, data);
+/* In/Out byte from/to IO Bus */
+uint8_t Z80operations::inPort(uint16_t port) {
+    // 3 clocks for read byte from bus
+    CPU::tstates += 3;
+    uint8_t hiport = port >> 8;
+    uint8_t loport = port & 0xFF;
+    return Ports::input(loport, hiport);
+}
+void Z80operations::outPort(uint16_t port, uint8_t value) {
+    // 4 clocks for write byte to bus
+    CPU::tstates += 4;
+    uint8_t hiport = port >> 8;
+    uint8_t loport = port & 0xFF;
+    Ports::output(loport, hiport, value);
 }
 
-extern "C" uint8_t input(uint8_t portLow, uint8_t portHigh)
-{
-    return env->Input(portLow, portHigh);
+/* Put an address on bus lasting 'tstates' cycles */
+void Z80operations::addressOnBus(uint16_t address, int32_t wstates){
+    // Additional clocks to be added on some instructions
+    if (ADDRESS_IN_LOW_RAM(address)) {
+        for (int idx = 0; idx < wstates; idx++) {
+            CPU::tstates += CPU::delayContention(CPU::tstates) + 1;
+        }
+    }
+    else
+        CPU::tstates += wstates;
 }
 
-extern "C" void output(uint8_t portLow, uint8_t portHigh, uint8_t data)
-{
-    env->Output(portLow, portHigh, data);
+/* Clocks needed for processing INT and NMI */
+void Z80operations::interruptHandlingTime(int32_t wstates) {
+    CPU::tstates += wstates;
+}
+
+/* Callback to know when the INT signal is active */
+bool Z80operations::isActiveINT(void) {
+    if (!interruptPending) return false;
+    interruptPending = false;
+    return true;
 }
 
 #endif

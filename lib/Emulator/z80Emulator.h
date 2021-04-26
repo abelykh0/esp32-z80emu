@@ -4,6 +4,7 @@
 // Abstraction for z80 Emulator
 
 #include <stdint.h>
+#include "../../include/emulator.h"
 #include "z80Environment.h"
 #undef F
 
