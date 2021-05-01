@@ -3,7 +3,7 @@
 
 #include "z80main.h"
 #include "z80input.h"
-#include "z80Memory.h"
+#include "z80Environment.h"
 #include "ps2Input.h"
 #include "ay3-8912-state.h"
 
@@ -23,12 +23,11 @@ static int _next_total = 0;
 static uint8_t frames = 0;
 static uint32_t _ticks = 0;
 static SpectrumScreen* _spectrumScreen;
-static Z80Environment _environment;
 
-void zx_setup(SpectrumScreen* spectrumScreen)
+void zx_setup(Z80Environment* environment)
 {
-	_spectrumScreen = spectrumScreen;
-	_attributeCount = spectrumScreen->Settings->TextColumns * spectrumScreen->Settings->TextRows;
+	_spectrumScreen = environment->Screen;
+	_attributeCount = _spectrumScreen->Settings->TextColumns * _spectrumScreen->Settings->TextRows;
 
 #ifdef BEEPER
     // Sound
@@ -39,10 +38,8 @@ void zx_setup(SpectrumScreen* spectrumScreen)
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 #endif
     _ay3_8912.Initialize();
-    SpectrumMemory.Initialize();
 
-    _environment.Setup(spectrumScreen);
-    Z80cpu.setup(&_environment);
+    Z80cpu.setup(environment);
     zx_reset();
 }
 

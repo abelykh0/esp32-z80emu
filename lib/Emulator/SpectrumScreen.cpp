@@ -1,5 +1,5 @@
 #include "SpectrumScreen.h"
-#include "z80Memory.h"
+#include "z80Environment.h"
 #include <string.h>
 
 namespace Display
@@ -44,7 +44,7 @@ void SpectrumScreen::ShowScreenshot(const uint8_t* screenshot)
 	memcpy(this->Settings->Pixels, screenshot, this->_pixelCount);
 	for (uint32_t i = 0; i < this->_attributeCount; i++)
 	{
-		this->Settings->Attributes[i] = ZxSpectrumMemory::FromSpectrumColor(
+		this->Settings->Attributes[i] = Z80Environment::FromSpectrumColor(
 				screenshot[this->_pixelCount + i]);
 	}
 }

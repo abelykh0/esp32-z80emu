@@ -5,14 +5,15 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "SD.h"
+#include "z80Environment.h"
 #include "ps2Input.h"
 #include "z80main.h"
 #include "FileSystem.h"
 #include "keyboard.h"
 #include "z80snapshot.h"
-#include "z80Memory.h"
 #include "main_ROM.h"
 
+// Temporary buffers
 uint8_t _buffer16K_1[0x4000];
 uint8_t _buffer16K_2[0x4000];
 
@@ -20,13 +21,11 @@ uint8_t _buffer16K_2[0x4000];
 static SpectrumScreenData* _savedScreenData = (SpectrumScreenData*)&_buffer16K_2[0x4000 - sizeof(SpectrumScreenData)];
 
 // Spectrum screen band
-static VideoSettings _spectrumVideoSettings {
-	32, 24, 
-	SpectrumMemory.MainScreenData.Pixels, 
-    SpectrumMemory.MainScreenData.Attributes, 
-    &SpectrumMemory.BorderColor
-};
+static VideoSettings _spectrumVideoSettings { 32, 24 };
 SpectrumScreen MainScreen(&_spectrumVideoSettings, 0, SPECTRUM_BAND_HEIGHT);
+
+// Z80State
+Z80Environment Environment(&MainScreen);
 
 // Debug screen video RAM
 // DEBUG_COLUMNS x DEBUG_ROWS characters
@@ -58,7 +57,8 @@ void startKeyboard()
 
 void saveState()
 {
-	*_savedScreenData = SpectrumMemory.MainScreenData;
+	memcpy(_savedScreenData->Attributes, MainScreen.Settings->Attributes, 768 * 2);
+	memcpy(_savedScreenData->Pixels, MainScreen.Settings->Pixels, 6144);
 }
 
 void clearHelp()
@@ -107,7 +107,8 @@ void restoreState(bool restoreScreen)
 {
 	if (restoreScreen)
 	{
-		SpectrumMemory.MainScreenData = *_savedScreenData;
+		memcpy(MainScreen.Settings->Attributes, _savedScreenData->Attributes, 768 * 2);
+		memcpy(MainScreen.Settings->Pixels, _savedScreenData->Pixels, 6144);
 	}
 
 	restoreHelp();
@@ -141,8 +142,7 @@ void showKeyboardSetup()
 	DebugScreen.PrintAlignCenter(2, "Press any key to return");
 
 	MainScreen.ShowScreenshot(spectrumKeyboard);
-
-	SpectrumMemory.BorderColor = 0; // Black
+	*MainScreen.Settings->BorderColor = 0; // Black
 }
 
 void showTitle(const char* title)
@@ -195,6 +195,7 @@ void showErrorMessage(const char* errorMessage)
 
 bool ReadRomFromFiles()
 {
+	/*
     if (SpectrumMemory.Rom0 == (uint8_t*)ROM)
     {
         SpectrumMemory.Rom0 = (uint8_t*)malloc(0x4000);
@@ -222,13 +223,14 @@ bool ReadRomFromFiles()
 #endif
         SpectrumMemory.Rom0 = (uint8_t*)ROM;
         SpectrumMemory.Rom1 = SpectrumMemory.Rom0;
-    }
+    }*/
 
-    return result;
+    return false; //result;
 }
 
 void ResetSystem()
 {
+	/*
     if (SpectrumMemory.Rom0 != (uint8_t*)ROM)
     {
         free(SpectrumMemory.Rom0);
@@ -237,7 +239,7 @@ void ResetSystem()
 #endif
         SpectrumMemory.Rom0 = (uint8_t*)ROM;
         SpectrumMemory.Rom1 = SpectrumMemory.Rom0;
-    }
+    }*/
 
     ReadRomFromFiles();
     zx_reset();
@@ -260,7 +262,7 @@ void EmulatorTaskMain(void *unused)
 	// Setup
 	startKeyboard();
 	showHelp();
-	zx_setup(&MainScreen);
+	zx_setup(&Environment);
     Serial.write("before ReadRomFromFiles()\r\n");
     ReadRomFromFiles();
     Serial.write("after ReadRomFromFiles()\r\n");

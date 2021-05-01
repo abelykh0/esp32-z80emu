@@ -5,7 +5,7 @@
 #include "z80snapshot.h"
 #include "z80main.h"
 #include "z80Emulator.h"
-#include "z80Memory.h"
+#include "z80Environment.h"
 
 /*
  Offset  Length  Description
@@ -71,6 +71,8 @@
 
  */
 
+extern Z80Environment Environment;
+
 struct FileHeader
 {
 	uint8_t A;
@@ -124,7 +126,7 @@ bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4
         pageCount = 3;
         pagesToSave[0] = 5;
         pagesToSave[1] = 2;
-        pagesToSave[2] = SpectrumMemory.MemoryState.RamBank;
+        pagesToSave[2] = Environment.MemoryState.RamBank;
     }
     else
     {
@@ -148,40 +150,25 @@ bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4
 	for (int i = 0; i < pageCount; i++)
 	{
         uint8_t pageNumber = pagesToSave[i];
-		uint8_t* buffer = nullptr;
+		uint8_t* buffer = buffer2;
 
-		switch (pageNumber)
-		{
-		case 5:
+        switch (pageNumber)
+        {
+            case 0:
+            case 2:
+            case 5:
+                Environment.Ram[pageNumber]->ToBuffer(buffer);
+                break;
 #ifdef ZX128K
-        case 7:
+            case 1:
+            case 3:
+            case 4:
+            case 6:
+            case 7:
+                Environment.Ram[pageNumber]->ToBuffer(buffer);
+                break;
 #endif
-			buffer = buffer2;
-            SpectrumMemory.ToBuffer(pageNumber, buffer);
-			break;
-
-		case 0:
-			buffer = SpectrumMemory.Ram0;
-			break;
-		case 2:
-			buffer = SpectrumMemory.Ram2;
-			break;
-
-#ifdef ZX128K
-		case 1:
-			buffer = SpectrumMemory.Ram1;
-			break;
-		case 3:
-			buffer = SpectrumMemory.Ram3;
-			break;
-		case 4:
-			buffer = SpectrumMemory.Ram4;
-			break;
-		case 6:
-			buffer = SpectrumMemory.Ram6;
-			break;
-#endif
-		}
+        }
 
 		uint16_t pageSize = CompressPage(buffer, buffer1);
 
@@ -307,13 +294,13 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 
     if (is128Mode)
     {
-        SpectrumMemory.MemoryState.Bits = header->PagingState;
+        Environment.MemoryState.Bits = header->PagingState;
     }
     else
     {
-        SpectrumMemory.MemoryState.Bits = 0;
-        SpectrumMemory.MemoryState.RomSelect = 1;
-        SpectrumMemory.MemoryState.PagingLock = 1;
+        Environment.MemoryState.Bits = 0;
+        Environment.MemoryState.RomSelect = 1;
+        Environment.MemoryState.PagingLock = 1;
     }
 
     bool isCompressed;
@@ -325,19 +312,7 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
         int bytesToRead = 0x4000;
         for (int pageIndex = 0; pageIndex < 3; pageIndex++)
         {
-            uint8_t* memory;
-            switch (pageIndex)
-            {
-                case 0:
-                    memory = buffer2;
-                    break;
-                case 1:
-                    memory = SpectrumMemory.Ram2;
-                    break;
-                case 2:
-                    memory = SpectrumMemory.Ram0;
-                    break;
-            }
+            uint8_t* memory= buffer2;
 
             bytesRead = file.read(buffer, bytesToRead);
             if (!isCompressed && bytesRead != bytesToRead)
@@ -364,10 +339,17 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
                 bytesToRead = 0x4000;
             }
 
-            if (pageIndex == 0)
+            switch (pageIndex)
             {
-                // 48K : 4000-7fff
-                SpectrumMemory.FromBuffer(5, memory);
+                case 0:
+                    Environment.Ram[5]->FromBuffer(memory);
+                    break;
+                case 1:
+                    Environment.Ram[2]->FromBuffer(memory);
+                    break;
+                case 2:
+                    Environment.Ram[0]->FromBuffer(memory);
+                    break;
             }
         }
     }
@@ -389,38 +371,23 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
             uint8_t* memory;
             switch (pageNumber)
             {
-            case 5:
-    #ifdef ZX128K
-            case 7:
-    #endif
-                memory = buffer2;
-                break;
-
-            case 0:
-                memory = SpectrumMemory.Ram0;
-                break;
-            case 2:
-                memory = SpectrumMemory.Ram2;
-                break;
-
-    #ifdef ZX128K
-            case 1:
-                memory = SpectrumMemory.Ram1;
-                break;
-            case 3:
-                memory = SpectrumMemory.Ram3;
-                break;
-            case 4:
-                memory = SpectrumMemory.Ram4;
-                break;
-            case 6:
-                memory = SpectrumMemory.Ram6;
-                break;
-    #endif
-
-            default:
-                memory = nullptr;
-                break;
+                case 0:
+                case 2:
+                case 5:
+                    memory = buffer2;
+                    break;
+#ifdef ZX128K
+                case 1:
+                case 3:
+                case 4:
+                case 6:
+                case 7:
+                    memory = buffer2;
+                    break;
+#endif
+                default:
+                    memory = nullptr;
+                    break;
             }
 
             if (memory != nullptr)
@@ -435,13 +402,7 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
                 }
 
                 DecompressPage(buffer1, pageSize, isCompressed, 0, memory);
-
-                if (pageNumber == 5 || pageNumber == 7)
-                {
-                    // 48K : 4000-7fff; 128K : page 5
-                    // 128K : page 7
-                    SpectrumMemory.FromBuffer(pageNumber, memory);
-                }
+                Environment.Ram[pageNumber]->FromBuffer(memory);
             }
             else
             {
@@ -706,7 +667,7 @@ void ReadState(FileHeader* header)
 	Z80cpu.PC = header->PC == 0 ? header->PCVersion2 : header->PC;
 
 	uint8_t borderColor = (header->Flags1 & 0x0E) >> 1;
-    SpectrumMemory.BorderColor = ZxSpectrumMemory::FromSpectrumColor(
+    Environment.BorderColor = Z80Environment::FromSpectrumColor(
 	    borderColor) >> 8;
 }
 
@@ -715,8 +676,8 @@ void SaveState(FileHeader* header)
 	header->PC = 0;
 	header->AdditionalBlockLength = 54;
 
-    if (SpectrumMemory.MemoryState.PagingLock == 1
-        && SpectrumMemory.MemoryState.RomSelect == 1)
+    if (Environment.MemoryState.PagingLock == 1
+        && Environment.MemoryState.RomSelect == 1)
     {
         // Save as 48K snapshot
         header->HardwareMode = 0;
@@ -726,7 +687,7 @@ void SaveState(FileHeader* header)
     {
         // Save as 128K snapshot
         header->HardwareMode = 4;
-        header->PagingState = SpectrumMemory.MemoryState.Bits;
+        header->PagingState = Environment.MemoryState.Bits;
     }
 
 	header->A = Z80cpu.A;
@@ -751,7 +712,7 @@ void SaveState(FileHeader* header)
 	// Bit 0  : Bit 7 of the R-register
 	// Bit 1-3: Border color
 	header->Flags1 = (Z80cpu.R & 0x80) >> 7;
-	uint8_t border =  ZxSpectrumMemory::ToSpectrumColor(SpectrumMemory.BorderColor);
+	uint8_t border =  Z80Environment::ToSpectrumColor(Environment.BorderColor);
 	header->Flags1 |= (border & 0x38) >> 2;
 
 	// Bit 0-1: Interrupt mode (0, 1 or 2)
@@ -894,9 +855,11 @@ uint16_t CompressPage(uint8_t* page, uint8_t* destMemory)
 
 void ShowScreenshot(uint8_t* buffer)
 {
-    memcpy(SpectrumMemory.MainScreenData.Pixels, buffer, 0x1800);
+    /*
+    memcpy(Environment.MainScreenData.Pixels, buffer, 0x1800);
     for (uint32_t i = 0x1800; i < 0x1B00; i++)
     {
         SpectrumMemory.WriteByte(5, i, buffer[i]);
     }
+    */
 }
