@@ -12,11 +12,15 @@ static uint8_t Ram2Buffer[0x4000];
 static uint8_t Ram5Buffer[0x2500];
 
 Z80Environment::Z80Environment (SpectrumScreen* spectrumScreen)
-    : BorderColor(this)
 {
     this->Screen = spectrumScreen;
-    this->Screen->Settings->Attributes = this->_mainScreenData.Attributes;
-    this->Screen->Settings->Pixels = this->_mainScreenData.Pixels;
+
+    VideoSettings* settings = this->Screen->Settings;
+    settings->TextColumns = 32;
+    settings->TextRows = 24;
+    settings->Attributes = this->_mainScreenData.Attributes;
+    settings->Pixels = this->_mainScreenData.Pixels;
+    settings->BorderColor = &this->BorderColor;
 
     // Due to a technical limitation, the maximum statically allocated DRAM usage is 160KB
     // The remaining 160KB (for a total of 320KB of DRAM) can only be allocated at runtime as heap
@@ -271,15 +275,6 @@ void Z80Environment::Output(uint8_t portLow, uint8_t portHigh, uint8_t data)
         zx_data = data;
         break;
     }
-}
-
-uint8_t Z80Environment::get_BorderColor()
-{
-    return *this->Screen->Settings->BorderColor;
-}
-void Z80Environment::set_BorderColor(uint8_t borderColor)
-{
-    *this->Screen->Settings->BorderColor = borderColor;
 }
 
 uint16_t Z80Environment::FromSpectrumColor(uint8_t sinclairColor)

@@ -51,16 +51,12 @@ private:
     RamVideoPage _ram7;
 #endif
 
-    uint8_t get_BorderColor(); void set_BorderColor(uint8_t);
-
 public:
 	SpectrumScreen* Screen;
+    uint8_t BorderColor;
     MemoryPage* Rom[2];
     MemoryPage* Ram[8];
     MemorySelect MemoryState;
-
-    CLASS(Z80Environment);
-    PROPERTY(uint8_t, BorderColor);
 
     Z80Environment(SpectrumScreen* spectrumScreen);
 

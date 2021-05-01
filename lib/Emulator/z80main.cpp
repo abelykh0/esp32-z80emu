@@ -40,14 +40,19 @@ void zx_setup(Z80Environment* environment)
     _ay3_8912.Initialize();
 
     Z80cpu.setup(environment);
+    Serial.write("before zx_reset()\r\n");
     zx_reset();
 }
 
 void zx_reset()
 {
+    Serial.write("in zx_reset()\r\n");
     memset(indata, 0xFF, 128);
+    Serial.write("in zx_reset()\r\n");
     *_spectrumScreen->Settings->BorderColor = 0x15;
+    Serial.write("in zx_reset()\r\n");
     Z80cpu.reset();
+    Serial.write("in zx_reset()\r\n");
 }
 
 int32_t zx_loop()

@@ -16,21 +16,15 @@ Screen::Screen(VideoSettings* settings, uint16_t startLine, uint16_t height)
 {
 	this->Settings = settings;
 	this->_isCursorVisible = false;
-
-	this->_hResolutionNoBorder = this->Settings->TextColumns * 8;
-
-    this->VerticalBorder = (this->Height - this->Settings->TextRows * 8) / 2;
-
-	this->_attributeCount = this->Settings->TextColumns * this->Settings->TextRows;
-	this->_pixelCount = this->_attributeCount * 8;
-
-	// Set in Initialize()
-	this->HorizontalResolution = 0;
-	this->HorizontalBorder = 0;
 }
 
 void Screen::Initialize(VideoController* videoController)
 {
+	this->_hResolutionNoBorder = this->Settings->TextColumns * 8;
+    this->VerticalBorder = (this->Height - this->Settings->TextRows * 8) / 2;
+	this->_attributeCount = this->Settings->TextColumns * this->Settings->TextRows;
+	this->_pixelCount = this->_attributeCount * 8;
+
 	Band::Initialize(videoController);
 	this->HorizontalResolution = videoController->getScreenWidth();
 	this->HorizontalBorder = (this->HorizontalResolution - this->_hResolutionNoBorder) / 2;

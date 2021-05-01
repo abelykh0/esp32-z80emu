@@ -21,7 +21,7 @@ uint8_t _buffer16K_2[0x4000];
 static SpectrumScreenData* _savedScreenData = (SpectrumScreenData*)&_buffer16K_2[0x4000 - sizeof(SpectrumScreenData)];
 
 // Spectrum screen band
-static VideoSettings _spectrumVideoSettings { 32, 24 };
+static VideoSettings _spectrumVideoSettings;
 SpectrumScreen MainScreen(&_spectrumVideoSettings, 0, SPECTRUM_BAND_HEIGHT);
 
 // Z80State
