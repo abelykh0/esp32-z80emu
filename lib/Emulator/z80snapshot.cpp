@@ -667,8 +667,7 @@ void ReadState(FileHeader* header)
 	Z80cpu.PC = header->PC == 0 ? header->PCVersion2 : header->PC;
 
 	uint8_t borderColor = (header->Flags1 & 0x0E) >> 1;
-    Environment.BorderColor = Z80Environment::FromSpectrumColor(
-	    borderColor) >> 8;
+    Environment.BorderColor = borderColor;
 }
 
 void SaveState(FileHeader* header)
@@ -712,7 +711,7 @@ void SaveState(FileHeader* header)
 	// Bit 0  : Bit 7 of the R-register
 	// Bit 1-3: Border color
 	header->Flags1 = (Z80cpu.R & 0x80) >> 7;
-	uint8_t border =  Z80Environment::ToSpectrumColor(Environment.BorderColor);
+	uint8_t border = Environment.BorderColor;
 	header->Flags1 |= (border & 0x38) >> 2;
 
 	// Bit 0-1: Interrupt mode (0, 1 or 2)
