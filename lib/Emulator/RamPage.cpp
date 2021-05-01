@@ -5,6 +5,7 @@
 RamPage& RamPage::operator=(void* allocatedRam)
 {
     this->_data = (uint8_t*)allocatedRam;
+    return *this;
 }
 
 uint8_t RamPage::ReadByte(uint16_t addr)
