@@ -303,20 +303,20 @@ uint16_t Z80Environment::FromSpectrumColor(uint8_t sinclairColor)
 
 	bool bright = ((sinclairColor & 0B01000000) != 0);
 
-	uint16_t ink = ((sinclairColor & 0B00000100) << 8); // InkG
-	ink |= ((sinclairColor & 0B00000010) << 7);         // InkR
-	ink |= ((sinclairColor & 0B00000001) << 12);        // InkB
+	uint16_t ink = ((sinclairColor & 0B00000100) << 9); // InkG
+	ink |= ((sinclairColor & 0B00000010) << 8);         // InkR
+	ink |= ((sinclairColor & 0B00000001) << 13);        // InkB
 	if (bright)
 	{
-		ink |= (ink << 1);
+		ink |= (ink >> 1);
 	}
 
-	uint16_t paper = ((sinclairColor & 0B00100000) >> 3); // PaperG
-	paper |= ((sinclairColor & 0B00010000) >> 4);         // PaperR
-	paper |= ((sinclairColor & 0B00001000) << 1);         // PaperB
+	uint16_t paper = ((sinclairColor & 0B00100000) >> 2); // PaperG
+	paper |= ((sinclairColor & 0B00010000) >> 3);         // PaperR
+	paper |= ((sinclairColor & 0B00001000) << 2);         // PaperB
 	if (bright)
 	{
-		paper |= (paper << 1);
+		paper |= (paper >> 1);
 	}
 
 	uint16_t result = ink | paper;
@@ -366,11 +366,12 @@ uint8_t Z80Environment::ToSpectrumColor(uint16_t color)
 	result |= ((color & 0B00010000) >> 1); // PaperB
 	result |= ((color & 0B00000001) << 4); // PaperR
 	result |= ((color & 0B00000100) << 3); // PaperG
+	result |= ((color & 0B00001000) << 2); // PaperG
 
 	color >>= 8;
-	result |= ((color & 0B00010000) >> 4); // InkB
-	result |= ((color & 0B00000001) << 1); // InkR
-	result |= (color & 0B00000100);        // InkG
+	result |= ((color & 0B00100000) >> 5); // InkB
+	result |= (color & 0B00000010);        // InkR
+	result |= ((color & 0B00001000) >> 1); // InkG
 
 	return result;
 }
