@@ -5,7 +5,6 @@
 
 RamPage& RamPage::operator=(void* allocatedRam)
 {
-    Serial.printf("allocated %x\r\n", (uint32_t)allocatedRam);
     this->_data = (uint8_t*)allocatedRam;
     return *this;
 }
