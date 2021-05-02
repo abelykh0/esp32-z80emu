@@ -12,6 +12,7 @@ static uint8_t Ram2Buffer[0x4000];
 static uint8_t Ram5Buffer[0x2500];
 
 Z80Environment::Z80Environment (SpectrumScreen* spectrumScreen)
+    : BorderColor(this)
 {
     this->Screen = spectrumScreen;
 
@@ -20,7 +21,7 @@ Z80Environment::Z80Environment (SpectrumScreen* spectrumScreen)
     settings->TextRows = 24;
     settings->Attributes = this->_mainScreenData.Attributes;
     settings->Pixels = this->_mainScreenData.Pixels;
-    settings->BorderColor = &this->BorderColor;
+    settings->BorderColor = &this->_borderColor;
 
     // Due to a technical limitation, the maximum statically allocated DRAM usage is 160KB
     // The remaining 160KB (for a total of 320KB of DRAM) can only be allocated at runtime as heap
@@ -33,6 +34,7 @@ Z80Environment::Z80Environment (SpectrumScreen* spectrumScreen)
     this->_ram5.Initialize(&this->_mainScreenData, Ram5Buffer);
 
 #ifdef ZX128K
+    Serial.printf("ZX128K\r\n");
     this->_ram1 = (uint8_t*)malloc(0x4000);
     this->_ram3 = (uint8_t*)malloc(0x4000);
     this->_ram4 = (uint8_t*)malloc(0x4000);
@@ -202,7 +204,7 @@ void Z80Environment::Output(uint8_t portLow, uint8_t portHigh, uint8_t data)
         uint8_t borderColor = (data & 0x07);
     	if ((indata[0x20] & 0x07) != borderColor)
     	{
-            *this->Screen->Settings->BorderColor = Z80Environment::FromSpectrumColor(borderColor) >> 8;
+            this->BorderColor = borderColor;
     	}
 
 #ifdef BEEPER
@@ -275,6 +277,15 @@ void Z80Environment::Output(uint8_t portLow, uint8_t portHigh, uint8_t data)
         zx_data = data;
         break;
     }
+}
+
+uint8_t Z80Environment::get_BorderColor()
+{
+     return Z80Environment::ToSpectrumColor(this->_borderColor);
+}
+void Z80Environment::set_BorderColor(uint8_t borderColor)
+{
+    this->_borderColor = Z80Environment::FromSpectrumColor(borderColor) >> 8;
 }
 
 uint16_t Z80Environment::FromSpectrumColor(uint8_t sinclairColor)

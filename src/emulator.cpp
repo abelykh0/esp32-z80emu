@@ -195,51 +195,49 @@ void showErrorMessage(const char* errorMessage)
 
 bool ReadRomFromFiles()
 {
-	/*
-    if (SpectrumMemory.Rom0 == (uint8_t*)ROM)
+    if ((uint8_t*)*Environment.Rom[0] == (uint8_t*)ROM)
     {
-        SpectrumMemory.Rom0 = (uint8_t*)malloc(0x4000);
+        *Environment.Rom[0] = (uint8_t*)malloc(0x4000);
 #ifdef ZX128K
-        SpectrumMemory.Rom1 = (uint8_t*)malloc(0x4000);
+        *Environment.Rom[1] = (uint8_t*)malloc(0x4000);
 #endif
     }
 
     bool result;
 #ifdef ZX128K
-    result = ReadFromFile("/roms/128-0.rom", SpectrumMemory.Rom0, 0x4000);
+    result = ReadFromFile("/roms/128-0.rom", (uint8_t*)*Environment.Rom[0], 0x4000);
     if (result)
     {
-        result = ReadFromFile("/roms/128-1.rom", SpectrumMemory.Rom1, 0x4000);
+        result = ReadFromFile("/roms/128-1.rom", (uint8_t*)*Environment.Rom[1], 0x4000);
     }
 #else
-    result = ReadFromFile("/roms/48.rom", SpectrumMemory.Rom0, 0x4000);
+    result = ReadFromFile("/roms/48.rom", (uint8_t*)*Environment.Rom[0], 0x4000);
 #endif
 
     if (!result)
     {
-        free(SpectrumMemory.Rom0);
+        free((uint8_t*)*Environment.Rom[0]);
 #ifdef ZX128K
-        free(SpectrumMemory.Rom1);
+        free((uint8_t*)*Environment.Rom[1]);
 #endif
-        SpectrumMemory.Rom0 = (uint8_t*)ROM;
-        SpectrumMemory.Rom1 = SpectrumMemory.Rom0;
-    }*/
+        *Environment.Rom[0] = (uint8_t*)ROM;
+        *Environment.Rom[1] = (uint8_t*)ROM;
+    }
 
-    return false; //result;
+    return result;
 }
 
 void ResetSystem()
 {
-	/*
-    if (SpectrumMemory.Rom0 != (uint8_t*)ROM)
+    if (*Environment.Rom[0] != (uint8_t*)ROM)
     {
-        free(SpectrumMemory.Rom0);
+        free((uint8_t*)*Environment.Rom[0]);
 #ifdef ZX128K
-        free(SpectrumMemory.Rom1);
+        free((uint8_t*)*Environment.Rom[1]);
 #endif
-        SpectrumMemory.Rom0 = (uint8_t*)ROM;
-        SpectrumMemory.Rom1 = SpectrumMemory.Rom0;
-    }*/
+        *Environment.Rom[0] = (uint8_t*)ROM;
+        *Environment.Rom[1] = (uint8_t*)ROM;
+    }
 
     ReadRomFromFiles();
     zx_reset();

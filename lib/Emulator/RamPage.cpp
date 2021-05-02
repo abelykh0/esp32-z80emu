@@ -1,11 +1,18 @@
 #include "RamPage.h"
 
 #include <string.h>
+#include "HardwareSerial.h"
 
 RamPage& RamPage::operator=(void* allocatedRam)
 {
+    Serial.printf("allocated %x\r\n", (uint32_t)allocatedRam);
     this->_data = (uint8_t*)allocatedRam;
     return *this;
+}
+
+RamPage::operator uint8_t*()
+{
+    return this->_data;
 }
 
 uint8_t RamPage::ReadByte(uint16_t addr)

@@ -9,6 +9,7 @@ private:
     uint8_t* _data = nullptr;
 public:
     RamPage& operator=(void* allocatedRam);
+    operator uint8_t*();
 
     uint8_t virtual ReadByte(uint16_t addr) override;
     void virtual WriteByte(uint16_t addr, uint8_t data) override;

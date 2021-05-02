@@ -34,6 +34,9 @@ typedef struct
 class Z80Environment
 {
 private:
+    uint8_t _borderColor;
+    uint8_t get_BorderColor(); void set_BorderColor(uint8_t);
+
     RamPage _rom0;
     RamPage _rom1;
 
@@ -53,10 +56,12 @@ private:
 
 public:
 	SpectrumScreen* Screen;
-    uint8_t BorderColor;
-    MemoryPage* Rom[2];
+    RamPage* Rom[2];
     MemoryPage* Ram[8];
     MemorySelect MemoryState;
+
+    CLASS(Z80Environment);
+    PROPERTY(uint8_t, BorderColor);
 
     Z80Environment(SpectrumScreen* spectrumScreen);
 

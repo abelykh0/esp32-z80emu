@@ -73,7 +73,7 @@ void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)
 		}
 
         // Border to the right
-        for (int column = band->HorizontalResolution - band->HorizontalBorder; column < band->HorizontalBorder; column++)
+        for (int column = band->HorizontalResolution - band->HorizontalBorder; column < band->HorizontalResolution; column++)
         {
             VGA_PIXELINROW(dest, column) = borderColor;
         }

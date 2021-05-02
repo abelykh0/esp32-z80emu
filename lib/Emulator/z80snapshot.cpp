@@ -854,11 +854,5 @@ uint16_t CompressPage(uint8_t* page, uint8_t* destMemory)
 
 void ShowScreenshot(uint8_t* buffer)
 {
-    /*
-    memcpy(Environment.MainScreenData.Pixels, buffer, 0x1800);
-    for (uint32_t i = 0x1800; i < 0x1B00; i++)
-    {
-        SpectrumMemory.WriteByte(5, i, buffer[i]);
-    }
-    */
+    Environment.Screen->ShowScreenshot(buffer);
 }
