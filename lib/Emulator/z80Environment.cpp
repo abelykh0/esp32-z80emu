@@ -11,9 +11,10 @@ static uint8_t Ram0Buffer[0x4000];
 static uint8_t Ram2Buffer[0x4000];
 static uint8_t Ram5Buffer[0x2500];
 
-Z80Environment::Z80Environment (SpectrumScreen* spectrumScreen)
+Z80Environment::Z80Environment(SpectrumScreen* spectrumScreen)
     : BorderColor(this)
 {
+    Serial.printf("Z80Environment()\r\n");
     this->Screen = spectrumScreen;
 
     VideoSettings* settings = this->Screen->Settings;

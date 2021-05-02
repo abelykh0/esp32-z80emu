@@ -46,13 +46,9 @@ void zx_setup(Z80Environment* environment)
 
 void zx_reset()
 {
-    Serial.write("in zx_reset()\r\n");
     memset(indata, 0xFF, 128);
-    Serial.write("in zx_reset()\r\n");
     *_spectrumScreen->Settings->BorderColor = 0x15;
-    Serial.write("in zx_reset()\r\n");
     Z80cpu.reset();
-    Serial.write("in zx_reset()\r\n");
 }
 
 int32_t zx_loop()

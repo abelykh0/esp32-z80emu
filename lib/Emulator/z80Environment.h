@@ -1,7 +1,7 @@
 #ifndef __Z80ENVIRONMENT_INCLUDED__
 #define __Z80ENVIRONMENT_INCLUDED__
 
-#define ZX128K
+//#define ZX128K
 
 // Class for the Z80 enviroment (ROM, RAM, I/O)
 
@@ -41,18 +41,15 @@ private:
     RamPage _rom1;
 
     RamPage _ram0;
-    RamPage _ram2;
-	SpectrumScreenData _mainScreenData;
-    RamVideoPage _ram5;
-
-#ifdef ZX128K
     RamPage _ram1;
+    RamPage _ram2;
     RamPage _ram3;
     RamPage _ram4;
+	SpectrumScreenData _mainScreenData;
+    RamVideoPage _ram5;
     RamPage _ram6;
 	SpectrumScreenData _shadowScreenData;
     RamVideoPage _ram7;
-#endif
 
 public:
 	SpectrumScreen* Screen;

@@ -259,13 +259,14 @@ void EmulatorTaskMain(void *unused)
 
 	// Setup
 	startKeyboard();
-	showHelp();
 	zx_setup(&Environment);
     Serial.write("before ReadRomFromFiles()\r\n");
     ReadRomFromFiles();
     Serial.write("after ReadRomFromFiles()\r\n");
 
     ScreenController.StartVideo(RESOLUTION);
+
+	showHelp();
 
 	// Loop
 	while (true)

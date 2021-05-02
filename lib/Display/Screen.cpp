@@ -38,7 +38,7 @@ void Screen::Clear()
 	{
 		this->Settings->Attributes[i] = this->_attribute;
 	}
-	*this->Settings->BorderColor = (uint8_t) this->_attribute;
+	*this->Settings->BorderColor = (uint8_t)this->_attribute;
 }
 
 uint8_t* IRAM_ATTR Screen::GetPixelPointer(uint16_t line)
