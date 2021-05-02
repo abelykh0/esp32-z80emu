@@ -39,6 +39,7 @@ static VideoSettings _videoSettings {
 	_debugPixels, _debugAttributes,	&_debugBorderColor
 };
 Screen DebugScreen(&_videoSettings, SPECTRUM_BAND_HEIGHT, DEBUG_BAND_HEIGHT);
+#define DEBUG_BAND_COLORS 0x2A10
 
 VideoController ScreenController(&MainScreen, &DebugScreen);
 
@@ -64,7 +65,7 @@ void saveState()
 void clearHelp()
 {
 	DebugScreen.HideCursor();
-	DebugScreen.SetAttribute(0x3F10); // white on blue
+	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
 	DebugScreen.Clear();
 
 	_helpShown = false;
@@ -73,7 +74,7 @@ void clearHelp()
 void showHelp()
 {
 	DebugScreen.HideCursor();
-	DebugScreen.SetAttribute(0x3F10); // white on blue
+	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
 	DebugScreen.Clear();
 
     int y = 0;
@@ -137,7 +138,7 @@ void showKeyboardSetup()
 	saveState();
 	_showingKeyboard = true;
 
-	DebugScreen.SetAttribute(0x3F10); // white on blue
+	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
 	DebugScreen.Clear();
 	DebugScreen.PrintAlignCenter(2, "Press any key to return");
 
@@ -149,12 +150,12 @@ void showTitle(const char* title)
 {
 	DebugScreen.SetAttribute(0x3F00); // white on black
 	DebugScreen.PrintAlignCenter(0, title);
-	DebugScreen.SetAttribute(0x3F10); // white on blue
+	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
 }
 
 void showRegisters()
 {
-	DebugScreen.SetAttribute(0x3F10); // white on blue
+	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
 	DebugScreen.Clear();
 	showTitle("Registers. ESC - clear");
 
@@ -190,7 +191,7 @@ void showErrorMessage(const char* errorMessage)
 {
 	DebugScreen.SetAttribute(0x0310); // red on blue
 	DebugScreen.PrintAlignCenter(2, errorMessage);
-	DebugScreen.SetAttribute(0x3F10); // white on blue
+	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
 }
 
 bool ReadRomFromFiles()
