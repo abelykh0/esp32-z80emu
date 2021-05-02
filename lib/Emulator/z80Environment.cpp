@@ -363,9 +363,8 @@ uint8_t Z80Environment::ToSpectrumColor(uint16_t color)
 		result |= 0B10000000;
 	}
 
-	result |= ((color & 0B00010000) >> 1); // PaperB
-	result |= ((color & 0B00000001) << 4); // PaperR
-	result |= ((color & 0B00000100) << 3); // PaperG
+	result |= ((color & 0B00100000) >> 2); // PaperB
+	result |= ((color & 0B00000010) << 3); // PaperR
 	result |= ((color & 0B00001000) << 2); // PaperG
 
 	color >>= 8;
