@@ -3,6 +3,7 @@
 #include "ps2Input.h"
 #include "ay3-8912-state.h"
 #include "main_ROM.h"
+#include "../../include/settings.h"
 
 Sound::Ay3_8912_state _ay3_8912;
 static uint8_t zx_data = 0;

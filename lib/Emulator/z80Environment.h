@@ -1,8 +1,6 @@
 #ifndef __Z80ENVIRONMENT_INCLUDED__
 #define __Z80ENVIRONMENT_INCLUDED__
 
-#define ZX128K
-
 // Class for the Z80 enviroment (ROM, RAM, I/O)
 
 #include <stdint.h>

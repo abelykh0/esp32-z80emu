@@ -1,11 +1,27 @@
 #include "ay3-8912-state.h"
 #include "volume.h"
 #include "fabgl.h"
+#include "../../include/settings.h"
 
 using namespace fabgl;
 
 static SoundGenerator _soundGenerator;
 static SquareWaveformGenerator _channel[3];
+
+#ifdef ZX128K
+// CPU clock is 3.5469MHz, 125000 * 3.5469 / 4 = 110840
+#define FREQUENCY_REFERENCE 110840
+#else
+// CPU clock is 3.5Hz, 125000 * 3.5 / 4 = 109375
+#define FREQUENCY_REFERENCE 109375
+#endif
+
+inline int fixPitch(int p)
+{
+	int fixed = (p > 0) ? (FREQUENCY_REFERENCE / p) : 0;
+	if (fixed > 15000) fixed = 15000;
+	return fixed;
+}
 
 namespace Sound
 {
@@ -138,7 +154,7 @@ void Ay3_8912_state::updated()
 
 		if (this->channelFrequency[channel] != oldChannelFrequency[channel])
 		{
-            _channel[channel].setFrequency(this->channelFrequency[channel]);
+            _channel[channel].setFrequency(fixPitch(this->channelFrequency[channel]));
 		}
 	}
 }
