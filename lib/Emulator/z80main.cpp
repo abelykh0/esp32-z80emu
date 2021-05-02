@@ -16,6 +16,7 @@
 #endif
 
 z80Emulator Z80cpu;
+extern Sound::Ay3_8912_state _ay3_8912;
 
 static uint16_t _attributeCount;
 static int _total;
@@ -46,6 +47,7 @@ void zx_setup(Z80Environment* environment)
 
 void zx_reset()
 {
+    _ay3_8912.Clear();
     memset(indata, 0xFF, 128);
     *_spectrumScreen->Settings->BorderColor = 0x15;
     Z80cpu.reset();
