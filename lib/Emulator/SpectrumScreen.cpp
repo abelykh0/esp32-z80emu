@@ -13,7 +13,7 @@ uint8_t* IRAM_ATTR GetPixelPointerStatic2(VideoSettings* settings, uint16_t line
 
 	uint32_t y012 = ((line & 0B00000111) << 8);
 	uint32_t y345 = ((line & 0B00111000) << 2);
-	uint32_t y67 = ((line & 0B11000000) << 5);
+	uint32_t y67 =  ((line & 0B11000000) << 5);
 	return &settings->Pixels[y012 | y345 | y67];
 }
 

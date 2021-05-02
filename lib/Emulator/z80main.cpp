@@ -49,7 +49,7 @@ void zx_reset()
 {
     _ay3_8912.Clear();
     memset(indata, 0xFF, 128);
-    *_spectrumScreen->Settings->BorderColor = 0x15;
+    *_spectrumScreen->Settings->BorderColor = 0x2A;
     Z80cpu.reset();
 }
 
