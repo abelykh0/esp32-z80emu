@@ -264,6 +264,7 @@ void EmulatorTaskMain(void *unused)
     ReadRomFromFiles();
     Serial.write("after ReadRomFromFiles()\r\n");
 
+	Environment.Initialize();
     ScreenController.StartVideo(RESOLUTION);
 
 	showHelp();
@@ -271,7 +272,7 @@ void EmulatorTaskMain(void *unused)
 	// Loop
 	while (true)
 	{
-		delay(1);
+		vTaskDelay(0); // important to avoid task watchdog timeouts
 
 		if (showKeyboardLoop())
 		{

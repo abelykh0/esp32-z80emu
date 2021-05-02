@@ -14,8 +14,8 @@
 // - CPU_JLSANCHEZ: use José Luis Sánchez's core     https://github.com/jsanchezv/z80cpp
 ///////////////////////////////////////////////////////////////////////////////
 //#define CPU_LINKEFONG
-#define CPU_ANDREWEISSFLOG
-//#define CPU_JLSANCHEZ
+//#define CPU_ANDREWEISSFLOG
+#define CPU_JLSANCHEZ
 
 #define SDCARD
 

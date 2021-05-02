@@ -14,7 +14,6 @@ static uint8_t Ram5Buffer[0x2500];
 Z80Environment::Z80Environment(SpectrumScreen* spectrumScreen)
     : BorderColor(this)
 {
-    Serial.printf("Z80Environment()\r\n");
     this->Screen = spectrumScreen;
 
     VideoSettings* settings = this->Screen->Settings;
@@ -23,6 +22,23 @@ Z80Environment::Z80Environment(SpectrumScreen* spectrumScreen)
     settings->Attributes = this->_mainScreenData.Attributes;
     settings->Pixels = this->_mainScreenData.Pixels;
     settings->BorderColor = &this->_borderColor;
+
+    this->Rom[0] = &this->_rom0;
+    this->Rom[1] = &this->_rom1;
+
+    this->Ram[0] = &this->_ram0;
+    this->Ram[1] = &this->_ram1;
+    this->Ram[2] = &this->_ram2;
+    this->Ram[3] = &this->_ram3;
+    this->Ram[4] = &this->_ram4;
+    this->Ram[5] = &this->_ram5;
+    this->Ram[6] = &this->_ram6;
+    this->Ram[7] = &this->_ram7;    
+}
+
+void Z80Environment::Initialize()
+{
+    Serial.printf("Z80Environment::Initialize()\r\n");
 
     // Due to a technical limitation, the maximum statically allocated DRAM usage is 160KB
     // The remaining 160KB (for a total of 320KB of DRAM) can only be allocated at runtime as heap
@@ -42,18 +58,6 @@ Z80Environment::Z80Environment(SpectrumScreen* spectrumScreen)
     this->_ram6 = (uint8_t*)malloc(0x4000);
     this->_ram7.Initialize(&this->_shadowScreenData, (uint8_t*)malloc(0x2500));
 #endif
-
-    this->Rom[0] = &this->_rom0;
-    this->Rom[1] = &this->_rom1;
-
-    this->Ram[0] = &this->_ram0;
-    this->Ram[1] = &this->_ram1;
-    this->Ram[2] = &this->_ram2;
-    this->Ram[3] = &this->_ram3;
-    this->Ram[4] = &this->_ram4;
-    this->Ram[5] = &this->_ram5;
-    this->Ram[6] = &this->_ram6;
-    this->Ram[7] = &this->_ram7;    
 }
 
 uint8_t Z80Environment::ReadByte(uint16_t addr)
