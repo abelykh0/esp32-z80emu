@@ -15,8 +15,12 @@ Spectrum ZX 128K emulator on VGA-32 board
 ## Third party software
 This project uses the following libraries:
 * (GPL v3.0) Display video using VGA, process PS/2 keyboard, and sound output: https://github.com/fdivitto/FabGL
-* (unsure, MIT?) Z80 emulator: https://github.com/anotherlin/z80emu
 * (GPL v2.0) OpenSE Basic: https://spectrumcomputing.co.uk/index.php?cat=96&id=27510
+
+Choose one of the following for Z*) CPU emulator:
+* (unsure, MIT?) Lin Ke-Fong's https://github.com/anotherlin/z80emu
+* (zlib License) Andre Weissflog's https://github.com/floooh/chips/
+* (GPL v3.0) José Luis Sánchez's https://github.com/jsanchezv/z80cpp
 
 ## Plans for the future / issues
 * Beeper sounds
