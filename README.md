@@ -17,7 +17,7 @@ This project uses the following libraries:
 * (GPL v3.0) Display video using VGA, process PS/2 keyboard, and sound output: https://github.com/fdivitto/FabGL
 * (GPL v2.0) OpenSE Basic: https://spectrumcomputing.co.uk/index.php?cat=96&id=27510
 
-Choose one of the following for Z*) CPU emulator:
+Choose one of the following for Z80 CPU emulator:
 * (unsure, MIT?) Lin Ke-Fong's https://github.com/anotherlin/z80emu
 * (zlib License) Andre Weissflog's https://github.com/floooh/chips/
 * (GPL v3.0) José Luis Sánchez's https://github.com/jsanchezv/z80cpp
