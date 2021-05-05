@@ -10,6 +10,7 @@ void setup()
     Serial.write("in setup()\r\n");
 
     xTaskCreatePinnedToCore(&EmulatorTaskMain, "emulatorTask", 1024 * 10, NULL, 5, &mainTaskHandle, tskNO_AFFINITY);
+    vTaskDelete(NULL);
 }
 
 void loop()

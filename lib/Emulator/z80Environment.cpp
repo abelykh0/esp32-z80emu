@@ -5,6 +5,8 @@
 #include "main_ROM.h"
 #include "../../include/settings.h"
 
+#define BEEPER_PIN 25
+
 Sound::Ay3_8912_state _ay3_8912;
 static uint8_t zx_data = 0;
 
@@ -59,6 +61,12 @@ void Z80Environment::Initialize()
     this->_ram6 = (uint8_t*)malloc(0x4000);
     this->_ram7.Initialize(&this->_shadowScreenData, (uint8_t*)malloc(0x2500));
 #endif
+
+#ifdef BEEPER
+    pinMode(BEEPER_PIN, OUTPUT);
+    digitalWrite(BEEPER_PIN, LOW);
+#endif
+    _ay3_8912.Initialize();
 }
 
 uint8_t Z80Environment::ReadByte(uint16_t addr)
@@ -217,14 +225,7 @@ void Z80Environment::Output(uint8_t portLow, uint8_t portHigh, uint8_t data)
         uint8_t sound = (data & 0x10);
     	if ((indata[0x20] & 0x10) != sound)
     	{
-			if (sound)
-			{
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
-			}
-			else
-			{
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
-			}
+            digitalWrite(BEEPER_PIN, sound >> 4); 
     	}
 #endif
 

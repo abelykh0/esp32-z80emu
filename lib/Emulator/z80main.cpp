@@ -30,16 +30,6 @@ void zx_setup(Z80Environment* environment)
 	_spectrumScreen = environment->Screen;
 	_attributeCount = _spectrumScreen->Settings->TextColumns * _spectrumScreen->Settings->TextRows;
 
-#ifdef BEEPER
-    // Sound
-    GPIO_InitTypeDef GPIO_InitStruct;
-    GPIO_InitStruct.Pin = GPIO_PIN_12;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-#endif
-    _ay3_8912.Initialize();
-
     Z80cpu.setup(environment);
     Serial.write("before zx_reset()\r\n");
     zx_reset();

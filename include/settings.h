@@ -17,6 +17,7 @@
 #define CPU_JLSANCHEZ
 
 #define SDCARD
+#define BEEPER
 
 /*
 #define RESOLUTION QVGA_320x240_60Hz

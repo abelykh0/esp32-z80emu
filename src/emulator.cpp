@@ -273,7 +273,7 @@ void EmulatorTaskMain(void *unused)
 	// Loop
 	while (true)
 	{
-		vTaskDelay(0); // important to avoid task watchdog timeouts
+		vTaskDelay(1); // important to avoid task watchdog timeouts
 
 		if (showKeyboardLoop())
 		{
