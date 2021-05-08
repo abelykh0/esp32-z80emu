@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "ff.h"
 
+#include "settings.h"
 #include "z80snapshot.h"
 #include "z80main.h"
 #include "z80Emulator.h"

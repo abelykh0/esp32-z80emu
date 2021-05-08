@@ -58,6 +58,11 @@ void VideoController::Start(char const* modeline, void* characterBuffer)
     this->InitAttribute(this->_defaultAttribute, FORE_COLOR, BACK_COLOR);
 }
 
+void VideoController::Print(const char* str)
+{
+	this->print((char*)str);
+}
+
 void VideoController::setAttribute(uint8_t x, uint8_t y, uint8_t foreColor, uint8_t backColor)
 {
     uint32_t* attribute;
@@ -86,6 +91,51 @@ void VideoController::setAttribute(uint8_t x, uint8_t y, uint8_t foreColor, uint
     this->Attributes[y * SCREEN_WIDTH + x] = attribute;
 }
 
+void VideoController::Clear()
+{
+    // TODO
+}
+
+void VideoController::SetAttribute(uint16_t attribute)
+{
+	//this->_attribute = attribute;
+}
+
+void VideoController::PrintAt(uint8_t x, uint8_t y, const char* str)
+{
+    this->SetCursorPosition(x, y);
+    this->Print(str);
+}
+
+void VideoController::PrintAlignCenter(uint8_t y, const char *str)
+{
+    // TODO
+    //uint8_t leftX = (this->Settings->TextColumns - strlen(str)) / 2;
+    //this->PrintAt(leftX, y, str);
+}
+
+void VideoController::ShowCursor()
+{
+    /*
+    if (!this->_isCursorVisible)
+    {
+    	this->_isCursorVisible = true;
+    	this->InvertColor();
+    }
+    */
+}
+
+void VideoController::HideCursor()
+{
+    /*
+    if (this->_isCursorVisible)
+    {
+    	this->_isCursorVisible = false;
+    	this->InvertColor();
+    }
+    */
+}
+
 void VideoController::printChar(uint16_t x, uint16_t y, uint16_t ch)
 {
 	VideoController::printChar(x, y, ch, 0xFF, 0xFF);
@@ -101,11 +151,6 @@ void VideoController::printChar(uint16_t x, uint16_t y, uint16_t ch, uint8_t for
 	int offset = y * SCREEN_WIDTH + x;
 	this->Characters[offset] = ch;
     this->setAttribute(x, y, foreColor, backColor);
-}
-
-void VideoController::Print(const char* str)
-{
-	this->print((char*)str);
 }
 void VideoController::print(const char* str, uint8_t foreColor, uint8_t backColor)
 {
@@ -204,6 +249,18 @@ void VideoController::ShowScreenshot(const uint8_t* screenshot)
 	{
 		this->Settings->Attributes[i] = Z80Environment::FromSpectrumColor(attributes[i]);
 	}
+}
+
+uint8_t* IRAM_ATTR GetPixelPointer(uint8_t* pixels, uint16_t line)
+{
+	// ZX Sinclair addressing
+	// 00-00-00-Y7-Y6-Y2-Y1-Y0 Y5-Y4-Y3-x4-x3-x2-x1-x0
+	//          12 11 10  9  8  7  6  5  4  3  2  1  0
+
+	uint32_t y012 = ((line & 0B00000111) << 8);
+	uint32_t y345 = ((line & 0B00111000) << 2);
+	uint32_t y67 =  ((line & 0B11000000) << 5);
+	return &pixels[y012 | y345 | y67];
 }
 
 void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)

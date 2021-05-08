@@ -2,7 +2,6 @@
 #define __EMULATOR_H__
 
 #include "settings.h"
-#include "z80Emulator.h"
 #include "VideoController.h"
 
 extern VideoController MainScreen;
