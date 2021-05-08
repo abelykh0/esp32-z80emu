@@ -33,11 +33,9 @@ void VideoController::InitAttribute(uint32_t* attribute, uint8_t foreColor, uint
 	}
 }
 
-void VideoController::Start(char const* modeline, void* characterBuffer)
+void VideoController::Start(char const* modeline)
 {
-    int charDataSize = 256 * 8;
-    this->_fontData = (uint8_t*)characterBuffer;
-    memcpy(this->_fontData, font8x8, charDataSize);
+    this->_fontData = (uint8_t*)font8x8;
 
     // "default" attribute (white on blue)
     this->_defaultAttribute = (uint32_t*)heap_caps_malloc(16 * 4, MALLOC_CAP_32BIT);

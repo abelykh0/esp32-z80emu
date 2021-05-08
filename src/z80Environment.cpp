@@ -10,9 +10,11 @@
 Sound::Ay3_8912_state _ay3_8912;
 static uint8_t zx_data = 0;
 
-static uint8_t Ram0Buffer[0x4000];
-static uint8_t Ram2Buffer[0x4000];
-static uint8_t Ram5Buffer[0x2500];
+static uint8_t _ram0Buffer[0x4000];
+static uint8_t _ram2Buffer[0x4000];
+static uint8_t _ram5Pixels[SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8];
+static uint16_t _ram5Attributes[SPECTRUM_WIDTH * SPECTRUM_HEIGHT];
+static uint8_t _ram5Buffer[0x2500];
 
 Z80Environment::Z80Environment(VideoController* spectrumScreen)
     : BorderColor(this)
@@ -46,9 +48,12 @@ void Z80Environment::Initialize()
     this->_rom0 = (uint8_t*)ROM;
     this->_rom1 = (uint8_t*)ROM;
 
-    this->_ram0 = Ram0Buffer;
-    this->_ram2 = Ram2Buffer;
-    this->_ram5.Initialize(&this->_mainScreenData, Ram5Buffer);
+    this->_ram0 = _ram0Buffer;
+    this->_ram2 = _ram2Buffer;
+
+    this->_mainScreenData.Pixels = _ram5Pixels;
+    this->_mainScreenData.Attributes = _ram5Attributes;
+    this->_ram5.Initialize(&this->_mainScreenData, _ram5Buffer);
 
 #ifdef ZX128K
     Serial.printf("ZX128K\r\n");
@@ -56,6 +61,9 @@ void Z80Environment::Initialize()
     this->_ram3 = (uint8_t*)malloc(0x4000);
     this->_ram4 = (uint8_t*)malloc(0x4000);
     this->_ram6 = (uint8_t*)malloc(0x4000);
+
+    this->_shadowScreenData.Pixels = (uint8_t*)malloc(SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8);
+    this->_shadowScreenData.Attributes = (uint16_t*)malloc(SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 2);
     this->_ram7.Initialize(&this->_shadowScreenData, (uint8_t*)malloc(0x2500));
 #endif
 

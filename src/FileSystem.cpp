@@ -283,16 +283,16 @@ bool saveSnapshotLoop()
 	}
 
 	scanCode = ((scanCode & 0xFF0000) >> 8 | (scanCode & 0xFF));
-	uint8_t x = DebugScreen->_cursor_x;
+	uint8_t x = DebugScreen->cursor_x;
     TCHAR* fileName;
 	switch (scanCode)
 	{
 	case KEY_BACKSPACE:
-		if (DebugScreen->_cursor_x > 0)
+		if (DebugScreen->cursor_x > 0)
 		{
-			DebugScreen->PrintAt(DebugScreen->_cursor_x - 1, DebugScreen->_cursor_y, " ");
-			DebugScreen->SetCursorPosition(DebugScreen->_cursor_x - 1, DebugScreen->_cursor_y);
-			_snapshotName[DebugScreen->_cursor_x] = '\0';
+			DebugScreen->PrintAt(DebugScreen->cursor_x - 1, DebugScreen->cursor_y, " ");
+			DebugScreen->SetCursorPosition(DebugScreen->cursor_x - 1, DebugScreen->cursor_y);
+			_snapshotName[DebugScreen->cursor_x] = '\0';
 		}
 		break;
 
@@ -327,14 +327,14 @@ bool saveSnapshotLoop()
 
 	default:
 		char character = Ps2_ConvertScancode(scanCode);
-		if (DebugScreen->_cursor_x < FILE_COLUMNWIDTH && character != '\0'
+		if (DebugScreen->cursor_x < FILE_COLUMNWIDTH && character != '\0'
 			&& character != '\\' && character != '/' && character != ':'
 			&& character != '*' && character != '?' && character != '"'
 			&& character != '<' && character != '>' && character != '|')
 		{
 			char* text = (char*)_buffer16K_1;
 			text[0] = character;
-			_snapshotName[DebugScreen->_cursor_x] = character;
+			_snapshotName[DebugScreen->cursor_x] = character;
 			text[1] = '\0';
 			DebugScreen->Print(text);
 		}

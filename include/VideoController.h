@@ -22,8 +22,8 @@ public:
     uint32_t** Attributes;
     uint16_t _leftOffset = 24; 
     uint16_t _topOffset = 16;
-    uint8_t _cursor_x = 0;
-    uint8_t _cursor_y = 0;
+    uint16_t cursor_x = 0;
+    uint16_t cursor_y = 0;
 
     // Mode 2
     SpectrumScreenData* Settings;
@@ -33,7 +33,7 @@ public:
     uint32_t Frames = 0;
 
     VideoController(SpectrumScreenData* screenData);
-    void Start(char const* modeline, void* characterBuffer);
+    void Start(char const* modeline);
 
     // Mode 1
 	void Clear();
@@ -52,9 +52,6 @@ public:
 private:
     std::map<uint16_t, uint32_t*> _attrToAddr;
     std::map<uint32_t*, uint16_t> _addrToAttr;
-
-    uint16_t cursor_x = 0;
-    uint16_t cursor_y = 0;
 
     uint32_t* CreateAttribute(uint8_t foreColor, uint8_t backColor);
     void InitAttribute(uint32_t* attribute, uint8_t foreColor, uint8_t backColor);

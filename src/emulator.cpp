@@ -29,9 +29,9 @@ VideoController* DebugScreen = Screen;
 Z80Environment Environment(Screen);
 
 // Data for the "debug" screen
-static uint8_t _fontData[256 * 8];
 static bool _showingKeyboard;
 static bool _helpShown;
+
 
 static PS2Controller* InputController;
 
@@ -250,7 +250,7 @@ void EmulatorTaskMain(void *unused)
     ReadRomFromFiles();
     Serial.write("after ReadRomFromFiles()\r\n");
 
-	Screen->Start(RESOLUTION, _fontData);
+	Screen->Start(RESOLUTION);
 
 	showHelp();
 
@@ -258,7 +258,7 @@ void EmulatorTaskMain(void *unused)
 	while (true)
 	{
 		vTaskDelay(1); // important to avoid task watchdog timeouts
-
+continue;
 		if (showKeyboardLoop())
 		{
 			continue;

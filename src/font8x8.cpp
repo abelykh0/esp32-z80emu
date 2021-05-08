@@ -1,7 +1,15 @@
 #include "font8x8.h"
 
 const unsigned char font8x8[] = {
-    8, 8, 1,
+	// 0x00 - special "character" for the Spectrum screen
+    0x01, /*  .......█  */
+    0x23, /*  ..█...██  */
+    0x45, /*  .█...█.█  */
+    0x67, /*  .██..███  */
+    0x89, /*  █...█..█  */
+    0xAB, /*  █.█.█.██  */
+    0xCD, /*  ██..██.█  */
+    0xEF, /*  ███.████  */
 
 	// 0x01
     0x7E, /*  .██████.  */
