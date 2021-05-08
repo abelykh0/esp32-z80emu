@@ -12,7 +12,7 @@ using namespace std;
 class VideoController : public fabgl::VGADirectController
 {
 public:
-    uint8_t _mode = 1;
+    uint8_t _mode = 2;
 
     // Mode 1
     uint8_t IRAM_ATTR createRawPixel(uint8_t color);

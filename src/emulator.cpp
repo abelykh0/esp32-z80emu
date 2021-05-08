@@ -32,7 +32,6 @@ Z80Environment Environment(Screen);
 static bool _showingKeyboard;
 static bool _helpShown;
 
-
 static PS2Controller* InputController;
 
 void startKeyboard()
@@ -258,7 +257,7 @@ void EmulatorTaskMain(void *unused)
 	while (true)
 	{
 		vTaskDelay(1); // important to avoid task watchdog timeouts
-continue;
+//continue;
 		if (showKeyboardLoop())
 		{
 			continue;

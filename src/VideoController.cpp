@@ -96,7 +96,7 @@ void VideoController::Clear()
 
 void VideoController::SetAttribute(uint16_t attribute)
 {
-	//this->_attribute = attribute;
+	//this->_defaultAttribute
 }
 
 void VideoController::PrintAt(uint8_t x, uint8_t y, const char* str)
@@ -315,7 +315,6 @@ void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)
             uint16_t vline = scaledLine - controller->_borderHeight;
             uint8_t* bitmap = (uint8_t*)GetPixelPointer(controller->Settings->Pixels, vline);
             uint16_t* colors = &controller->Settings->Attributes[vline / 8 * SPECTRUM_WIDTH];
-            //int column = band->HorizontalBorder;
             for (uint8_t* charBits = bitmap; charBits < bitmap + SPECTRUM_WIDTH; charBits++)
             {
                 uint8_t pixels = *charBits;
@@ -356,7 +355,7 @@ void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)
             }
 
             // Border on the right
-            memset(dest, controller->createRawPixel(controller->BorderColor), controller->_borderWidth);
+            memset(dest16, controller->createRawPixel(controller->BorderColor), controller->_borderWidth);
         }
     }
 }
