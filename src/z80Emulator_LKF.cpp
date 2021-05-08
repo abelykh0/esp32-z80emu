@@ -4,8 +4,8 @@
 
 #ifdef CPU_LINKEFONG
 
-#include "z80_LKF/z80emu.h"
-#include "z80_LKF/z80user.h"
+#include "z80emu.h"
+#include "z80user.h"
 
 static Z80_STATE z80_state;
 static Z80_STATE* state = &z80_state;

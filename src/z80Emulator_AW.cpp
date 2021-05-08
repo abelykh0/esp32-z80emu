@@ -4,7 +4,7 @@
 
 #ifdef CPU_ANDREWEISSFLOG
 
-#include "z80_AW/z80.h"
+#include "z80.h"
 
 static z80_t _zxCpu;
 static Z80Environment* env;

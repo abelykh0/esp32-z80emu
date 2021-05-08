@@ -26,15 +26,14 @@ VideoController* Screen = &_screen;
 VideoController* DebugScreen = Screen;
 
 // Z80State
-Z80Environment Environment(&MainScreen);
+Z80Environment Environment(Screen);
 
 // Data for the "debug" screen
-static uint8_t _fontData[(256 + 768) * 8];
-
-static PS2Controller* InputController;
-
+static uint8_t _fontData[256 * 8];
 static bool _showingKeyboard;
 static bool _helpShown;
+
+static PS2Controller* InputController;
 
 void startKeyboard()
 {
@@ -127,8 +126,8 @@ void showKeyboardSetup()
 	DebugScreen->Clear();
 	DebugScreen->PrintAlignCenter(2, "Press any key to return");
 
-	MainScreen.ShowScreenshot(spectrumKeyboard);
-	MainScreen.BorderColor = 0; // Black
+	Screen->ShowScreenshot(spectrumKeyboard);
+	Screen->BorderColor = 0; // Black
 }
 
 void showTitle(const char* title)
