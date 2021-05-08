@@ -1,7 +1,7 @@
 #include "ay3-8912-state.h"
 #include "volume.h"
 #include "fabgl.h"
-#include "../../include/settings.h"
+#include "settings.h"
 
 using namespace fabgl;
 

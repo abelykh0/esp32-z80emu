@@ -3,10 +3,13 @@
 
 #include <stdint.h>
 
+#define SPECTRUM_WIDTH  32
+#define SPECTRUM_HEIGHT 24
+
 typedef struct 
 {
-	uint8_t  Pixels[32 * 8 * 24];
-	uint16_t Attributes[32 * 24];
+	uint8_t*  Pixels;
+	uint16_t* Attributes;
 } SpectrumScreenData;
 
 #endif

@@ -3,7 +3,7 @@
 #include "ps2Input.h"
 #include "ay3-8912-state.h"
 #include "main_ROM.h"
-#include "../../include/settings.h"
+#include "settings.h"
 
 #define BEEPER_PIN 25
 
@@ -14,17 +14,14 @@ static uint8_t Ram0Buffer[0x4000];
 static uint8_t Ram2Buffer[0x4000];
 static uint8_t Ram5Buffer[0x2500];
 
-Z80Environment::Z80Environment(SpectrumScreen* spectrumScreen)
+Z80Environment::Z80Environment(VideoController* spectrumScreen)
     : BorderColor(this)
 {
     this->Screen = spectrumScreen;
 
-    VideoSettings* settings = this->Screen->Settings;
-    settings->TextColumns = 32;
-    settings->TextRows = 24;
+    SpectrumScreenData* settings = this->Screen->Settings;
     settings->Attributes = this->_mainScreenData.Attributes;
     settings->Pixels = this->_mainScreenData.Pixels;
-    settings->BorderColor = &this->_borderColor;
 
     this->Rom[0] = &this->_rom0;
     this->Rom[1] = &this->_rom1;

@@ -23,12 +23,12 @@ static int _total;
 static int _next_total = 0;
 static uint8_t frames = 0;
 static uint32_t _ticks = 0;
-static SpectrumScreen* _spectrumScreen;
+static VideoController* _spectrumScreen;
 
 void zx_setup(Z80Environment* environment)
 {
 	_spectrumScreen = environment->Screen;
-	_attributeCount = _spectrumScreen->Settings->TextColumns * _spectrumScreen->Settings->TextRows;
+	_attributeCount = SPECTRUM_HEIGHT * SPECTRUM_WIDTH;
 
     Z80cpu.setup(environment);
     Serial.write("before zx_reset()\r\n");
@@ -39,7 +39,7 @@ void zx_reset()
 {
     _ay3_8912.Clear();
     memset(indata, 0xFF, 128);
-    *_spectrumScreen->Settings->BorderColor = 0x2A;
+    _spectrumScreen->BorderColor = 0x2A;
     Z80cpu.reset();
 }
 

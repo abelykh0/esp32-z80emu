@@ -12,8 +12,13 @@
 
 using namespace zx;
 
+#define DEBUG_COLUMNS 42
+#define DEBUG_ROWS 58
 #define FILE_COLUMNS 3
 #define FILE_COLUMNWIDTH (DEBUG_COLUMNS / FILE_COLUMNS)
+
+extern VideoController* Screen;
+extern VideoController* DebugScreen;
 
 typedef TCHAR FileName[FF_MAX_LFN + 1];
 
@@ -100,10 +105,10 @@ static TCHAR* TruncateFileName(TCHAR* fileName)
 
 static void noScreenshot()
 {
-	MainScreen.Clear();
-	MainScreen.SetAttribute(0x0310); // red on blue
-	MainScreen.PrintAlignCenter(11, "Error reading selected file");
-	MainScreen.SetAttribute(0x3F10); // white on blue
+	Screen->Clear();
+	Screen->SetAttribute(0x0310); // red on blue
+	Screen->PrintAlignCenter(11, "Error reading selected file");
+	Screen->SetAttribute(0x3F10); // white on blue
 }
 
 static void SetSelection(uint8_t selectedFile)
@@ -117,7 +122,7 @@ static void SetSelection(uint8_t selectedFile)
 
 	uint8_t x, y;
 	GetFileCoord(selectedFile, &x, &y);
-	DebugScreen.PrintAt(x, y, "\x10"); // ►
+	DebugScreen->PrintAt(x, y, "\x10"); // ►
 
 	FRESULT fr;
 
@@ -239,8 +244,8 @@ bool saveSnapshotSetup(const char* path)
     _rootFolder = path;
     _rootFolderLength = strlen(path);
 
-	DebugScreen.SetAttribute(0x3F10); // white on blue
-	DebugScreen.Clear();
+	DebugScreen->SetAttribute(0x3F10); // white on blue
+	DebugScreen->Clear();
 
 	showTitle("Save snapshot. ENTER, ESC, BS");
 
@@ -254,9 +259,9 @@ bool saveSnapshotSetup(const char* path)
 	// Unmount file system
 	unmount();
 
-	DebugScreen.PrintAt(0, 2, "Enter file name:");
-	DebugScreen.SetCursorPosition(0, 3);
-	DebugScreen.ShowCursor();
+	DebugScreen->PrintAt(0, 2, "Enter file name:");
+	DebugScreen->SetCursorPosition(0, 3);
+	DebugScreen->ShowCursor();
 	memset(_snapshotName, 0, FF_MAX_LFN + 1);
 	_savingSnapshot = true;
 
@@ -278,23 +283,23 @@ bool saveSnapshotLoop()
 	}
 
 	scanCode = ((scanCode & 0xFF0000) >> 8 | (scanCode & 0xFF));
-	uint8_t x = DebugScreen._cursor_x;
+	uint8_t x = DebugScreen->_cursor_x;
     TCHAR* fileName;
 	switch (scanCode)
 	{
 	case KEY_BACKSPACE:
-		if (DebugScreen._cursor_x > 0)
+		if (DebugScreen->_cursor_x > 0)
 		{
-			DebugScreen.PrintAt(DebugScreen._cursor_x - 1, DebugScreen._cursor_y, " ");
-			DebugScreen.SetCursorPosition(DebugScreen._cursor_x - 1, DebugScreen._cursor_y);
-			_snapshotName[DebugScreen._cursor_x] = '\0';
+			DebugScreen->PrintAt(DebugScreen->_cursor_x - 1, DebugScreen->_cursor_y, " ");
+			DebugScreen->SetCursorPosition(DebugScreen->_cursor_x - 1, DebugScreen->_cursor_y);
+			_snapshotName[DebugScreen->_cursor_x] = '\0';
 		}
 		break;
 
 	case KEY_ENTER:
 	case KEY_KP_ENTER:
-		DebugScreen.HideCursor();
-		DebugScreen.PrintAt(0, 5, "Saving...                  ");
+		DebugScreen->HideCursor();
+		DebugScreen->PrintAt(0, 5, "Saving...                  ");
         fileName = GetFileName(_snapshotName);
 		strcat(fileName,".z80");
 		if (saveSnapshot(fileName))
@@ -306,11 +311,11 @@ bool saveSnapshotLoop()
 		}
 		else
 		{
-			DebugScreen.SetAttribute(0x0310); // red on blue
-			DebugScreen.PrintAt(0, 5, "Error saving file");
-			DebugScreen.SetAttribute(0x3F10); // white on blue
-			DebugScreen.SetCursorPosition(x, 3);
-			DebugScreen.ShowCursor();
+			DebugScreen->SetAttribute(0x0310); // red on blue
+			DebugScreen->PrintAt(0, 5, "Error saving file");
+			DebugScreen->SetAttribute(0x3F10); // white on blue
+			DebugScreen->SetCursorPosition(x, 3);
+			DebugScreen->ShowCursor();
 		}
 		break;
 
@@ -322,16 +327,16 @@ bool saveSnapshotLoop()
 
 	default:
 		char character = Ps2_ConvertScancode(scanCode);
-		if (DebugScreen._cursor_x < FILE_COLUMNWIDTH && character != '\0'
+		if (DebugScreen->_cursor_x < FILE_COLUMNWIDTH && character != '\0'
 			&& character != '\\' && character != '/' && character != ':'
 			&& character != '*' && character != '?' && character != '"'
 			&& character != '<' && character != '>' && character != '|')
 		{
 			char* text = (char*)_buffer16K_1;
 			text[0] = character;
-			_snapshotName[DebugScreen._cursor_x] = character;
+			_snapshotName[DebugScreen->_cursor_x] = character;
 			text[1] = '\0';
-			DebugScreen.Print(text);
+			DebugScreen->Print(text);
 		}
 		break;
 	}
@@ -348,9 +353,9 @@ bool loadSnapshotSetup(const char* path)
 
 	saveState();
 
-	DebugScreen.SetAttribute(0x3F10); // white on blue
-	DebugScreen.Clear();
-	*MainScreen.Settings->BorderColor = 0x10;
+	DebugScreen->SetAttribute(0x3F10); // white on blue
+	DebugScreen->Clear();
+	Screen->BorderColor = 0x10;
 
 	showTitle("Load snapshot. ENTER, ESC, \x18, \x19, \x1A, \x1B"); // ↑, ↓, →, ←
 
@@ -407,15 +412,15 @@ bool loadSnapshotSetup(const char* path)
 
         for (int y = 1; y < DEBUG_ROWS; y++)
         {
-            DebugScreen.PrintAt(FILE_COLUMNWIDTH, y, "\xB3"); // │
-            DebugScreen.PrintAt(FILE_COLUMNWIDTH * 2 + 1, y, "\xB3"); // │
+            DebugScreen->PrintAt(FILE_COLUMNWIDTH, y, "\xB3"); // │
+            DebugScreen->PrintAt(FILE_COLUMNWIDTH * 2 + 1, y, "\xB3"); // │
         }
 
         uint8_t x, y;
         for (int fileIndex = 0; fileIndex < _fileCount; fileIndex++)
         {
             GetFileCoord(fileIndex, &x, &y);
-            DebugScreen.PrintAt(x + 1, y, TruncateFileName(_fileNames[fileIndex]));
+            DebugScreen->PrintAt(x + 1, y, TruncateFileName(_fileNames[fileIndex]));
         }
 
         SetSelection(_selectedFile);	
@@ -500,7 +505,7 @@ bool loadSnapshotLoop()
 
 	uint8_t x, y;
 	GetFileCoord(previousSelection, &x, &y);
-	DebugScreen.PrintAt(x, y, " ");
+	DebugScreen->PrintAt(x, y, " ");
 
 	SetSelection(_selectedFile);
 

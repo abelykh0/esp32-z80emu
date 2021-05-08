@@ -3,16 +3,9 @@
 
 #include "settings.h"
 #include "z80Emulator.h"
-#include "Screen.h"
-#include "SpectrumScreen.h"
+#include "VideoController.h"
 
-#define DEBUG_BAND_HEIGHT (DEBUG_ROWS * 8)
-#define SPECTRUM_BAND_HEIGHT (SCREEN_HEIGHT - DEBUG_BAND_HEIGHT)
-
-using namespace Display;
-
-extern Screen DebugScreen;
-extern SpectrumScreen MainScreen;
+extern VideoController MainScreen;
 extern uint8_t _buffer16K_1[];
 extern uint8_t _buffer16K_2[];
 

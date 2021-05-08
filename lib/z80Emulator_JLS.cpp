@@ -4,8 +4,8 @@
 
 #ifdef CPU_JLSANCHEZ
 
-#include "z80_JLS/z80.h"
-#include "z80_JLS/z80operations.h"
+#include "z80JLS/z80.h"
+#include "z80operations.h"
 
 class Operations : public Z80operations
 {

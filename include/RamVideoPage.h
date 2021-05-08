@@ -2,10 +2,7 @@
 #define __RAMVIDEOPAGE_INCLUDED__
 
 #include "MemoryPage.h"
-#include "VideoSettings.h"
 #include "SpectrumScreenData.h"
-
-using namespace Display;
 
 class RamVideoPage: public MemoryPage
 {

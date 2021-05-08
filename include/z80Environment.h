@@ -4,14 +4,11 @@
 // Class for the Z80 enviroment (ROM, RAM, I/O)
 
 #include <stdint.h>
-#include "SpectrumScreen.h"
 #include "MemoryPage.h"
 #include "RamPage.h"
-#include "RamVideoPage.h"
-#include "SpectrumScreenData.h"
 #include "ClassProperties.h"
-
-using namespace Display;
+#include "VideoController.h"
+#include "RamVideoPage.h"
 
 typedef struct 
 {
@@ -50,7 +47,7 @@ private:
     RamVideoPage _ram7;
 
 public:
-	SpectrumScreen* Screen;
+	VideoController* Screen;
     RamPage* Rom[2];
     MemoryPage* Ram[8];
     MemorySelect MemoryState;
@@ -58,7 +55,7 @@ public:
     CLASS(Z80Environment);
     PROPERTY(uint8_t, BorderColor);
 
-    Z80Environment(SpectrumScreen* spectrumScreen);
+    Z80Environment(VideoController* spectrumScreen);
 
     void Initialize();
 
