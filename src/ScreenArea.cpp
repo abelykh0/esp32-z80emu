@@ -29,9 +29,8 @@ void ScreenArea::PrintAt(uint8_t x, uint8_t y, const char* str)
 
 void ScreenArea::PrintAlignCenter(uint8_t y, const char *str)
 {
-    // TODO
-    //uint8_t leftX = (this->Settings->TextColumns - strlen(str)) / 2;
-    //this->PrintAt(leftX, y, str);
+    uint8_t leftX = (this->_Width - strlen(str)) / 2;
+    this->PrintAt(leftX, y, str);
 }
 
 void ScreenArea::ShowCursor()

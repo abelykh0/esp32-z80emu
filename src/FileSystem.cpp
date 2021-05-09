@@ -17,18 +17,19 @@ using namespace zx;
 #define DEBUG_ROWS 58
 #define FILE_COLUMNS 3
 #define FILE_COLUMNWIDTH (DEBUG_COLUMNS / FILE_COLUMNS)
+#define MAX_LFN 90
 
 extern VideoController* Screen;
 extern ScreenArea* DebugScreen;
 
-typedef TCHAR FileName[FF_MAX_LFN + 1];
+typedef TCHAR FileName[MAX_LFN + 1];
 
-static FileName* _fileNames = (FileName*) _buffer16K_2;
+static FileName* _fileNames = (FileName*)_buffer16K_2;
 static int16_t _selectedFile = 0;
 static int16_t _fileCount;
 static bool _loadingSnapshot = false;
 static bool _savingSnapshot = false;
-static char* _snapshotName = (char*)&_buffer16K_1[FF_MAX_LFN + 1];
+static char* _snapshotName = (char*)&_buffer16K_1[MAX_LFN + 1];
 
 static fs::FS* _fileSystem;
 static const char* _rootFolder;
@@ -50,7 +51,7 @@ static void unmount()
 #endif
 }
 
-static void GetFileCoord(uint8_t fileIndex, uint8_t* x, uint8_t* y)
+static void GetFileCoord(uint16_t fileIndex, uint8_t* x, uint8_t* y)
 {
 	*x = fileIndex / (DEBUG_ROWS - 1) * (FILE_COLUMNWIDTH + 1);
 	*y = 1 + fileIndex % (DEBUG_ROWS - 1);
@@ -60,7 +61,7 @@ static TCHAR* GetFileName(TCHAR* fileName)
 {
 	TCHAR* result = (TCHAR*)_buffer16K_1;
     strncpy(result, _rootFolder, _rootFolderLength);
-	strncpy(result + _rootFolderLength, fileName, FF_MAX_LFN);
+	strncpy(result + _rootFolderLength, fileName, MAX_LFN);
 
     return result;
 }
@@ -68,9 +69,9 @@ static TCHAR* GetFileName(TCHAR* fileName)
 static TCHAR* FileExtension(TCHAR* fileName)
 {
 	TCHAR* result = (TCHAR*)_buffer16K_1;
-	strncpy(result, fileName, FF_MAX_LFN);
+	strncpy(result, fileName, MAX_LFN);
 
-	result[FF_MAX_LFN - 1] = '\0';
+	result[MAX_LFN - 1] = '\0';
 	char* extension = strrchr(result, '.');
     if (extension != nullptr)
     {
@@ -137,8 +138,8 @@ static void SetSelection(uint8_t selectedFile)
 		TCHAR* fileName = GetFileName(_fileNames[selectedFile]);
 
 		// Try to open file with the same name and .SCR extension
-		TCHAR* scrFileName = (TCHAR*)&_buffer16K_1[_rootFolderLength + FF_MAX_LFN + 1];
-		strncpy(scrFileName, fileName, FF_MAX_LFN + 1);
+		TCHAR* scrFileName = (TCHAR*)&_buffer16K_1[_rootFolderLength + MAX_LFN + 1];
+		strncpy(scrFileName, fileName, MAX_LFN + 1);
 		TCHAR* extension = strrchr(scrFileName, '.');
 		if (extension != nullptr)
 		{
@@ -221,16 +222,16 @@ static bool saveSnapshot(const TCHAR* fileName)
 static int fileCompare(const void* a, const void* b)
 {
 	TCHAR* file1 = (TCHAR*)_buffer16K_1;
-	for (int i = 0; i <= FF_MAX_LFN; i++){
+	for (int i = 0; i <= MAX_LFN; i++){
 		file1[i] = tolower(((TCHAR*)a)[i]);
 	}
 
-	TCHAR* file2 = (TCHAR*)&_buffer16K_1[FF_MAX_LFN + 2];
-	for (int i = 0; i <= FF_MAX_LFN; i++){
+	TCHAR* file2 = (TCHAR*)&_buffer16K_1[MAX_LFN + 2];
+	for (int i = 0; i <= MAX_LFN; i++){
 		file2[i] = tolower(((TCHAR*)b)[i]);
 	}
 
-	return strncmp(file1, file2, FF_MAX_LFN + 1);
+	return strncmp(file1, file2, MAX_LFN + 1);
 }
 
 void FileSystemInitialize(fs::FS* fileSystem)
@@ -263,7 +264,7 @@ bool saveSnapshotSetup(const char* path)
 	DebugScreen->PrintAt(0, 2, "Enter file name:");
 	DebugScreen->SetCursorPosition(0, 3);
 	DebugScreen->ShowCursor();
-	memset(_snapshotName, 0, FF_MAX_LFN + 1);
+	memset(_snapshotName, 0, MAX_LFN + 1);
 	_savingSnapshot = true;
 
 	return true;
@@ -356,7 +357,7 @@ bool loadSnapshotSetup(const char* path)
 
 	DebugScreen->SetAttribute(0x3F10); // white on blue
 	DebugScreen->Clear();
-	*Screen->BorderColor = 0x10;
+	//*Screen->BorderColor = 0x10;
 
 	showTitle("Load snapshot. ENTER, ESC, \x18, \x19, \x1A, \x1B"); // ↑, ↓, →, ←
 
@@ -395,7 +396,7 @@ bool loadSnapshotSetup(const char* path)
                 continue;
             }
 
-			strncpy(_fileNames[fileIndex], file.name() + _rootFolderLength, FF_MAX_LFN + 1);
+			strncpy(_fileNames[fileIndex], file.name() + _rootFolderLength, MAX_LFN + 1);
 			_fileCount++;
             fileIndex++;
 		}
@@ -406,22 +407,25 @@ bool loadSnapshotSetup(const char* path)
         _ay3_8912.ResumeSound();
 	}
 
+	Serial.printf("before sort\r\n");
+
 	// Sort files alphabetically
 	if (_fileCount > 0)
 	{
-		qsort(_fileNames, _fileCount, FF_MAX_LFN + 1, fileCompare);
+		//qsort(_fileNames, _fileCount, MAX_LFN + 1, fileCompare);
+	Serial.printf("file count=%d\r\n", _fileCount);
 
         for (int y = 1; y < DEBUG_ROWS; y++)
         {
             DebugScreen->PrintAt(FILE_COLUMNWIDTH, y, "\xB3"); // │
-            DebugScreen->PrintAt(FILE_COLUMNWIDTH * 2 + 1, y, "\xB3"); // │
+            //DebugScreen->PrintAt(FILE_COLUMNWIDTH * 2 + 1, y, "\xB3"); // │
         }
 
         uint8_t x, y;
         for (int fileIndex = 0; fileIndex < _fileCount; fileIndex++)
         {
             GetFileCoord(fileIndex, &x, &y);
-            DebugScreen->PrintAt(x + 1, y, TruncateFileName(_fileNames[fileIndex]));
+            //DebugScreen->PrintAt(x + 1, y, TruncateFileName(_fileNames[fileIndex]));
         }
 
         SetSelection(_selectedFile);	

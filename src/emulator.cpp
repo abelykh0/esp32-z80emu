@@ -24,10 +24,10 @@ uint8_t _buffer16K_2[0x4000];
 static SpectrumScreenData _spectrumScreenData;
 static VideoController _screen(&_spectrumScreenData);
 VideoController* Screen = &_screen;
-ScreenArea DebugScreen(Screen, 
+ScreenArea HelpScreen(Screen, 
 	1, SPECTRUM_WIDTH_WITH_BORDER, 
 	SPECTRUM_HEIGHT_WITH_BORDER + 2, SCREEN_HEIGHT - (SPECTRUM_HEIGHT_WITH_BORDER + 2));
-ScreenArea DebugScreenRight(Screen, 
+ScreenArea DebugScreen(Screen, 
 	SPECTRUM_WIDTH_WITH_BORDER + 2, SCREEN_WIDTH - (SPECTRUM_WIDTH_WITH_BORDER + 2), 
 	1, SCREEN_HEIGHT - 2);
 
@@ -57,30 +57,30 @@ void saveState()
 
 void clearHelp()
 {
-	DebugScreen.HideCursor();
-	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
-	DebugScreen.Clear();
+	//DebugScreen.HideCursor();
+	//DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
+	//DebugScreen.Clear();
 
 	_helpShown = false;
 }
 
 void showHelp()
 {
-	DebugScreen.HideCursor();
-	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
-	DebugScreen.Clear();
+	HelpScreen.HideCursor();
+	HelpScreen.SetAttribute(DEBUG_BAND_COLORS);
+	HelpScreen.Clear();
 
     int y = 0;
-	DebugScreen.PrintAt(0, y++, "F1  - show / hide help");
+	HelpScreen.PrintAt(0, y++, "F1  - show / hide help");
 #ifdef SDCARD
-	DebugScreen.PrintAt(0, y++, "F2  - save snapshot to SD card");
-	DebugScreen.PrintAt(0, y++, "F3  - load snapshot from SD card");
+	HelpScreen.PrintAt(0, y++, "F2  - save snapshot to SD card");
+	HelpScreen.PrintAt(0, y++, "F3  - load snapshot from SD card");
 #else
-	DebugScreen.PrintAt(0, y++, "F3  - load snapshot from flash");
+	HelpScreen.PrintAt(0, y++, "F3  - load snapshot from flash");
 #endif
-	DebugScreen.PrintAt(0, y++, "F5  - reset");
-	DebugScreen.PrintAt(0, y++, "F10 - show keyboard layout");
-	DebugScreen.PrintAt(0, y++, "F12 - show registers");
+	HelpScreen.PrintAt(0, y++, "F5  - reset");
+	HelpScreen.PrintAt(0, y++, "F10 - show keyboard layout");
+	HelpScreen.PrintAt(0, y++, "F12 - show registers");
 
 	_helpShown = true;
 }
