@@ -26,8 +26,8 @@ void ScreenArea::Clear()
 
 void ScreenArea::SetAttribute(uint16_t attribute)
 {
-	this->backColor = attribute >> 8;
-	this->foreColor = attribute & 0xFF;
+	this->foreColor = attribute >> 8;
+	this->backColor = attribute & 0xFF;
 }
 
 void ScreenArea::PrintAt(uint8_t x, uint8_t y, const char* str)

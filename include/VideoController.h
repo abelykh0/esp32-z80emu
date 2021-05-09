@@ -42,7 +42,7 @@ public:
 	void Print(const char* str);
     void print(char* str, uint8_t foreColor, uint8_t backColor);
 	void SetCursorPosition(uint8_t x, uint8_t y);
-    void ShowScreenshot(uint8_t borderColor);
+    void ShowScreenshot();
     void ShowScreenshot(const uint8_t* screenshot, uint8_t borderColor);
 
     // Mode 2

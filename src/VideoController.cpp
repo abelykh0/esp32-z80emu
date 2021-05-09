@@ -295,7 +295,7 @@ void VideoController::ShowScreenshot(const uint8_t* screenshot, uint8_t borderCo
     // Border
 }
 
-void VideoController::ShowScreenshot(uint8_t borderColor)
+void VideoController::ShowScreenshot()
 {
     uint8_t* pixelData = this->Settings->Pixels;
     uint16_t* attrData = this->Settings->Attributes;
@@ -326,7 +326,7 @@ void VideoController::ShowScreenshot(uint8_t borderColor)
 					}
 
 					*spectrumAttributes = attributeValue;
-					//spectrumAttributes++;
+					spectrumAttributes++;
 				}
 			}
         

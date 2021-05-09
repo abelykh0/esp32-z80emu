@@ -108,7 +108,7 @@ uint16_t CompressPage(uint8_t* page, uint8_t* destMemory);
 void ReadState(FileHeader* header);
 void SaveState(FileHeader* header);
 void GetPageInfo(uint8_t* buffer, bool is128Mode, uint8_t pagingState, int8_t* pageNumber, uint16_t* pageSize);
-void ShowScreenshot(uint8_t* buffer);
+void ShowScreenshot(uint8_t* buffer, uint8_t borderColor);
 
 bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4000])
 {
@@ -466,7 +466,8 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 
         uint8_t* buffer2 = &buffer1[0x2000];
         DecompressPage(buffer1, 0x1B00, isCompressed, 0x1B00, buffer2);
-        ShowScreenshot(buffer2);
+    	uint8_t borderColor = (header->Flags1 & 0x0E) >> 1;
+        ShowScreenshot(buffer2, borderColor);
     }
     else
     {
@@ -538,7 +539,8 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
                 }
 
                 DecompressPage(buffer1, pageSize, isCompressed, 0x1B00, buffer2);
-                ShowScreenshot(buffer2);
+            	uint8_t borderColor = (header->Flags1 & 0x0E) >> 1;
+                ShowScreenshot(buffer2, borderColor);
 
                 return true;
             }
@@ -584,7 +586,7 @@ bool zx::LoadScreenshot(File file, uint8_t buffer1[0x4000])
         return false;
     }
 
-    ShowScreenshot(buffer1);
+    ShowScreenshot(buffer1, 0);
 
 	return true;
 }
@@ -853,7 +855,7 @@ uint16_t CompressPage(uint8_t* page, uint8_t* destMemory)
 	return size;
 }
 
-void ShowScreenshot(uint8_t* buffer)
+void ShowScreenshot(uint8_t* buffer, uint8_t borderColor)
 {
-    //Environment.Screen->ShowScreenshot(buffer, );
+    Environment.Screen->ShowScreenshot(buffer, borderColor);
 }

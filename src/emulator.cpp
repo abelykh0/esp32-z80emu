@@ -50,7 +50,7 @@ void startKeyboard()
 
 void saveState()
 {
-	//Screen->ShowScreenshot();
+	Screen->ShowScreenshot();
 
 	Screen->_mode = 1;
 }
@@ -129,7 +129,7 @@ bool showKeyboardLoop()
 void showKeyboardSetup()
 {
 	Screen->ShowScreenshot(spectrumKeyboard, 0);
-	saveState();
+	Screen->_mode = 1;
 	_showingKeyboard = true;
 /*
 	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
