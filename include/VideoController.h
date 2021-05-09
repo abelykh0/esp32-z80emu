@@ -7,6 +7,9 @@
 #include "Settings.h"
 #include "SpectrumScreenData.h"
 
+#define SPECTRUM_WIDTH_WITH_BORDER  36
+#define SPECTRUM_HEIGHT_WITH_BORDER 26
+
 using namespace std;
 
 class VideoController : public fabgl::VGADirectController

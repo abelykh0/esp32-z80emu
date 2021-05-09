@@ -5,8 +5,6 @@
 
 #define BACK_COLOR 0x10
 #define FORE_COLOR 0x3F
-#define SPECTRUM_WIDTH_WITH_BORDER  36
-#define SPECTRUM_HEIGHT_WITH_BORDER 26
 
 extern uint8_t* GetPixelPointer(uint8_t* pixels, uint16_t line);
 extern "C" void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine);
