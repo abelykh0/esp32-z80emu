@@ -6,19 +6,17 @@
 #define BACK_COLOR 0x10
 #define FORE_COLOR 0x3F
 
-extern uint8_t* GetPixelPointer(uint8_t* pixels, uint16_t line);
+extern uint8_t* IRAM_ATTR GetPixelPointer(uint8_t* pixels, uint16_t line);
 extern "C" void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine);
 
 VideoController::VideoController(SpectrumScreenData* screenData)
 {
     this->Settings = screenData;
-	this->_spectrumAttributes = (uint32_t*)heap_caps_malloc(SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8 * 4, MALLOC_CAP_32BIT);
+	this->_spectrumAttributes = (uint32_t*)heap_caps_malloc(SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8 * 2 * 4, MALLOC_CAP_32BIT);
 }
 
 void VideoController::Start(char const* modeline)
 {
-    Serial.printf("==%d\r\n", (uint32_t)this->_spectrumAttributes);
-
     this->_fontData = (uint8_t*)font8x8;
 
     // "default" attribute (white on blue)
@@ -260,6 +258,7 @@ void VideoController::ShowScreenshot(const uint8_t* screenshot, uint8_t borderCo
     uint8_t* pixelData = (uint8_t*)screenshot;
     uint8_t* attrData = (uint8_t*)screenshot + SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8;
 	uint32_t* spectrumAttributes = this->_spectrumAttributes;
+    Serial.printf("==%d\r\n", (uint32_t)this->_spectrumAttributes);
     for (int y = 0; y < SPECTRUM_HEIGHT; y++)
     {
         for (int x = 0; x < SPECTRUM_WIDTH; x++)
@@ -301,6 +300,7 @@ void VideoController::ShowScreenshot(uint8_t borderColor)
     uint8_t* pixelData = this->Settings->Pixels;
     uint16_t* attrData = this->Settings->Attributes;
 	uint32_t* spectrumAttributes = this->_spectrumAttributes;
+    Serial.printf("==%d\r\n", (uint32_t)this->_spectrumAttributes);
     for (int y = 0; y < SPECTRUM_HEIGHT; y++)
     {
         for (int x = 0; x < SPECTRUM_WIDTH; x++)
@@ -326,7 +326,7 @@ void VideoController::ShowScreenshot(uint8_t borderColor)
 					}
 
 					*spectrumAttributes = attributeValue;
-					spectrumAttributes++;
+					//spectrumAttributes++;
 				}
 			}
         

@@ -26,9 +26,9 @@ static VideoController _screen(&_spectrumScreenData);
 VideoController* Screen = &_screen;
 ScreenArea HelpScreen(Screen, 
 	1, SPECTRUM_WIDTH_WITH_BORDER, 
-	SPECTRUM_HEIGHT_WITH_BORDER + 2, SCREEN_HEIGHT - (SPECTRUM_HEIGHT_WITH_BORDER + 2));
+	SPECTRUM_HEIGHT_WITH_BORDER + 2, SCREEN_HEIGHT - (SPECTRUM_HEIGHT_WITH_BORDER + 3));
 ScreenArea DebugScreen(Screen, 
-	SPECTRUM_WIDTH_WITH_BORDER + 2, SCREEN_WIDTH - (SPECTRUM_WIDTH_WITH_BORDER + 2), 
+	SPECTRUM_WIDTH_WITH_BORDER + 2, SCREEN_WIDTH - (SPECTRUM_WIDTH_WITH_BORDER + 3), 
 	1, SCREEN_HEIGHT - 2);
 
 // Z80State
@@ -128,6 +128,7 @@ bool showKeyboardLoop()
 
 void showKeyboardSetup()
 {
+	Screen->ShowScreenshot(spectrumKeyboard, 0);
 	saveState();
 	_showingKeyboard = true;
 /*
@@ -135,7 +136,6 @@ void showKeyboardSetup()
 	DebugScreen.Clear();
 	DebugScreen.PrintAlignCenter(2, "Press any key to return");
 */
-	//Screen->ShowScreenshot(spectrumKeyboard, 0);
 }
 
 void showTitle(const char* title)

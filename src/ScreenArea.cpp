@@ -13,12 +13,21 @@ ScreenArea::ScreenArea(VideoController* videoController,
 
 void ScreenArea::Clear()
 {
-    // TODO
+    for (int y = this->_yOffset; y < this->_yOffset + this->_Height; y++)
+    {
+        for (int x = this->_xOffset; x < this->_xOffset + this->_Width; x++)
+        {
+            int i = y * SCREEN_WIDTH + x;
+            this->_videoController->Characters[i] = ' ';
+            this->_videoController->Attributes[i] = this->_videoController->_defaultAttribute;
+        }
+    }
 }
 
 void ScreenArea::SetAttribute(uint16_t attribute)
 {
-	//this->_defaultAttribute
+	this->backColor = attribute >> 8;
+	this->foreColor = attribute & 0xFF;
 }
 
 void ScreenArea::PrintAt(uint8_t x, uint8_t y, const char* str)
@@ -57,7 +66,7 @@ void ScreenArea::HideCursor()
 
 void ScreenArea::Print(const char* str)
 {
-	this->_videoController->Print((char*)str);
+	this->_videoController->print((char*)str, this->foreColor, this->backColor);
 }
 
 void ScreenArea::SetCursorPosition(uint8_t x, uint8_t y)

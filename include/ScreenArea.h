@@ -11,6 +11,8 @@ private:
     uint16_t _yOffset;
     uint16_t _Width;
     uint16_t _Height;
+    uint8_t foreColor = 0xFF;
+    uint8_t backColor = 0xFF;
 
 public:
     uint16_t cursor_x = 0;

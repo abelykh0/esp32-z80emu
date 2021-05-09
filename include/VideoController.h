@@ -40,6 +40,7 @@ public:
 
     // Mode 1
 	void Print(const char* str);
+    void print(char* str, uint8_t foreColor, uint8_t backColor);
 	void SetCursorPosition(uint8_t x, uint8_t y);
     void ShowScreenshot(uint8_t borderColor);
     void ShowScreenshot(const uint8_t* screenshot, uint8_t borderColor);
@@ -54,7 +55,6 @@ private:
     uint32_t* CreateAttribute(uint8_t foreColor, uint8_t backColor);
     void InitAttribute(uint32_t* attribute, uint8_t foreColor, uint8_t backColor);
     void cursorNext();
-    void print(char* str, uint8_t foreColor, uint8_t backColor);
     void print(char* str);
     void print(const char* str, uint8_t foreColor, uint8_t backColor);
     void printChar(uint16_t x, uint16_t y, uint16_t ch);
