@@ -24,7 +24,7 @@ uint8_t _buffer16K_2[0x4000];
 static SpectrumScreenData _spectrumScreenData;
 static VideoController _screen(&_spectrumScreenData);
 VideoController* Screen = &_screen;
-ScreenArea DebugScreen(Screen, 42, SCREEN_WIDTH - 43, 1, SCREEN_HEIGHT - 2);
+ScreenArea DebugScreen(Screen, 38, SCREEN_WIDTH - 38, 1, SCREEN_HEIGHT - 2);
 
 // Z80State
 Z80Environment Environment(Screen);
@@ -130,8 +130,7 @@ void showKeyboardSetup()
 	DebugScreen.Clear();
 	DebugScreen.PrintAlignCenter(2, "Press any key to return");
 */
-	//Screen->ShowScreenshot(spectrumKeyboard);
-	//*Screen->BorderColor = 0; // Black
+	Screen->ShowScreenshot(spectrumKeyboard, 0);
 }
 
 void showTitle(const char* title)

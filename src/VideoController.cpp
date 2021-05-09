@@ -19,6 +19,8 @@ VideoController::VideoController(SpectrumScreenData* screenData)
 
 void VideoController::Start(char const* modeline)
 {
+    Serial.printf("==%d\r\n", (uint32_t)this->_spectrumAttributes);
+
     this->_fontData = (uint8_t*)font8x8;
 
     // "default" attribute (white on blue)
@@ -61,17 +63,18 @@ void VideoController::prepareDebugScreen()
     }
 
     // Border around Spectrum screen
-    this->printChar(SPECTRUM_WIDTH_WITH_BORDER + 1, 0, '\xCB');  // ╦
-    this->printChar(0, SPECTRUM_HEIGHT_WITH_BORDER + 1, '\xCC'); // ╠
-    this->printChar(SPECTRUM_WIDTH_WITH_BORDER + 1, SPECTRUM_HEIGHT_WITH_BORDER + 1, '\xBC'); // ╝
     for (int i = 1; i <= SPECTRUM_WIDTH_WITH_BORDER; i++)
     {
     	this->printChar(i, SPECTRUM_HEIGHT_WITH_BORDER + 1, '\x0CD'); // ═
     }
-    for (int i = 1; i <= SPECTRUM_HEIGHT_WITH_BORDER; i++)
+    for (int i = 1; i < SCREEN_HEIGHT - 1; i++)
     {
     	this->printChar(SPECTRUM_WIDTH_WITH_BORDER + 1, i, '\x0BA'); // ║
     }
+    this->printChar(SPECTRUM_WIDTH_WITH_BORDER + 1, 0, '\xCB');  // ╦
+    this->printChar(0, SPECTRUM_HEIGHT_WITH_BORDER + 1, '\xCC'); // ╠
+    this->printChar(SPECTRUM_WIDTH_WITH_BORDER + 1, SPECTRUM_HEIGHT_WITH_BORDER + 1, '\xB9'); // ╣
+    this->printChar(SPECTRUM_WIDTH_WITH_BORDER + 1, SCREEN_HEIGHT - 1, '\xCA'); // ╩
 
     // Spectrum border
     for (int i = 1; i <= SPECTRUM_WIDTH; i++)
@@ -255,6 +258,7 @@ uint8_t IRAM_ATTR VideoController::createRawPixel(uint8_t color)
 
 void VideoController::ShowScreenshot(const uint8_t* screenshot, uint8_t borderColor)
 {
+    // Screenshot
     uint8_t* pixelData = (uint8_t*)screenshot;
     uint8_t* attrData = (uint8_t*)screenshot + SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8;
 	uint32_t* spectrumAttributes = this->_spectrumAttributes;
@@ -290,6 +294,8 @@ void VideoController::ShowScreenshot(const uint8_t* screenshot, uint8_t borderCo
             attrData++;    
         }
     }
+
+    // Border
 }
 
 void VideoController::ShowScreenshot(uint8_t borderColor)
