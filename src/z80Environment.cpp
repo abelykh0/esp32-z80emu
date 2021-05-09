@@ -20,10 +20,7 @@ Z80Environment::Z80Environment(VideoController* spectrumScreen)
     : BorderColor(this)
 {
     this->Screen = spectrumScreen;
-
-    SpectrumScreenData* settings = this->Screen->Settings;
-    settings->Attributes = this->_mainScreenData.Attributes;
-    settings->Pixels = this->_mainScreenData.Pixels;
+    this->Screen->BorderColor = &this->_borderColor;
 
     this->Rom[0] = &this->_rom0;
     this->Rom[1] = &this->_rom1;
@@ -53,6 +50,9 @@ void Z80Environment::Initialize()
 
     this->_mainScreenData.Pixels = _ram5Pixels;
     this->_mainScreenData.Attributes = _ram5Attributes;
+    SpectrumScreenData* settings = this->Screen->Settings;
+    settings->Attributes = this->_mainScreenData.Attributes;
+    settings->Pixels = this->_mainScreenData.Pixels;
     this->_ram5.Initialize(&this->_mainScreenData, _ram5Buffer);
 
 #ifdef ZX128K

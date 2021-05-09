@@ -3,34 +3,18 @@
 #include "font8x8.h"
 #include "z80Environment.h"
 
-extern uint8_t* GetPixelPointer(uint8_t* pixels, uint16_t line);
-
 #define BACK_COLOR 0x10
 #define FORE_COLOR 0x3F
+#define SPECTRUM_WIDTH_WITH_BORDER  36
+#define SPECTRUM_HEIGHT_WITH_BORDER 26
 
+extern uint8_t* GetPixelPointer(uint8_t* pixels, uint16_t line);
 extern "C" void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine);
 
 VideoController::VideoController(SpectrumScreenData* screenData)
 {
     this->Settings = screenData;
-}
-
-void VideoController::InitAttribute(uint32_t* attribute, uint8_t foreColor, uint8_t backColor)
-{
-	for (uint8_t i = 0; i < 16; i++)
-	{
-		uint8_t value = i;
-        uint32_t attributeValue;
-		for (uint8_t bit = 0; bit < 4; bit++)
-		{
-            VGA_PIXELINROW(((uint8_t*)&attributeValue), bit) = 
-                this->createRawPixel(value & 0x08 ?  foreColor : backColor);
-			value <<= 1;
-		}
-        
-        *attribute = attributeValue;
-        attribute++;
-	}
+	this->_spectrumAttributes = (uint32_t*)heap_caps_malloc(SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8 * 4, MALLOC_CAP_32BIT);
 }
 
 void VideoController::Start(char const* modeline)
@@ -54,6 +38,81 @@ void VideoController::Start(char const* modeline)
     this->setResolution(modeline);
 
     this->InitAttribute(this->_defaultAttribute, FORE_COLOR, BACK_COLOR);
+
+    this->prepareDebugScreen();
+}   
+
+void VideoController::prepareDebugScreen()
+{
+    // Display frame
+    this->printChar(0, 0, '\xC9'); // ╔
+    this->printChar(SCREEN_WIDTH - 1, 0, '\xBB');  // ╗
+    this->printChar(0, SCREEN_HEIGHT - 1, '\xC8'); // ╚
+    this->printChar(SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1, '\xBC'); // ╝
+    for (int i = 1; i < SCREEN_WIDTH - 1; i++)
+    {
+    	this->printChar(i, 0, '\x0CD'); // ═
+    	this->printChar(i, SCREEN_HEIGHT - 1, '\x0CD'); // ═
+    }
+    for (int i = 1; i < SCREEN_HEIGHT - 1; i++)
+    {
+    	this->printChar(0, i, '\x0BA'); // ║
+    	this->printChar(SCREEN_WIDTH - 1, i, '\x0BA'); // ║
+    }
+
+    // Border around Spectrum screen
+    this->printChar(SPECTRUM_WIDTH_WITH_BORDER + 1, 0, '\xCB');  // ╦
+    this->printChar(0, SPECTRUM_HEIGHT_WITH_BORDER + 1, '\xCC'); // ╠
+    this->printChar(SPECTRUM_WIDTH_WITH_BORDER + 1, SPECTRUM_HEIGHT_WITH_BORDER + 1, '\xBC'); // ╝
+    for (int i = 1; i <= SPECTRUM_WIDTH_WITH_BORDER; i++)
+    {
+    	this->printChar(i, SPECTRUM_HEIGHT_WITH_BORDER + 1, '\x0CD'); // ═
+    }
+    for (int i = 1; i <= SPECTRUM_HEIGHT_WITH_BORDER; i++)
+    {
+    	this->printChar(SPECTRUM_WIDTH_WITH_BORDER + 1, i, '\x0BA'); // ║
+    }
+
+    // Spectrum border
+    for (int i = 1; i <= SPECTRUM_WIDTH; i++)
+    {
+    	this->printChar(i, 1, ' ');
+    	this->printChar(i, SPECTRUM_HEIGHT, ' ');
+    }
+    for (int i = 1; i <= SPECTRUM_HEIGHT; i++)
+    {
+    	this->printChar(1, i, ' ');
+    	this->printChar(2, i, ' ');
+    	this->printChar(SPECTRUM_WIDTH - 1, i, ' ');
+    	this->printChar(SPECTRUM_WIDTH, i, ' ');
+    }
+
+    // Spectrum content
+    for (int y = 2; y < SPECTRUM_HEIGHT_WITH_BORDER; y++)
+    {
+        for (int x = 3; x < SPECTRUM_WIDTH_WITH_BORDER - 1; x++)
+        {
+            this->printChar(x, y, 0);
+        }
+    }
+}
+
+void VideoController::InitAttribute(uint32_t* attribute, uint8_t foreColor, uint8_t backColor)
+{
+	for (uint8_t i = 0; i < 16; i++)
+	{
+		uint8_t value = i;
+        uint32_t attributeValue;
+		for (uint8_t bit = 0; bit < 4; bit++)
+		{
+            VGA_PIXELINROW(((uint8_t*)&attributeValue), bit) = 
+                this->createRawPixel(value & 0x08 ?  foreColor : backColor);
+			value <<= 1;
+		}
+        
+        *attribute = attributeValue;
+        attribute++;
+	}
 }
 
 void VideoController::Print(const char* str)
@@ -87,51 +146,6 @@ void VideoController::setAttribute(uint8_t x, uint8_t y, uint8_t foreColor, uint
     }
 
     this->Attributes[y * SCREEN_WIDTH + x] = attribute;
-}
-
-void VideoController::Clear()
-{
-    // TODO
-}
-
-void VideoController::SetAttribute(uint16_t attribute)
-{
-	//this->_defaultAttribute
-}
-
-void VideoController::PrintAt(uint8_t x, uint8_t y, const char* str)
-{
-    this->SetCursorPosition(x, y);
-    this->Print(str);
-}
-
-void VideoController::PrintAlignCenter(uint8_t y, const char *str)
-{
-    // TODO
-    //uint8_t leftX = (this->Settings->TextColumns - strlen(str)) / 2;
-    //this->PrintAt(leftX, y, str);
-}
-
-void VideoController::ShowCursor()
-{
-    /*
-    if (!this->_isCursorVisible)
-    {
-    	this->_isCursorVisible = true;
-    	this->InvertColor();
-    }
-    */
-}
-
-void VideoController::HideCursor()
-{
-    /*
-    if (this->_isCursorVisible)
-    {
-    	this->_isCursorVisible = false;
-    	this->InvertColor();
-    }
-    */
 }
 
 void VideoController::printChar(uint16_t x, uint16_t y, uint16_t ch)
@@ -239,14 +253,82 @@ uint8_t IRAM_ATTR VideoController::createRawPixel(uint8_t color)
     return m_HVSync | color;
 }
 
-void VideoController::ShowScreenshot(const uint8_t* screenshot)
+void VideoController::ShowScreenshot(const uint8_t* screenshot, uint8_t borderColor)
 {
-	memcpy(this->Settings->Pixels, screenshot, SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8);
-    uint8_t* attributes = (uint8_t*)screenshot + SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8;
-	for (uint32_t i = 0; i < SPECTRUM_WIDTH * SPECTRUM_HEIGHT; i++)
-	{
-		this->Settings->Attributes[i] = Z80Environment::FromSpectrumColor(attributes[i]);
-	}
+    uint8_t* pixelData = (uint8_t*)screenshot;
+    uint8_t* attrData = (uint8_t*)screenshot + SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8;
+	uint32_t* spectrumAttributes = this->_spectrumAttributes;
+    for (int y = 0; y < SPECTRUM_HEIGHT; y++)
+    {
+        for (int x = 0; x < SPECTRUM_WIDTH; x++)
+        {
+			this->Attributes[(y + this->_topOffset / 8) * SCREEN_WIDTH + x + (this->_leftOffset / 8)] = spectrumAttributes;
+			uint16_t colors = Z80Environment::FromSpectrumColor(*attrData);
+			uint8_t foreColor = colors >> 8;
+			uint8_t backColor = colors & 0xFF;
+
+            for (int y2 = 0; y2 < 8; y2++)
+            {
+				uint8_t* charPixels = GetPixelPointer(pixelData, y * 8 + y2) + x;
+				uint8_t pixels = *charPixels;
+
+				uint32_t attributeValue;
+				for (uint8_t halfByte = 0; halfByte < 2; halfByte++)
+				{
+					for (uint8_t bit = 0; bit < 4; bit++)
+					{
+						VGA_PIXELINROW(((uint8_t*)&attributeValue), bit) = 
+							this->createRawPixel(pixels & 0x80 ?  foreColor : backColor);
+						pixels <<= 1;
+					}
+
+					*spectrumAttributes = attributeValue;
+					spectrumAttributes++;
+				}
+			}
+        
+            attrData++;    
+        }
+    }
+}
+
+void VideoController::ShowScreenshot(uint8_t borderColor)
+{
+    uint8_t* pixelData = this->Settings->Pixels;
+    uint16_t* attrData = this->Settings->Attributes;
+	uint32_t* spectrumAttributes = this->_spectrumAttributes;
+    for (int y = 0; y < SPECTRUM_HEIGHT; y++)
+    {
+        for (int x = 0; x < SPECTRUM_WIDTH; x++)
+        {
+			this->Attributes[(y + this->_topOffset / 8) * SCREEN_WIDTH + x + (this->_leftOffset / 8)] = spectrumAttributes;
+			uint16_t colors = *attrData;
+			uint8_t foreColor = colors >> 8;
+			uint8_t backColor = colors & 0xFF;
+
+            for (int y2 = 0; y2 < 8; y2++)
+            {
+				uint8_t* charPixels = GetPixelPointer(pixelData, y * 8 + y2) + x;
+				uint8_t pixels = *charPixels;
+
+				uint32_t attributeValue;
+				for (uint8_t halfByte = 0; halfByte < 2; halfByte++)
+				{
+					for (uint8_t bit = 0; bit < 4; bit++)
+					{
+						VGA_PIXELINROW(((uint8_t*)&attributeValue), bit) = 
+							this->createRawPixel(pixels & 0x80 ?  foreColor : backColor);
+						pixels <<= 1;
+					}
+
+					*spectrumAttributes = attributeValue;
+					spectrumAttributes++;
+				}
+			}
+        
+            attrData++;    
+        }
+    }
 }
 
 uint8_t* IRAM_ATTR GetPixelPointer(uint8_t* pixels, uint16_t line)
@@ -264,6 +346,10 @@ uint8_t* IRAM_ATTR GetPixelPointer(uint8_t* pixels, uint16_t line)
 void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)
 {
     auto controller = static_cast<VideoController*>(arg);
+    if (scanLine == 1)
+    {
+        controller->Frames++;
+    }
 
     uint8_t mode = controller->_mode;
     if (mode == 1)
@@ -298,17 +384,17 @@ void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)
         // Spectrum screen
 
         unsigned scaledLine = scanLine / 2;
+        uint16_t* dest16 = (uint16_t*)dest;
+
         if (scaledLine < controller->_borderHeight
-            || scaledLine > SPECTRUM_HEIGHT * 8 + controller->_borderHeight)
+            || scaledLine >= SPECTRUM_HEIGHT * 8 + controller->_borderHeight)
         {
-            memset(dest, controller->createRawPixel(controller->BorderColor), SCREEN_WIDTH * 8);
+            memset(dest16, controller->createRawPixel(*controller->BorderColor), SCREEN_WIDTH * 8);
         }
         else
         {
-            uint16_t* dest16 = (uint16_t*)dest;
-
             // Border on the left
-            memset(dest, controller->createRawPixel(controller->BorderColor), controller->_borderWidth);
+            memset(dest16, controller->createRawPixel(*controller->BorderColor), controller->_borderWidth);
             dest16 += controller->_borderWidth;
 
             // Screen pixels
@@ -355,7 +441,7 @@ void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)
             }
 
             // Border on the right
-            memset(dest16, controller->createRawPixel(controller->BorderColor), controller->_borderWidth);
+            memset(dest16, controller->createRawPixel(*controller->BorderColor), controller->_borderWidth);
         }
     }
 }

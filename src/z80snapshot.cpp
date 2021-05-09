@@ -855,5 +855,5 @@ uint16_t CompressPage(uint8_t* page, uint8_t* destMemory)
 
 void ShowScreenshot(uint8_t* buffer)
 {
-    Environment.Screen->ShowScreenshot(buffer);
+    //Environment.Screen->ShowScreenshot(buffer, );
 }

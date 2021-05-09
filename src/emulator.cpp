@@ -12,6 +12,7 @@
 #include "keyboard.h"
 #include "z80snapshot.h"
 #include "main_ROM.h"
+#include "ScreenArea.h"
 
 using namespace fabgl;
 
@@ -23,7 +24,7 @@ uint8_t _buffer16K_2[0x4000];
 static SpectrumScreenData _spectrumScreenData;
 static VideoController _screen(&_spectrumScreenData);
 VideoController* Screen = &_screen;
-VideoController* DebugScreen = Screen;
+ScreenArea DebugScreen(Screen, 42, SCREEN_WIDTH - 43, 1, SCREEN_HEIGHT - 2);
 
 // Z80State
 Z80Environment Environment(Screen);
@@ -44,34 +45,37 @@ void startKeyboard()
 
 void saveState()
 {
+	//Screen->ShowScreenshot();
+
+	Screen->_mode = 1;
 }
 
 void clearHelp()
 {
-	DebugScreen->HideCursor();
-	DebugScreen->SetAttribute(DEBUG_BAND_COLORS);
-	DebugScreen->Clear();
+	DebugScreen.HideCursor();
+	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
+	DebugScreen.Clear();
 
 	_helpShown = false;
 }
 
 void showHelp()
 {
-	DebugScreen->HideCursor();
-	DebugScreen->SetAttribute(DEBUG_BAND_COLORS);
-	DebugScreen->Clear();
+	DebugScreen.HideCursor();
+	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
+	DebugScreen.Clear();
 
     int y = 0;
-	DebugScreen->PrintAt(0, y++, "F1  - show / hide help");
+	DebugScreen.PrintAt(0, y++, "F1  - show / hide help");
 #ifdef SDCARD
-	DebugScreen->PrintAt(0, y++, "F2  - save snapshot to SD card");
-	DebugScreen->PrintAt(0, y++, "F3  - load snapshot from SD card");
+	DebugScreen.PrintAt(0, y++, "F2  - save snapshot to SD card");
+	DebugScreen.PrintAt(0, y++, "F3  - load snapshot from SD card");
 #else
-	DebugScreen->PrintAt(0, y++, "F3  - load snapshot from flash");
+	DebugScreen.PrintAt(0, y++, "F3  - load snapshot from flash");
 #endif
-	DebugScreen->PrintAt(0, y++, "F5  - reset");
-	DebugScreen->PrintAt(0, y++, "F10 - show keyboard layout");
-	DebugScreen->PrintAt(0, y++, "F12 - show registers");
+	DebugScreen.PrintAt(0, y++, "F5  - reset");
+	DebugScreen.PrintAt(0, y++, "F10 - show keyboard layout");
+	DebugScreen.PrintAt(0, y++, "F12 - show registers");
 
 	_helpShown = true;
 }
@@ -90,6 +94,7 @@ void restoreHelp()
 
 void restoreState(bool restoreScreen)
 {
+	Screen->_mode = 2;
 	if (restoreScreen)
 	{
 		// not used currently
@@ -120,42 +125,42 @@ void showKeyboardSetup()
 {
 	saveState();
 	_showingKeyboard = true;
-
-	DebugScreen->SetAttribute(DEBUG_BAND_COLORS);
-	DebugScreen->Clear();
-	DebugScreen->PrintAlignCenter(2, "Press any key to return");
-
-	Screen->ShowScreenshot(spectrumKeyboard);
-	Screen->BorderColor = 0; // Black
+/*
+	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
+	DebugScreen.Clear();
+	DebugScreen.PrintAlignCenter(2, "Press any key to return");
+*/
+	//Screen->ShowScreenshot(spectrumKeyboard);
+	//*Screen->BorderColor = 0; // Black
 }
 
 void showTitle(const char* title)
 {
-	DebugScreen->SetAttribute(0x3F00); // white on black
-	DebugScreen->PrintAlignCenter(0, title);
-	DebugScreen->SetAttribute(DEBUG_BAND_COLORS);
+	DebugScreen.SetAttribute(0x3F00); // white on black
+	DebugScreen.PrintAlignCenter(0, title);
+	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
 }
 
 void showRegisters()
 {
-	DebugScreen->SetAttribute(DEBUG_BAND_COLORS);
-	DebugScreen->Clear();
+	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
+	DebugScreen.Clear();
 	showTitle("Registers. ESC - clear");
 
     char* buf = (char*)_buffer16K_1;
 
     sprintf(buf, "PC %04x  AF %04x  AF' %04x  I %02x",
         (uint16_t)Z80cpu.PC, (uint16_t)Z80cpu.AF, (uint16_t)Z80cpu.AFx, (uint16_t)Z80cpu.I);
-    DebugScreen->PrintAlignCenter(2, buf);
+    DebugScreen.PrintAlignCenter(2, buf);
     sprintf(buf, "SP %04x  BC %04x  BC' %04x  R %02x",
         (uint16_t)Z80cpu.SP, (uint16_t)Z80cpu.BC, (uint16_t)Z80cpu.BCx, (uint16_t)Z80cpu.R);
-    DebugScreen->PrintAlignCenter(3, buf);
+    DebugScreen.PrintAlignCenter(3, buf);
     sprintf(buf, "IX %04x  DE %04x  DE' %04x  IM %x",
         (uint16_t)Z80cpu.IX, (uint16_t)Z80cpu.DE, (uint16_t)Z80cpu.DEx, (uint16_t)Z80cpu.IM);
-    DebugScreen->PrintAlignCenter(4, buf);
+    DebugScreen.PrintAlignCenter(4, buf);
     sprintf(buf, "IY %04x  HL %04x  HL' %04x      ",
         (uint16_t)Z80cpu.IY, (uint16_t)Z80cpu.HL, (uint16_t)Z80cpu.HLx);
-    DebugScreen->PrintAlignCenter(5, buf);
+    DebugScreen.PrintAlignCenter(5, buf);
 }
 
 void toggleHelp()
@@ -172,9 +177,9 @@ void toggleHelp()
 
 void showErrorMessage(const char* errorMessage)
 {
-	DebugScreen->SetAttribute(0x0310); // red on blue
-	DebugScreen->PrintAlignCenter(2, errorMessage);
-	DebugScreen->SetAttribute(DEBUG_BAND_COLORS);
+	DebugScreen.SetAttribute(0x0310); // red on blue
+	DebugScreen.PrintAlignCenter(2, errorMessage);
+	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
 }
 
 bool ReadRomFromFiles()
@@ -245,6 +250,7 @@ void EmulatorTaskMain(void *unused)
 	startKeyboard();
 	zx_setup(&Environment);
 	Environment.Initialize();
+
     Serial.write("before ReadRomFromFiles()\r\n");
     ReadRomFromFiles();
     Serial.write("after ReadRomFromFiles()\r\n");
@@ -257,7 +263,7 @@ void EmulatorTaskMain(void *unused)
 	while (true)
 	{
 		vTaskDelay(1); // important to avoid task watchdog timeouts
-//continue;
+
 		if (showKeyboardLoop())
 		{
 			continue;

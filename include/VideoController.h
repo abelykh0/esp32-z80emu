@@ -22,12 +22,12 @@ public:
     uint32_t** Attributes;
     uint16_t _leftOffset = 24; 
     uint16_t _topOffset = 16;
-    uint16_t cursor_x = 0;
-    uint16_t cursor_y = 0;
+    uint8_t cursor_x = 0;
+    uint8_t cursor_y = 0;
 
     // Mode 2
     SpectrumScreenData* Settings;
-    uint8_t  BorderColor;
+    uint8_t* BorderColor;
     uint16_t _borderWidth = 32; 
     uint16_t _borderHeight = 24;
     uint32_t Frames = 0;
@@ -36,22 +36,17 @@ public:
     void Start(char const* modeline);
 
     // Mode 1
-	void Clear();
-	void SetAttribute(uint16_t attribute);
-	void SetCursorPosition(uint8_t x, uint8_t y);
-	void ShowCursor();
-	void HideCursor();
 	void Print(const char* str);
-	void PrintAt(uint8_t x, uint8_t y, const char* str);
-	void PrintAlignRight(uint8_t y, const char *str);
-	void PrintAlignCenter(uint8_t y, const char *str);
+	void SetCursorPosition(uint8_t x, uint8_t y);
+    void ShowScreenshot(uint8_t borderColor);
+    void ShowScreenshot(const uint8_t* screenshot, uint8_t borderColor);
 
     // Mode 2
-    void ShowScreenshot(const uint8_t* screenshot);
 
 private:
     std::map<uint16_t, uint32_t*> _attrToAddr;
     std::map<uint32_t*, uint16_t> _addrToAttr;
+    uint32_t* _spectrumAttributes;
 
     uint32_t* CreateAttribute(uint8_t foreColor, uint8_t backColor);
     void InitAttribute(uint32_t* attribute, uint8_t foreColor, uint8_t backColor);
@@ -63,6 +58,7 @@ private:
     void printChar(uint16_t x, uint16_t y, uint16_t ch, uint8_t foreColor, uint8_t backColor);
     void setAttribute(uint8_t x, uint8_t y, uint8_t foreColor, uint8_t backColor);
     void freeUnusedAttributes();
+    void prepareDebugScreen();
 };
 
 #endif

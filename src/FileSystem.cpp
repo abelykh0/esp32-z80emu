@@ -9,6 +9,7 @@
 #include "z80main.h"
 #include "z80snapshot.h"
 #include "SD.h"
+#include "ScreenArea.h"
 
 using namespace zx;
 
@@ -18,7 +19,7 @@ using namespace zx;
 #define FILE_COLUMNWIDTH (DEBUG_COLUMNS / FILE_COLUMNS)
 
 extern VideoController* Screen;
-extern VideoController* DebugScreen;
+extern ScreenArea* DebugScreen;
 
 typedef TCHAR FileName[FF_MAX_LFN + 1];
 
@@ -105,10 +106,10 @@ static TCHAR* TruncateFileName(TCHAR* fileName)
 
 static void noScreenshot()
 {
-	Screen->Clear();
-	Screen->SetAttribute(0x0310); // red on blue
-	Screen->PrintAlignCenter(11, "Error reading selected file");
-	Screen->SetAttribute(0x3F10); // white on blue
+	//Screen->Clear();
+	//Screen->SetAttribute(0x0310); // red on blue
+	//Screen->PrintAlignCenter(11, "Error reading selected file");
+	//Screen->SetAttribute(0x3F10); // white on blue
 }
 
 static void SetSelection(uint8_t selectedFile)
@@ -355,7 +356,7 @@ bool loadSnapshotSetup(const char* path)
 
 	DebugScreen->SetAttribute(0x3F10); // white on blue
 	DebugScreen->Clear();
-	Screen->BorderColor = 0x10;
+	*Screen->BorderColor = 0x10;
 
 	showTitle("Load snapshot. ENTER, ESC, \x18, \x19, \x1A, \x1B"); // ↑, ↓, →, ←
 

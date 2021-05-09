@@ -39,7 +39,7 @@ void zx_reset()
 {
     _ay3_8912.Clear();
     memset(indata, 0xFF, 128);
-    _spectrumScreen->BorderColor = 0x2A;
+    *_spectrumScreen->BorderColor = 0x2A;
     Z80cpu.reset();
 }
 
@@ -94,7 +94,7 @@ int32_t zx_loop()
         Z80cpu.interrupt();
 
         // delay
-        while (_spectrumScreen->Frames < _ticks)
+        //while (_spectrumScreen->Frames < _ticks)
         {
         }
 
