@@ -25,8 +25,8 @@ static SpectrumScreenData _spectrumScreenData;
 static VideoController _screen(&_spectrumScreenData);
 VideoController* Screen = &_screen;
 ScreenArea HelpScreen(Screen, 
-	1, SPECTRUM_WIDTH_WITH_BORDER, 
-	SPECTRUM_HEIGHT_WITH_BORDER + 2, SCREEN_HEIGHT - (SPECTRUM_HEIGHT_WITH_BORDER + 3));
+	3, SPECTRUM_WIDTH_WITH_BORDER - 3, 
+	SPECTRUM_HEIGHT_WITH_BORDER + 4, SCREEN_HEIGHT - (SPECTRUM_HEIGHT_WITH_BORDER + 7));
 ScreenArea DebugScreen(Screen, 
 	SPECTRUM_WIDTH_WITH_BORDER + 2, SCREEN_WIDTH - (SPECTRUM_WIDTH_WITH_BORDER + 3), 
 	1, SCREEN_HEIGHT - 2);
@@ -58,7 +58,7 @@ void saveState()
 void clearHelp()
 {
 	//DebugScreen.HideCursor();
-	//DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
+	//DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
 	//DebugScreen.Clear();
 
 	_helpShown = false;
@@ -67,7 +67,7 @@ void clearHelp()
 void showHelp()
 {
 	HelpScreen.HideCursor();
-	HelpScreen.SetAttribute(DEBUG_BAND_COLORS);
+	HelpScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
 	HelpScreen.Clear();
 
     int y = 0;
@@ -132,7 +132,7 @@ void showKeyboardSetup()
 	Screen->_mode = 1;
 	_showingKeyboard = true;
 /*
-	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
+	DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
 	DebugScreen.Clear();
 	DebugScreen.PrintAlignCenter(2, "Press any key to return");
 */
@@ -140,14 +140,14 @@ void showKeyboardSetup()
 
 void showTitle(const char* title)
 {
-	DebugScreen.SetAttribute(0x3F00); // white on black
+	DebugScreen.SetPrintAttribute(0x3F00); // white on black
 	DebugScreen.PrintAlignCenter(0, title);
-	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
+	DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
 }
 
 void showRegisters()
 {
-	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
+	DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
 	DebugScreen.Clear();
 	showTitle("Registers. ESC - clear");
 
@@ -181,9 +181,9 @@ void toggleHelp()
 
 void showErrorMessage(const char* errorMessage)
 {
-	DebugScreen.SetAttribute(0x0310); // red on blue
+	DebugScreen.SetPrintAttribute(0x0310); // red on blue
 	DebugScreen.PrintAlignCenter(2, errorMessage);
-	DebugScreen.SetAttribute(DEBUG_BAND_COLORS);
+	DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
 }
 
 bool ReadRomFromFiles()

@@ -18,6 +18,8 @@ using namespace zx;
 #define FILE_COLUMNS 3
 #define FILE_COLUMNWIDTH (DEBUG_COLUMNS / FILE_COLUMNS)
 #define MAX_LFN 90
+#define FORE_COLOR (DEBUG_BAND_COLORS >> 8)
+#define BACK_COLOR (DEBUG_BAND_COLORS & 0xFF)
 
 extern VideoController* Screen;
 extern ScreenArea DebugScreen;
@@ -91,7 +93,7 @@ static TCHAR* FileExtension(TCHAR* fileName)
 
 static TCHAR* TruncateFileName(TCHAR* fileName)
 {
-	int maxLength = DEBUG_COLUMNS / FILE_COLUMNS - 1;
+	int maxLength = FILE_COLUMNWIDTH + 1;
 	TCHAR* result = (TCHAR*) _buffer16K_1;
 	strncpy(result, fileName, maxLength);
 
@@ -124,7 +126,10 @@ static void SetSelection(uint8_t selectedFile)
 
 	uint8_t x, y;
 	GetFileCoord(selectedFile, &x, &y);
-	DebugScreen.PrintAt(x, y, "\x10"); // ►
+	for (uint8_t i = x; i < x + FILE_COLUMNWIDTH; i++)
+	{
+		DebugScreen.SetAttribute(i, y, BACK_COLOR, FORE_COLOR); // inverse
+	}
 
 	FRESULT fr;
 
@@ -246,7 +251,7 @@ bool saveSnapshotSetup(const char* path)
     _rootFolder = path;
     _rootFolderLength = strlen(path);
 
-	DebugScreen.SetAttribute(0x3F10); // white on blue
+	DebugScreen.SetPrintAttribute(FORE_COLOR, BACK_COLOR);
 	DebugScreen.Clear();
 
 	showTitle("Save snapshot. ENTER, ESC, BS");
@@ -313,9 +318,9 @@ bool saveSnapshotLoop()
 		}
 		else
 		{
-			DebugScreen.SetAttribute(0x0310); // red on blue
+			DebugScreen.SetPrintAttribute(0x0310); // red on blue
 			DebugScreen.PrintAt(0, 5, "Error saving file");
-			DebugScreen.SetAttribute(0x3F10); // white on blue
+			DebugScreen.SetPrintAttribute(0x3F10); // white on blue
 			DebugScreen.SetCursorPosition(x, 3);
 			DebugScreen.ShowCursor();
 		}
@@ -355,7 +360,7 @@ bool loadSnapshotSetup(const char* path)
 
 	saveState();
 
-	DebugScreen.SetAttribute(0x3F10); // white on blue
+	DebugScreen.SetPrintAttribute(0x3F10); // white on blue
 	DebugScreen.Clear();
 	//*Screen->BorderColor = 0x10;
 
@@ -423,7 +428,7 @@ bool loadSnapshotSetup(const char* path)
         for (int fileIndex = 0; fileIndex < _fileCount; fileIndex++)
         {
             GetFileCoord(fileIndex, &x, &y);
-            DebugScreen.PrintAt(x + 1, y, TruncateFileName(_fileNames[fileIndex]));
+            DebugScreen.PrintAt(x, y, TruncateFileName(_fileNames[fileIndex]));
         }
 
         SetSelection(_selectedFile);	
@@ -508,7 +513,10 @@ bool loadSnapshotLoop()
 
 	uint8_t x, y;
 	GetFileCoord(previousSelection, &x, &y);
-	DebugScreen.PrintAt(x, y, " ");
+	for (uint8_t i = x; i < x + FILE_COLUMNWIDTH; i++)
+	{
+		DebugScreen.SetAttribute(i, y, FORE_COLOR, BACK_COLOR);
+	}
 
 	SetSelection(_selectedFile);
 

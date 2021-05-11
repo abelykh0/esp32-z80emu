@@ -119,7 +119,7 @@ void VideoController::Print(const char* str)
 	this->print((char*)str);
 }
 
-void VideoController::setAttribute(uint8_t x, uint8_t y, uint8_t foreColor, uint8_t backColor)
+void VideoController::SetAttribute(uint8_t x, uint8_t y, uint8_t foreColor, uint8_t backColor)
 {
     uint32_t* attribute;
     uint16_t colors = foreColor << 8 | backColor;
@@ -161,7 +161,7 @@ void VideoController::printChar(uint16_t x, uint16_t y, uint16_t ch, uint8_t for
 
 	int offset = y * SCREEN_WIDTH + x;
 	this->Characters[offset] = ch;
-    this->setAttribute(x, y, foreColor, backColor);
+    this->SetAttribute(x, y, foreColor, backColor);
 }
 void VideoController::print(const char* str, uint8_t foreColor, uint8_t backColor)
 {
@@ -242,6 +242,7 @@ void VideoController::freeUnusedAttributes()
 uint32_t* VideoController::CreateAttribute(uint8_t foreColor, uint8_t backColor)
 {
     uint32_t* attribute = (uint32_t*)heap_caps_malloc(16 * 4, MALLOC_CAP_32BIT);
+    Serial.printf("Created attribute %x\n", (uint32_t)attribute);
     this->InitAttribute(attribute, foreColor, backColor);
     return attribute;
 }
@@ -258,7 +259,6 @@ void VideoController::ShowScreenshot(const uint8_t* screenshot, uint8_t borderCo
     uint8_t* pixelData = (uint8_t*)screenshot;
     uint8_t* attrData = (uint8_t*)screenshot + SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8;
 	uint32_t* spectrumAttributes = this->_spectrumAttributes;
-    Serial.printf("==%d\r\n", (uint32_t)this->_spectrumAttributes);
     for (int y = 0; y < SPECTRUM_HEIGHT; y++)
     {
         for (int x = 0; x < SPECTRUM_WIDTH; x++)

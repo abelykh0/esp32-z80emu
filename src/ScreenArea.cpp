@@ -24,10 +24,21 @@ void ScreenArea::Clear()
     }
 }
 
-void ScreenArea::SetAttribute(uint16_t attribute)
+void ScreenArea::SetPrintAttribute(uint16_t attribute)
 {
 	this->foreColor = attribute >> 8;
 	this->backColor = attribute & 0xFF;
+}
+
+void ScreenArea::SetPrintAttribute(uint8_t foreColor, uint8_t backColor)
+{
+	this->foreColor = foreColor;
+	this->backColor = backColor;
+}
+
+void ScreenArea::SetAttribute(uint8_t x, uint8_t y, uint8_t foreColor, uint8_t backColor)
+{
+	this->_videoController->SetAttribute(x + this->_xOffset, y + this->_yOffset, foreColor, backColor);
 }
 
 void ScreenArea::PrintAt(uint8_t x, uint8_t y, const char* str)

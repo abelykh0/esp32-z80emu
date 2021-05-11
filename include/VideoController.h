@@ -44,6 +44,7 @@ public:
 	void SetCursorPosition(uint8_t x, uint8_t y);
     void ShowScreenshot();
     void ShowScreenshot(const uint8_t* screenshot, uint8_t borderColor);
+    void SetAttribute(uint8_t x, uint8_t y, uint8_t foreColor, uint8_t backColor);
 
     // Mode 2
 
@@ -59,7 +60,6 @@ private:
     void print(const char* str, uint8_t foreColor, uint8_t backColor);
     void printChar(uint16_t x, uint16_t y, uint16_t ch);
     void printChar(uint16_t x, uint16_t y, uint16_t ch, uint8_t foreColor, uint8_t backColor);
-    void setAttribute(uint8_t x, uint8_t y, uint8_t foreColor, uint8_t backColor);
     void freeUnusedAttributes();
     void prepareDebugScreen();
 };
