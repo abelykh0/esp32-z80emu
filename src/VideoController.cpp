@@ -247,12 +247,6 @@ uint32_t* VideoController::CreateAttribute(uint8_t foreColor, uint8_t backColor)
     return attribute;
 }
 
-uint8_t IRAM_ATTR VideoController::createRawPixel(uint8_t color)
-{
-    // HACK: should call createRawPixel() instead
-    return this->m_HVSync | color;
-}
-
 void VideoController::ShowScreenshot(const uint8_t* screenshot, uint8_t borderColor)
 {
     // Screenshot
@@ -335,6 +329,12 @@ void VideoController::ShowScreenshot()
     }
 }
 
+uint8_t IRAM_ATTR VideoController::createRawPixel(uint8_t color)
+{
+    // HACK: should call createRawPixel() instead
+    return this->m_HVSync | color;
+}
+
 uint8_t* IRAM_ATTR GetPixelPointer(uint8_t* pixels, uint16_t line)
 {
 	// ZX Sinclair addressing
@@ -364,7 +364,7 @@ void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)
         int fontRow = scanLine % 8;
         int startCoord = y * SCREEN_WIDTH;
 
-        uint16_t* characters = (uint16_t*)(controller->Characters + startCoord);
+        uint8_t* characters = controller->Characters + startCoord;
         uint32_t** attributes = controller->Attributes + startCoord;
         uint32_t* dest32 = (uint32_t*)dest;
         uint32_t** lastAttribute = attributes + SCREEN_WIDTH - 1;
@@ -372,7 +372,7 @@ void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)
 
         do
         {
-            uint16_t character = *characters;
+            uint8_t character = *characters;
             uint8_t fontPixels = fontData[character * 8];
             uint32_t* attribute = *attributes;
             dest32[0] = attribute[fontPixels >> 4];

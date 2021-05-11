@@ -20,7 +20,7 @@ public:
     // Mode 1
     uint8_t IRAM_ATTR createRawPixel(uint8_t color);
     uint8_t* _fontData;
-    uint16_t Characters[SCREEN_WIDTH * SCREEN_HEIGHT];
+    uint8_t Characters[SCREEN_WIDTH * SCREEN_HEIGHT];
     uint32_t* _defaultAttribute = nullptr;
     uint32_t** Attributes;
     uint16_t _leftOffset = 24; 
