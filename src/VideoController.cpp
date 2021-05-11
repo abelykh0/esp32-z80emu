@@ -250,7 +250,7 @@ uint32_t* VideoController::CreateAttribute(uint8_t foreColor, uint8_t backColor)
 uint8_t IRAM_ATTR VideoController::createRawPixel(uint8_t color)
 {
     // HACK: should call createRawPixel() instead
-    return m_HVSync | color;
+    return this->m_HVSync | color;
 }
 
 void VideoController::ShowScreenshot(const uint8_t* screenshot, uint8_t borderColor)
@@ -350,7 +350,7 @@ uint8_t* IRAM_ATTR GetPixelPointer(uint8_t* pixels, uint16_t line)
 void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)
 {
     auto controller = static_cast<VideoController*>(arg);
-    if (scanLine == 1)
+    if (scanLine == 0)
     {
         controller->Frames++;
     }
@@ -412,32 +412,29 @@ void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)
                 foregroundColor |= foregroundColor << 8;
                 uint16_t backgroundColor = controller->createRawPixel(((uint8_t*)colors)[0]);
                 backgroundColor |= backgroundColor << 8;
-                for (int bit = 0; bit < 8; bit++)
+                for (uint16_t* endDest16 = dest16 + 8; dest16 < endDest16; )
                 {
-                    if ((bit & 0x01) == 0)
+                    if ((pixels & 0x40) != 0)
                     {
-                        if ((pixels & 0x40) != 0)
-                        {
-                            *dest16 = foregroundColor;
-                        }
-                        else
-                        {
-                            *dest16 = backgroundColor;
-                        }
+                        *dest16 = foregroundColor;
                     }
                     else
                     {
-                        if ((pixels & 0x80) != 0)
-                        {
-                            *dest16 = foregroundColor;
-                        }
-                        else
-                        {
-                            *dest16 = backgroundColor;
-                        }
-                        pixels <<= 2;
+                        *dest16 = backgroundColor;
                     }
 
+                    dest16++;
+
+                    if ((pixels & 0x80) != 0)
+                    {
+                        *dest16 = foregroundColor;
+                    }
+                    else
+                    {
+                        *dest16 = backgroundColor;
+                    }
+
+                    pixels <<= 2;
                     dest16++;
                 }
 

@@ -55,7 +55,7 @@ public:
     CLASS(Z80Environment);
     PROPERTY(uint8_t, BorderColor);
 
-    Z80Environment(VideoController* spectrumScreen);
+    Z80Environment(VideoController* screen);
 
     void Initialize();
 

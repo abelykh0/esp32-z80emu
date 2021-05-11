@@ -33,7 +33,7 @@ public:
     uint8_t* BorderColor;
     uint16_t _borderWidth = 32; 
     uint16_t _borderHeight = 24;
-    uint32_t Frames = 0;
+    volatile uint32_t Frames = 0;
 
     VideoController(SpectrumScreenData* screenData);
     void Start(char const* modeline);

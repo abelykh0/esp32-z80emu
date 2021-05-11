@@ -16,10 +16,10 @@ static uint8_t _ram5Pixels[SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8];
 static uint16_t _ram5Attributes[SPECTRUM_WIDTH * SPECTRUM_HEIGHT];
 static uint8_t _ram5Buffer[0x2500];
 
-Z80Environment::Z80Environment(VideoController* spectrumScreen)
+Z80Environment::Z80Environment(VideoController* screen)
     : BorderColor(this)
 {
-    this->Screen = spectrumScreen;
+    this->Screen = screen;
     this->Screen->BorderColor = &this->_borderColor;
 
     this->Rom[0] = &this->_rom0;

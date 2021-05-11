@@ -94,7 +94,7 @@ int32_t zx_loop()
         Z80cpu.interrupt();
 
         // delay
-        //while (_spectrumScreen->Frames < _ticks)
+        while (_spectrumScreen->Frames < _ticks)
         {
         }
 
