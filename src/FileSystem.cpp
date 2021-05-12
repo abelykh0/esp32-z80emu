@@ -21,7 +21,6 @@ using namespace zx;
 #define FORE_COLOR (DEBUG_BAND_COLORS >> 8)
 #define BACK_COLOR (DEBUG_BAND_COLORS & 0xFF)
 
-extern VideoController* Screen;
 extern ScreenArea DebugScreen;
 
 typedef TCHAR FileName[MAX_LFN + 1];
@@ -31,7 +30,7 @@ static int16_t _selectedFile = 0;
 static int16_t _fileCount;
 static bool _loadingSnapshot = false;
 static bool _savingSnapshot = false;
-static char* _snapshotName = (char*)&_buffer16K_1[MAX_LFN + 1];
+static char* _snapshotName = ((char*)_buffer16K_1) + MAX_LFN;
 
 static fs::FS* _fileSystem;
 static const char* _rootFolder;
@@ -295,11 +294,11 @@ bool saveSnapshotLoop()
 	switch (scanCode)
 	{
 	case KEY_BACKSPACE:
-		if (DebugScreen.getX() > 0)
+		if (x > 0)
 		{
-			DebugScreen.PrintAt(DebugScreen.getX() - 1, DebugScreen.getY(), " ");
-			DebugScreen.SetCursorPosition(DebugScreen.getX() - 1, DebugScreen.getY());
-			_snapshotName[DebugScreen.getX()] = '\0';
+			DebugScreen.PrintAt(x - 1, DebugScreen.getY(), " ");
+			DebugScreen.SetCursorPosition(x - 1, DebugScreen.getY());
+			_snapshotName[x] = '\0';
 		}
 		break;
 
@@ -334,14 +333,14 @@ bool saveSnapshotLoop()
 
 	default:
 		char character = Ps2_ConvertScancode(scanCode);
-		if (DebugScreen.getX() < FILE_COLUMNWIDTH && character != '\0'
+		if (x < FILE_COLUMNWIDTH && character != '\0'
 			&& character != '\\' && character != '/' && character != ':'
 			&& character != '*' && character != '?' && character != '"'
 			&& character != '<' && character != '>' && character != '|')
 		{
 			char* text = (char*)_buffer16K_1;
 			text[0] = character;
-			_snapshotName[DebugScreen.getX()] = character;
+			_snapshotName[x] = character;
 			text[1] = '\0';
 			DebugScreen.Print(text);
 		}

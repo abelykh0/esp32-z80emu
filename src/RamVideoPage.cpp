@@ -50,7 +50,7 @@ void RamVideoPage::FromBuffer(void* data)
     memcpy(this->_videoRam->Pixels, data, 0x1800);
 
     // Screen Attributes
-    for (uint32_t i = 0x1800; i < 0x1AFF; i++)
+    for (uint32_t i = 0x1800; i < 0x1B00; i++)
     {
         this->WriteByte(i, ((uint8_t*)data)[i]);
     }
@@ -67,7 +67,7 @@ void RamVideoPage::ToBuffer(void* buffer)
     memcpy(buffer, this->_videoRam->Pixels, 0x1800);
 
     // Screen Attributes
-    for (uint32_t i = 0x1800; i < 0x1AFF; i++)
+    for (uint32_t i = 0x1800; i < 0x1B00; i++)
     {
         data[i] = this->ReadByte(i);
     }

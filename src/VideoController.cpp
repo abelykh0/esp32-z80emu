@@ -205,15 +205,15 @@ void VideoController::cursorNext()
 
 void VideoController::SetCursorPosition(uint8_t x, uint8_t y)
 {
-	cursor_x = x;
-	cursor_y = y;
-	if (cursor_x >= SCREEN_WIDTH)
+	this->cursor_x = x;
+	this->cursor_y = y;
+	if (this->cursor_x >= SCREEN_WIDTH)
 	{
-		cursor_x = SCREEN_WIDTH - 1;
+		this->cursor_x = SCREEN_WIDTH - 1;
 	}
-	if (cursor_y >= SCREEN_HEIGHT)
+	if (this->cursor_y >= SCREEN_HEIGHT)
 	{
-		cursor_y = SCREEN_HEIGHT - 1;
+		this->cursor_y = SCREEN_HEIGHT - 1;
 	}
 }
 

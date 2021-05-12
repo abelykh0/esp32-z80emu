@@ -70,7 +70,6 @@ static void showRegisters()
 
 void saveState()
 {
-	showRegisters();
 	Screen->ShowScreenshot();
 	Screen->_mode = 1;
 }
@@ -184,6 +183,7 @@ static bool processSpecialKey(int32_t scanCode)
 	case KEY_F1:
 	Serial.printf("F1 pressed\r\n");
 		saveState();
+		showRegisters();
 		break;
 
 #ifdef SDCARD

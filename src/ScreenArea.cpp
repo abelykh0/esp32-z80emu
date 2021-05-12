@@ -55,42 +55,69 @@ void ScreenArea::PrintAlignCenter(uint8_t y, const char *str)
 
 uint16_t ScreenArea::getX()
 {
-    return this->_videoController->cursor_x + this->_xOffset;
+    if (this->_videoController->cursor_x < this->_xOffset)
+    {
+        return 0;
+    }
+    else
+    {
+        return this->_videoController->cursor_x - this->_xOffset;
+    }
 }
 
 uint16_t ScreenArea::getY()
 {
-    return this->_videoController->cursor_y + this->_yOffset;
+    if (this->_videoController->cursor_y < this->_yOffset)
+    {
+        return 0;
+    }
+    else
+    {
+        return this->_videoController->cursor_y - this->_yOffset;
+    }    
 }
 
 void ScreenArea::ShowCursor()
 {
-    /*
     if (!this->_isCursorVisible)
     {
     	this->_isCursorVisible = true;
-    	this->InvertColor();
+    	this->SetAttribute(this->getX(), this->getY(), this->backColor, this->foreColor);
     }
-    */
 }
 
 void ScreenArea::HideCursor()
 {
-    /*
     if (this->_isCursorVisible)
     {
     	this->_isCursorVisible = false;
-    	this->InvertColor();
+    	this->SetAttribute(this->getX(), this->getY(), this->foreColor, this->backColor);
     }
-    */
 }
 
 void ScreenArea::Print(const char* str)
 {
+    Serial.printf("x=%d y=%d\r\n", this->getX(), this->getY());
+    if (this->_isCursorVisible)
+    {
+    	this->SetAttribute(this->getX(), this->getY(), this->foreColor, this->backColor);
+    }
 	this->_videoController->print((char*)str, this->foreColor, this->backColor);
+    if (this->_isCursorVisible)
+    {
+    	this->SetAttribute(this->getX(), this->getY(), this->backColor, this->foreColor);
+    }
 }
 
 void ScreenArea::SetCursorPosition(uint8_t x, uint8_t y)
 {
+    if (this->_isCursorVisible)
+    {
+    	this->SetAttribute(this->getX(), this->getY(), this->foreColor, this->backColor);
+    }
     this->_videoController->SetCursorPosition(x + this->_xOffset, y + this->_yOffset);
+    if (this->_isCursorVisible)
+    {
+    	this->SetAttribute(this->getX(), this->getY(), this->backColor, this->foreColor);
+    }
 }

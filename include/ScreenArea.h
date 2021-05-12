@@ -15,6 +15,7 @@ private:
     uint8_t backColor = 0xFF;
 
 public:
+    bool _isCursorVisible = false;
     uint16_t getX();
     uint16_t getY();
 
