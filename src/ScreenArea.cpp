@@ -53,6 +53,16 @@ void ScreenArea::PrintAlignCenter(uint8_t y, const char *str)
     this->PrintAt(leftX, y, str);
 }
 
+uint16_t ScreenArea::getX()
+{
+    return this->_videoController->cursor_x + this->_xOffset;
+}
+
+uint16_t ScreenArea::getY()
+{
+    return this->_videoController->cursor_y + this->_yOffset;
+}
+
 void ScreenArea::ShowCursor()
 {
     /*

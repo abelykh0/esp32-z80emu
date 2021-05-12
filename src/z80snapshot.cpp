@@ -533,11 +533,6 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
                 }
 
                 uint8_t* buffer2 = &buffer1[0x2000];
-                if (pageSize > 0x1B00)
-                {
-                    pageSize = 0x1B00;
-                }
-
                 DecompressPage(buffer1, pageSize, isCompressed, 0x1B00, buffer2);
             	uint8_t borderColor = (header->Flags1 & 0x0E) >> 1;
                 ShowScreenshot(buffer2, borderColor);

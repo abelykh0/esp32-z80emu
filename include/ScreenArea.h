@@ -15,8 +15,8 @@ private:
     uint8_t backColor = 0xFF;
 
 public:
-    uint16_t cursor_x = 0;
-    uint16_t cursor_y = 0;
+    uint16_t getX();
+    uint16_t getY();
 
     ScreenArea(VideoController* videoController, 
         uint16_t xOffset, uint16_t width,
