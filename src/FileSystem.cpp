@@ -245,8 +245,6 @@ void FileSystemInitialize(fs::FS* fileSystem)
 
 bool saveSnapshotSetup(const char* path)
 {
-    _ay3_8912.StopSound();
-
     _rootFolder = path;
     _rootFolderLength = strlen(path);
 
@@ -258,7 +256,6 @@ bool saveSnapshotSetup(const char* path)
 	FRESULT fr = mount();
 	if (fr != FR_OK)
 	{
-        _ay3_8912.ResumeSound();
 		return false;
 	}
 
@@ -278,7 +275,6 @@ bool saveSnapshotLoop()
 {
 	if (!_savingSnapshot)
 	{
-        _ay3_8912.ResumeSound();
 		return false;
 	}
 
@@ -311,8 +307,7 @@ bool saveSnapshotLoop()
 		if (saveSnapshot(fileName))
 		{
 			_savingSnapshot = false;
-			restoreState(false);
-            _ay3_8912.ResumeSound();
+			restoreState();
 			return false;
 		}
 		else
@@ -327,8 +322,7 @@ bool saveSnapshotLoop()
 
 	case KEY_ESC:
 		_savingSnapshot = false;
-		restoreState(false);
-        _ay3_8912.ResumeSound();
+		restoreState();
 		return false;
 
 	default:
@@ -352,8 +346,6 @@ bool saveSnapshotLoop()
 
 bool loadSnapshotSetup(const char* path)
 {
-    _ay3_8912.StopSound();
-
     _rootFolder = path;
     _rootFolderLength = strlen(path);
 
@@ -368,7 +360,6 @@ bool loadSnapshotSetup(const char* path)
 	FRESULT fr = mount();
 	if (fr != FR_OK)
 	{
-        _ay3_8912.ResumeSound();
 		return false;
 	}
 
@@ -408,7 +399,6 @@ bool loadSnapshotSetup(const char* path)
 	else
 	{
 		result = false;
-        _ay3_8912.ResumeSound();
 	}
 
 	// Sort files alphabetically
@@ -494,14 +484,12 @@ bool loadSnapshotLoop()
 	case KEY_KP_ENTER:
 		loadSnapshot(GetFileName(_fileNames[_selectedFile]));
 		_loadingSnapshot = false;
-		restoreState(false);
-        _ay3_8912.ResumeSound();
+		restoreState();
 		return false;
 
 	case KEY_ESC:
 		_loadingSnapshot = false;
-		restoreState(true);
-        _ay3_8912.ResumeSound();
+		restoreState();
 		return false;
 	}
 

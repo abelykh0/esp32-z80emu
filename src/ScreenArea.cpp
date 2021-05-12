@@ -13,6 +13,7 @@ ScreenArea::ScreenArea(VideoController* videoController,
 
 void ScreenArea::Clear()
 {
+    this->HideCursor();
     for (int y = this->_yOffset; y < this->_yOffset + this->_Height; y++)
     {
         for (int x = this->_xOffset; x < this->_xOffset + this->_Width; x++)

@@ -12,6 +12,6 @@ void EmulatorTaskMain(void *unused);
 
 void showTitle(const char* title);
 void saveState();
-void restoreState(bool restoreScreen);
+void restoreState();
 
 #endif /* __EMULATOR_H__ */

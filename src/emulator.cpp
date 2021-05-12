@@ -46,6 +46,14 @@ static void startKeyboard()
 	Ps2_Initialize(InputController);
 }
 
+static void hideRegisters()
+{
+	for (int y = 8; y < 12; y++)
+	{
+    	HelpScreen.PrintAlignCenter(y, "                                  ");
+	}
+}
+
 static void showRegisters()
 {
 	//DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
@@ -70,6 +78,7 @@ static void showRegisters()
 
 void saveState()
 {
+	_ay3_8912.StopSound();
 	Screen->ShowScreenshot();
 	Screen->_mode = 1;
 }
@@ -92,13 +101,10 @@ static void showHelp()
 	HelpScreen.PrintAt(0, y++, "F10 - show keyboard layout");
 }
 
-void restoreState(bool restoreScreen)
+void restoreState()
 {
 	Screen->_mode = 2;
-	if (restoreScreen)
-	{
-		// not used currently
-	}
+	_ay3_8912.ResumeSound();
 }
 
 static void showErrorMessage(const char* errorMessage)
@@ -155,6 +161,7 @@ static void ResetSystem()
     }
 
     ReadRomFromFiles();
+	restoreState();
     zx_reset();
 }
 
@@ -162,6 +169,7 @@ static void showKeyboardSetup()
 {
 	Screen->ShowScreenshot(spectrumKeyboard, 0);
 	Screen->_mode = 1;
+	DebugScreen.Clear();
 /*
 	DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
 	DebugScreen.Clear();
@@ -181,13 +189,14 @@ static bool processSpecialKey(int32_t scanCode)
 	switch (scanCode)
 	{
 	case KEY_F1:
-	Serial.printf("F1 pressed\r\n");
 		saveState();
 		showRegisters();
+		DebugScreen.Clear();
 		break;
 
 #ifdef SDCARD
 case KEY_F2:
+	hideRegisters();
 	if (!saveSnapshotSetup("/"))
 	{
 #ifdef SDCARD
@@ -205,6 +214,7 @@ case KEY_F2:
 #endif
 
 	case KEY_F3:
+		hideRegisters();
 		if (!loadSnapshotSetup("/"))
 		{
 #ifdef SDCARD
@@ -255,7 +265,7 @@ static bool pausedLoop()
 
 	if (!processSpecialKey(scanCode))
 	{
-		restoreState(true);
+		restoreState();
 		return false;
 	}
 
