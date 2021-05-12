@@ -36,6 +36,8 @@ Z80Environment Environment(Screen);
 
 static PS2Controller* InputController;
 
+static bool _savingSnapshot = false;
+
 static void startKeyboard()
 {
 	Mouse::quickCheckHardware();
@@ -54,16 +56,16 @@ static void showRegisters()
 
     sprintf(buf, "PC %04x  AF %04x  AF' %04x  I %02x",
         (uint16_t)Z80cpu.PC, (uint16_t)Z80cpu.AF, (uint16_t)Z80cpu.AFx, (uint16_t)Z80cpu.I);
-    HelpScreen.PrintAlignCenter(7, buf);
+    HelpScreen.PrintAlignCenter(8, buf);
     sprintf(buf, "SP %04x  BC %04x  BC' %04x  R %02x",
         (uint16_t)Z80cpu.SP, (uint16_t)Z80cpu.BC, (uint16_t)Z80cpu.BCx, (uint16_t)Z80cpu.R);
-    HelpScreen.PrintAlignCenter(8, buf);
+    HelpScreen.PrintAlignCenter(9, buf);
     sprintf(buf, "IX %04x  DE %04x  DE' %04x  IM %x",
         (uint16_t)Z80cpu.IX, (uint16_t)Z80cpu.DE, (uint16_t)Z80cpu.DEx, (uint16_t)Z80cpu.IM);
-    HelpScreen.PrintAlignCenter(9, buf);
+    HelpScreen.PrintAlignCenter(10, buf);
     sprintf(buf, "IY %04x  HL %04x  HL' %04x      ",
         (uint16_t)Z80cpu.IY, (uint16_t)Z80cpu.HL, (uint16_t)Z80cpu.HLx);
-    HelpScreen.PrintAlignCenter(10, buf);
+    HelpScreen.PrintAlignCenter(11, buf);
 }
 
 void saveState()
@@ -194,6 +196,11 @@ case KEY_F2:
 		showErrorMessage("Cannot initialize flash file system");
 #endif
 	}
+	else
+	{
+		saveState();
+		_savingSnapshot = true;
+	}
 	break;
 #endif
 
@@ -228,6 +235,16 @@ static bool pausedLoop()
 	if (Screen->_mode == 2)
 	{
 		return false;
+	}
+
+	if (saveSnapshotLoop())
+	{
+		return true;
+	}
+
+	if (loadSnapshotLoop())
+	{
+		return true;
 	}
 
 	int32_t scanCode = Ps2_GetScancode();
