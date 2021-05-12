@@ -1,8 +1,6 @@
 #ifndef __CLASSPROPERTIES_INCLUDED__
 #define __CLASSPROPERTIES_INCLUDED__
 
-// Abstraction for z80 Emulator
-
 // Magic from https://www.codeproject.com/Articles/12358/C-object-properties-with-no-run-time-or-memory-ove.
 template<class T, class V, V (T::*_get)(), void (T::*_set)(V)>
 struct property

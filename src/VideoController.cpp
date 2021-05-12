@@ -6,6 +6,8 @@
 #define BACK_COLOR 0x10
 #define FORE_COLOR 0x3F
 
+static uint32_t _borderAttribute;
+
 extern uint8_t* IRAM_ATTR GetPixelPointer(uint8_t* pixels, uint16_t line);
 extern "C" void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine);
 
@@ -73,17 +75,17 @@ void VideoController::prepareDebugScreen()
     this->printChar(SPECTRUM_WIDTH_WITH_BORDER + 1, SCREEN_HEIGHT - 1, '\xCA'); // ╩
 
     // Spectrum border
-    for (int i = 1; i <= SPECTRUM_WIDTH; i++)
+    for (int x = 1; x <= SPECTRUM_WIDTH_WITH_BORDER; x++)
     {
-    	this->printChar(i, 1, ' ');
-    	this->printChar(i, SPECTRUM_HEIGHT, ' ');
+    	this->printChar(x, 1, ' ');
+    	this->printChar(x, SPECTRUM_HEIGHT_WITH_BORDER, ' ');
     }
-    for (int i = 1; i <= SPECTRUM_HEIGHT; i++)
+    for (int y = 1; y <= SPECTRUM_HEIGHT_WITH_BORDER; y++)
     {
-    	this->printChar(1, i, ' ');
-    	this->printChar(2, i, ' ');
-    	this->printChar(SPECTRUM_WIDTH - 1, i, ' ');
-    	this->printChar(SPECTRUM_WIDTH, i, ' ');
+    	this->printChar(1, y, ' ');
+    	this->printChar(2, y, ' ');
+    	this->printChar(SPECTRUM_WIDTH_WITH_BORDER - 1, y, ' ');
+    	this->printChar(SPECTRUM_WIDTH_WITH_BORDER, y, ' ');
     }
 
     // Spectrum content
@@ -249,58 +251,42 @@ uint32_t* VideoController::CreateAttribute(uint8_t foreColor, uint8_t backColor)
 
 void VideoController::ShowScreenshot(const uint8_t* screenshot, uint8_t borderColor)
 {
-    // Screenshot
-    uint8_t* pixelData = (uint8_t*)screenshot;
-    uint8_t* attrData = (uint8_t*)screenshot + SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8;
-	uint32_t* spectrumAttributes = this->_spectrumAttributes;
-    for (int y = 0; y < SPECTRUM_HEIGHT; y++)
-    {
-        for (int x = 0; x < SPECTRUM_WIDTH; x++)
-        {
-			this->Attributes[(y + this->_topOffset / 8) * SCREEN_WIDTH + x + (this->_leftOffset / 8)] = spectrumAttributes;
-			uint16_t colors = Z80Environment::FromSpectrumColor(*attrData);
-			uint8_t foreColor = colors >> 8;
-			uint8_t backColor = colors & 0xFF;
-
-            for (int y2 = 0; y2 < 8; y2++)
-            {
-				uint8_t* charPixels = GetPixelPointer(pixelData, y * 8 + y2) + x;
-				uint8_t pixels = *charPixels;
-
-				uint32_t attributeValue;
-				for (uint8_t halfByte = 0; halfByte < 2; halfByte++)
-				{
-					for (uint8_t bit = 0; bit < 4; bit++)
-					{
-						VGA_PIXELINROW(((uint8_t*)&attributeValue), bit) = 
-							this->createRawPixel(pixels & 0x80 ?  foreColor : backColor);
-						pixels <<= 1;
-					}
-
-					*spectrumAttributes = attributeValue;
-					spectrumAttributes++;
-				}
-			}
-        
-            attrData++;    
-        }
-    }
-
-    // Border
+    uint8_t border = Z80Environment::FromSpectrumColor(borderColor) >> 8;
+    this->showScreenshot((uint8_t*)screenshot, nullptr, border);
 }
 
 void VideoController::ShowScreenshot()
 {
-    uint8_t* pixelData = this->Settings->Pixels;
-    uint16_t* attrData = this->Settings->Attributes;
+    this->showScreenshot(this->Settings->Pixels, this->Settings->Attributes, *this->BorderColor);
+}
+
+void VideoController::showScreenshot(
+    uint8_t* pixelData, 
+    uint16_t* attributes,
+    uint8_t borderColor)
+{
+    // Screenshot
+    uint8_t* attrData8 = nullptr;
+    if (attributes == nullptr)
+    {
+        attrData8 = (uint8_t*)pixelData + SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8;
+    }
+
 	uint32_t* spectrumAttributes = this->_spectrumAttributes;
-    Serial.printf("==%d\r\n", (uint32_t)this->_spectrumAttributes);
     for (int y = 0; y < SPECTRUM_HEIGHT; y++)
     {
         for (int x = 0; x < SPECTRUM_WIDTH; x++)
         {
 			this->Attributes[(y + this->_topOffset / 8) * SCREEN_WIDTH + x + (this->_leftOffset / 8)] = spectrumAttributes;
-			uint16_t colors = *attrData;
+			uint16_t colors;
+            if (attributes == nullptr)
+            {
+                colors = Z80Environment::FromSpectrumColor(*attrData8);
+            }
+            else
+            {
+                colors = *attributes;
+            }
 			uint8_t foreColor = colors >> 8;
 			uint8_t backColor = colors & 0xFF;
 
@@ -323,9 +309,33 @@ void VideoController::ShowScreenshot()
 					spectrumAttributes++;
 				}
 			}
-        
-            attrData++;    
+
+            if (attributes == nullptr)
+            {
+                attrData8++;
+            }
+            else
+            {
+                attributes++;
+            }
         }
+    }
+
+    // Border
+    uint8_t rawPixel = this->createRawPixel(borderColor);
+    uint32_t attributeValue = rawPixel << 24 | rawPixel << 16 | rawPixel << 8 | rawPixel;
+    _borderAttribute = attributeValue;
+    for (int x = 1; x <= SPECTRUM_WIDTH_WITH_BORDER; x++)
+    {
+    	this->Attributes[SCREEN_WIDTH + x] = &_borderAttribute;
+    	this->Attributes[SPECTRUM_HEIGHT_WITH_BORDER * SCREEN_WIDTH + x] = &_borderAttribute;
+    }
+    for (int y = 1; y <= SPECTRUM_HEIGHT_WITH_BORDER; y++)
+    {
+    	this->Attributes[y * SCREEN_WIDTH + 1] = &_borderAttribute;
+    	this->Attributes[y * SCREEN_WIDTH + 2] = &_borderAttribute;
+    	this->Attributes[y * SCREEN_WIDTH + SPECTRUM_WIDTH_WITH_BORDER - 1] = &_borderAttribute;
+    	this->Attributes[y * SCREEN_WIDTH + SPECTRUM_WIDTH_WITH_BORDER] = &_borderAttribute;
     }
 }
 

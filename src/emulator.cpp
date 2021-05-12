@@ -34,13 +34,9 @@ ScreenArea DebugScreen(Screen,
 // Z80State
 Z80Environment Environment(Screen);
 
-// Data for the "debug" screen
-static bool _showingKeyboard;
-static bool _helpShown;
-
 static PS2Controller* InputController;
 
-void startKeyboard()
+static void startKeyboard()
 {
 	Mouse::quickCheckHardware();
 	InputController = new PS2Controller();
@@ -48,30 +44,43 @@ void startKeyboard()
 	Ps2_Initialize(InputController);
 }
 
+static void showRegisters()
+{
+	//DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
+	//DebugScreen.Clear();
+	//showTitle("Registers. ESC - clear");
+
+    char* buf = (char*)_buffer16K_1;
+
+    sprintf(buf, "PC %04x  AF %04x  AF' %04x  I %02x",
+        (uint16_t)Z80cpu.PC, (uint16_t)Z80cpu.AF, (uint16_t)Z80cpu.AFx, (uint16_t)Z80cpu.I);
+    HelpScreen.PrintAlignCenter(7, buf);
+    sprintf(buf, "SP %04x  BC %04x  BC' %04x  R %02x",
+        (uint16_t)Z80cpu.SP, (uint16_t)Z80cpu.BC, (uint16_t)Z80cpu.BCx, (uint16_t)Z80cpu.R);
+    HelpScreen.PrintAlignCenter(8, buf);
+    sprintf(buf, "IX %04x  DE %04x  DE' %04x  IM %x",
+        (uint16_t)Z80cpu.IX, (uint16_t)Z80cpu.DE, (uint16_t)Z80cpu.DEx, (uint16_t)Z80cpu.IM);
+    HelpScreen.PrintAlignCenter(9, buf);
+    sprintf(buf, "IY %04x  HL %04x  HL' %04x      ",
+        (uint16_t)Z80cpu.IY, (uint16_t)Z80cpu.HL, (uint16_t)Z80cpu.HLx);
+    HelpScreen.PrintAlignCenter(10, buf);
+}
+
 void saveState()
 {
+	showRegisters();
 	Screen->ShowScreenshot();
-
 	Screen->_mode = 1;
 }
 
-void clearHelp()
-{
-	//DebugScreen.HideCursor();
-	//DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
-	//DebugScreen.Clear();
-
-	_helpShown = false;
-}
-
-void showHelp()
+static void showHelp()
 {
 	HelpScreen.HideCursor();
 	HelpScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
 	HelpScreen.Clear();
 
     int y = 0;
-	HelpScreen.PrintAt(0, y++, "F1  - show / hide help");
+	HelpScreen.PrintAt(0, y++, "F1  - pause");
 #ifdef SDCARD
 	HelpScreen.PrintAt(0, y++, "F2  - save snapshot to SD card");
 	HelpScreen.PrintAt(0, y++, "F3  - load snapshot from SD card");
@@ -80,21 +89,6 @@ void showHelp()
 #endif
 	HelpScreen.PrintAt(0, y++, "F5  - reset");
 	HelpScreen.PrintAt(0, y++, "F10 - show keyboard layout");
-	HelpScreen.PrintAt(0, y++, "F12 - show registers");
-
-	_helpShown = true;
-}
-
-void restoreHelp()
-{
-	if (_helpShown)
-	{
-		showHelp();
-	}
-	else
-	{
-		clearHelp();
-	}
 }
 
 void restoreState(bool restoreScreen)
@@ -104,89 +98,16 @@ void restoreState(bool restoreScreen)
 	{
 		// not used currently
 	}
-
-	restoreHelp();
 }
 
-bool showKeyboardLoop()
-{
-	if (!_showingKeyboard)
-	{
-		return false;
-	}
-
-	int32_t scanCode = Ps2_GetScancode();
-	if (scanCode == 0 || (scanCode & 0xFF00) != 0x00)
-	{
-		return true;
-	}
-
-	_showingKeyboard = false;
-	restoreState(true);
-	return false;
-}
-
-void showKeyboardSetup()
-{
-	Screen->ShowScreenshot(spectrumKeyboard, 0);
-	Screen->_mode = 1;
-	_showingKeyboard = true;
-/*
-	DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
-	DebugScreen.Clear();
-	DebugScreen.PrintAlignCenter(2, "Press any key to return");
-*/
-}
-
-void showTitle(const char* title)
-{
-	DebugScreen.SetPrintAttribute(0x3F00); // white on black
-	DebugScreen.PrintAlignCenter(0, title);
-	DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
-}
-
-void showRegisters()
-{
-	DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
-	DebugScreen.Clear();
-	showTitle("Registers. ESC - clear");
-
-    char* buf = (char*)_buffer16K_1;
-
-    sprintf(buf, "PC %04x  AF %04x  AF' %04x  I %02x",
-        (uint16_t)Z80cpu.PC, (uint16_t)Z80cpu.AF, (uint16_t)Z80cpu.AFx, (uint16_t)Z80cpu.I);
-    DebugScreen.PrintAlignCenter(2, buf);
-    sprintf(buf, "SP %04x  BC %04x  BC' %04x  R %02x",
-        (uint16_t)Z80cpu.SP, (uint16_t)Z80cpu.BC, (uint16_t)Z80cpu.BCx, (uint16_t)Z80cpu.R);
-    DebugScreen.PrintAlignCenter(3, buf);
-    sprintf(buf, "IX %04x  DE %04x  DE' %04x  IM %x",
-        (uint16_t)Z80cpu.IX, (uint16_t)Z80cpu.DE, (uint16_t)Z80cpu.DEx, (uint16_t)Z80cpu.IM);
-    DebugScreen.PrintAlignCenter(4, buf);
-    sprintf(buf, "IY %04x  HL %04x  HL' %04x      ",
-        (uint16_t)Z80cpu.IY, (uint16_t)Z80cpu.HL, (uint16_t)Z80cpu.HLx);
-    DebugScreen.PrintAlignCenter(5, buf);
-}
-
-void toggleHelp()
-{
-	if (_helpShown)
-	{
-		clearHelp();
-	}
-	else
-	{
-		showHelp();
-	}
-}
-
-void showErrorMessage(const char* errorMessage)
+static void showErrorMessage(const char* errorMessage)
 {
 	DebugScreen.SetPrintAttribute(0x0310); // red on blue
 	DebugScreen.PrintAlignCenter(2, errorMessage);
 	DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
 }
 
-bool ReadRomFromFiles()
+static bool ReadRomFromFiles()
 {
     if ((uint8_t*)*Environment.Rom[0] == (uint8_t*)ROM)
     {
@@ -220,7 +141,7 @@ bool ReadRomFromFiles()
     return result;
 }
 
-void ResetSystem()
+static void ResetSystem()
 {
     if (*Environment.Rom[0] != (uint8_t*)ROM)
     {
@@ -234,6 +155,94 @@ void ResetSystem()
 
     ReadRomFromFiles();
     zx_reset();
+}
+
+static void showKeyboardSetup()
+{
+	Screen->ShowScreenshot(spectrumKeyboard, 0);
+	Screen->_mode = 1;
+/*
+	DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
+	DebugScreen.Clear();
+	DebugScreen.PrintAlignCenter(2, "Press any key to return");
+*/
+}
+
+void showTitle(const char* title)
+{
+	DebugScreen.SetPrintAttribute(0x3F00); // white on black
+	DebugScreen.PrintAlignCenter(0, title);
+	DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
+}
+
+static bool processSpecialKey(int32_t scanCode)
+{
+	switch (scanCode)
+	{
+	case KEY_F1:
+	Serial.printf("F1 pressed\r\n");
+		saveState();
+		break;
+
+#ifdef SDCARD
+case KEY_F2:
+	if (!saveSnapshotSetup("/"))
+	{
+#ifdef SDCARD
+		showErrorMessage("Cannot initialize SD card");
+#else
+		showErrorMessage("Cannot initialize flash file system");
+#endif
+	}
+	break;
+#endif
+
+	case KEY_F3:
+		if (!loadSnapshotSetup("/"))
+		{
+#ifdef SDCARD
+			showErrorMessage("Error when loading from SD card");
+#else
+			showErrorMessage("Error when loading from flash");
+#endif
+		}
+		break;
+
+	case KEY_F5:
+		ResetSystem();
+		break;
+
+	case KEY_F10:
+		showKeyboardSetup();
+		break;
+
+	default:
+		return false;
+	}	
+
+	return true;
+} 
+
+static bool pausedLoop()
+{
+	if (Screen->_mode == 2)
+	{
+		return false;
+	}
+
+	int32_t scanCode = Ps2_GetScancode();
+	if (scanCode == 0 || (scanCode & 0xFF00) != 0x00)
+	{
+		return true;
+	}
+
+	if (!processSpecialKey(scanCode))
+	{
+		restoreState(true);
+		return false;
+	}
+
+	return true;
 }
 
 void EmulatorTaskMain(void *unused)
@@ -268,68 +277,12 @@ void EmulatorTaskMain(void *unused)
 	{
 		vTaskDelay(1); // important to avoid task watchdog timeouts
 
-		if (showKeyboardLoop())
+		if (pausedLoop())
 		{
 			continue;
 		}
-
-		if (loadSnapshotLoop())
-		{
-			continue;
-		}
-
-        if (saveSnapshotLoop())
-        {
-            continue;
-        }
 
 		int32_t result = zx_loop();
-		switch (result)
-		{
-		case KEY_ESC:
-			showHelp();
-			break;
-
-		case KEY_F1:
-			toggleHelp();
-			break;
-
-#ifdef SDCARD
-	case KEY_F2:
-		if (!saveSnapshotSetup("/"))
-		{
-#ifdef SDCARD
-			showErrorMessage("Cannot initialize SD card");
-#else
-			showErrorMessage("Cannot initialize flash file system");
-#endif
-		}
-		break;
-#endif
-
-		case KEY_F3:
-			if (!loadSnapshotSetup("/"))
-			{
-#ifdef SDCARD
-				showErrorMessage("Error when loading from SD card");
-#else
-				showErrorMessage("Error when loading from flash");
-#endif
-			}
-			break;
-
-		case KEY_F5:
-            ResetSystem();
-			showHelp();
-			break;
-
-		case KEY_F10:
-			showKeyboardSetup();
-			break;
-
-		case KEY_F12:
-			showRegisters();
-			break;
-		}	
+		processSpecialKey(result);
 	}
 }

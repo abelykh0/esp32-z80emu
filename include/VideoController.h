@@ -62,6 +62,7 @@ private:
     void printChar(uint16_t x, uint16_t y, uint16_t ch, uint8_t foreColor, uint8_t backColor);
     void freeUnusedAttributes();
     void prepareDebugScreen();
+    void showScreenshot(uint8_t* pixelData, uint16_t* attributes, uint8_t borderColor);
 };
 
 #endif
