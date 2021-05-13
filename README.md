@@ -11,6 +11,7 @@ Spectrum ZX 128K emulator on VGA-32 board
 * Output some sounds (beeper and partial support for AY3-8912)
 * Kempston mouse
 * Load ROMs from SD card (`/roms/128-0.rom`; `/roms/128-1.rom`. Fall back to OpenSE Basic if not present)
+* Not using any PSRAM
 
 ## Third party software
 This project uses the following libraries:
