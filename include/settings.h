@@ -12,9 +12,9 @@
 // - CPU_ANDREWEISSFLOG: use Andre Weissflog's core  https://github.com/floooh/chips/
 // - CPU_JLSANCHEZ: use José Luis Sánchez's core     https://github.com/jsanchezv/z80cpp
 ///////////////////////////////////////////////////////////////////////////////
-#define CPU_LINKEFONG
+//#define CPU_LINKEFONG
 //#define CPU_ANDREWEISSFLOG
-//#define CPU_JLSANCHEZ
+#define CPU_JLSANCHEZ
 
 #define SDCARD
 #define BEEPER

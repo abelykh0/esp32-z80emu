@@ -2,10 +2,31 @@
 
 #include "z80Emulator.h"
 
-#ifdef CPU_JLSANCHEZ2
+#ifdef CPU_JLSANCHEZ
 
 #include "z80.h"
 #include "z80operations.h"
+
+class Operations : public Z80operations
+{
+private:
+    // Delay Contention: for emulating CPU slowing due to sharing bus with ULA
+    // NOTE: Only 48K spectrum contention implemented. This function must be called
+    // only when dealing with affected memory (use ADDRESS_IN_LOW_RAM macro)
+    static uint8_t delayContention(uint32_t currentTstates);    
+
+public:
+    uint8_t fetchOpcode(uint16_t address) override;
+    uint8_t peek8(uint16_t address) override;
+    void poke8(uint16_t address, uint8_t value) override;
+    uint16_t peek16(uint16_t adddress) override;
+    void poke16(uint16_t address, RegisterPair word) override;
+    uint8_t inPort(uint16_t port) override;
+    void outPort(uint16_t port, uint8_t value) override;
+    void addressOnBus(uint16_t address, int32_t wstates) override;
+    void interruptHandlingTime(int32_t wstates) override;
+    bool isActiveINT(void) override;    
+};
 
 static Operations z80Operations;
 static Z80 z80(&z80Operations);
@@ -113,5 +134,133 @@ void z80Emulator::set_IFF2(uint8_t value) { z80.setIFF2(value == 1); }
 
 uint8_t z80Emulator::get_IM() { return (uint8_t)z80.getIM(); }
 void z80Emulator::set_IM(uint8_t value) { z80.setIM((Z80::IntMode)value); }
+
+
+#define ADDRESS_IN_LOW_RAM(addr) (1 == (addr >> 14))
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// delay contention: emulates wait states introduced by the ULA (graphic chip)
+// whenever there is a memory access to contended memory (shared between ULA and CPU).
+// detailed info: https://worldofspectrum.org/faq/reference/48kreference.htm#ZXSpectrum
+// from paragraph which starts with "The 50 Hz interrupt is synchronized with..."
+// if you only read from https://worldofspectrum.org/faq/reference/48kreference.htm#Contention
+// without reading the previous paragraphs about line timings, it may be confusing.
+//
+inline uint8_t Operations::delayContention(uint32_t currentTstates)
+{
+    // sequence of wait states
+    static uint8_t wait_states[8] = { 6, 5, 4, 3, 2, 1, 0, 0 };
+
+	// delay states one t-state BEFORE the first pixel to be drawn
+	currentTstates += 1;
+
+	// each line spans 224 t-states
+	int line = currentTstates / 224;
+
+	// only the 192 lines between 64 and 255 have graphic data, the rest is border
+	if (line < 64 || line >= 256) return 0;
+
+	// only the first 128 t-states of each line correspond to a graphic data transfer
+	// the remaining 96 t-states correspond to border
+	int halfpix = currentTstates % 224;
+	if (halfpix >= 128) return 0;
+
+	int modulo = halfpix % 8;
+	return wait_states[modulo];
+}
+
+/* Read opcode from RAM */
+uint8_t Operations::fetchOpcode(uint16_t address) {
+    // 3 clocks to fetch opcode from RAM and 1 execution clock
+    if (ADDRESS_IN_LOW_RAM(address))
+    {
+        tstates += Operations::delayContention(tstates);
+    }
+
+    tstates += 4;
+    return env->ReadByte(address);
+}
+
+/* Read/Write byte from/to RAM */
+uint8_t Operations::peek8(uint16_t address) {
+    // 3 clocks for read byte from RAM
+    if (ADDRESS_IN_LOW_RAM(address))
+    {
+        tstates += Operations::delayContention(tstates);
+    }
+
+    tstates += 3;
+    return env->ReadByte(address);
+}
+void Operations::poke8(uint16_t address, uint8_t value) {
+    // 3 clocks for write byte to RAM
+    if (ADDRESS_IN_LOW_RAM(address))
+    {
+        tstates += Operations::delayContention(tstates);
+    }
+
+    tstates += 3;
+    env->WriteByte(address, value);
+}
+
+/* Read/Write word from/to RAM */
+uint16_t Operations::peek16(uint16_t address) {
+    // Order matters, first read lsb, then read msb, don't "optimize"
+    uint8_t lsb = this->peek8(address);
+    uint8_t msb = this->peek8(address + 1);
+    return (msb << 8) | lsb;
+}
+void Operations::poke16(uint16_t address, RegisterPair word) {
+    // Order matters, first write lsb, then write msb, don't "optimize"
+    this->poke8(address, word.byte8.lo);
+    this->poke8(address + 1, word.byte8.hi);
+}
+
+/* In/Out byte from/to IO Bus */
+uint8_t Operations::inPort(uint16_t port) {
+    // 3 clocks for read byte from bus
+    tstates += 3;
+    uint8_t hiport = port >> 8;
+    uint8_t loport = port & 0xFF;
+    return env->Input(loport, hiport);
+}
+void Operations::outPort(uint16_t port, uint8_t value) {
+    // 4 clocks for write byte to bus
+    tstates += 4;
+    uint8_t hiport = port >> 8;
+    uint8_t loport = port & 0xFF;
+    env->Output(loport, hiport, value);
+}
+
+/* Put an address on bus lasting 'tstates' cycles */
+void Operations::addressOnBus(uint16_t address, int32_t wstates){
+    // Additional clocks to be added on some instructions
+    if (ADDRESS_IN_LOW_RAM(address)) 
+    {
+        for (int idx = 0; idx < wstates; idx++) 
+        {
+            tstates += Operations::delayContention(tstates) + 1;
+        }
+    }
+    else
+    {
+        tstates += wstates;
+    }
+}
+
+/* Clocks needed for processing INT and NMI */
+void Operations::interruptHandlingTime(int32_t wstates) 
+{
+    tstates += wstates;
+}
+
+/* Callback to know when the INT signal is active */
+bool Operations::isActiveINT(void) 
+{
+    if (!interruptPending) return false;
+    interruptPending = false;
+    return true;
+}
 
 #endif
