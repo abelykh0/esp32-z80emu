@@ -10,6 +10,7 @@
 #include "z80snapshot.h"
 #include "SD.h"
 #include "ScreenArea.h"
+#include "errorReadingFile.h"
 
 using namespace zx;
 
@@ -21,6 +22,7 @@ using namespace zx;
 #define FORE_COLOR (DEBUG_BAND_COLORS >> 8)
 #define BACK_COLOR (DEBUG_BAND_COLORS & 0xFF)
 
+extern VideoController* Screen;
 extern ScreenArea DebugScreen;
 
 typedef TCHAR FileName[MAX_LFN + 1];
@@ -108,10 +110,8 @@ static TCHAR* TruncateFileName(TCHAR* fileName)
 
 static void noScreenshot()
 {
-	//Screen->Clear();
-	//Screen->SetAttribute(0x0310); // red on blue
-	//Screen->PrintAlignCenter(11, "Error reading selected file");
-	//Screen->SetAttribute(0x3F10); // white on blue
+	// Error reading selected file
+	Screen->ShowScreenshot(errorReadingFile, 0);
 }
 
 static void SetSelection(uint8_t selectedFile)
