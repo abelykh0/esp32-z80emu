@@ -244,7 +244,6 @@ void VideoController::freeUnusedAttributes()
 uint32_t* VideoController::CreateAttribute(uint8_t foreColor, uint8_t backColor)
 {
     uint32_t* attribute = (uint32_t*)heap_caps_malloc(16 * 4, MALLOC_CAP_32BIT);
-    Serial.printf("Created attribute %x\n", (uint32_t)attribute);
     this->InitAttribute(attribute, foreColor, backColor);
     return attribute;
 }

@@ -170,11 +170,6 @@ static void showKeyboardSetup()
 	Screen->ShowScreenshot(spectrumKeyboard, 0);
 	Screen->_mode = 1;
 	DebugScreen.Clear();
-/*
-	DebugScreen.SetPrintAttribute(DEBUG_BAND_COLORS);
-	DebugScreen.Clear();
-	DebugScreen.PrintAlignCenter(2, "Press any key to return");
-*/
 }
 
 void showTitle(const char* title)

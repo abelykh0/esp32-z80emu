@@ -353,7 +353,6 @@ bool loadSnapshotSetup(const char* path)
 
 	DebugScreen.SetPrintAttribute(0x3F10); // white on blue
 	DebugScreen.Clear();
-	//*Screen->BorderColor = 0x10;
 
 	showTitle("Load snapshot. ENTER, ESC, \x18, \x19, \x1A, \x1B"); // ↑, ↓, →, ←
 
