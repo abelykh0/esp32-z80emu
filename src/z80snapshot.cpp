@@ -450,6 +450,7 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 
 	// Note: this requires little-endian processor
 	FileHeader* header = (FileHeader*)buffer1;
+    uint8_t borderColor = (header->Flags1 & 0x0E) >> 1;
 
     bool isCompressed;
     if (header->PC != 0)
@@ -466,7 +467,6 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 
         uint8_t* buffer2 = &buffer1[0x2000];
         DecompressPage(buffer1, 0x1B00, isCompressed, 0x1B00, buffer2);
-    	uint8_t borderColor = (header->Flags1 & 0x0E) >> 1;
         ShowScreenshot(buffer2, borderColor);
     }
     else
@@ -534,7 +534,6 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 
                 uint8_t* buffer2 = &buffer1[0x2000];
                 DecompressPage(buffer1, pageSize, isCompressed, 0x1B00, buffer2);
-            	uint8_t borderColor = (header->Flags1 & 0x0E) >> 1;
                 ShowScreenshot(buffer2, borderColor);
 
                 return true;
