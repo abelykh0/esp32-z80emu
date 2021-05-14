@@ -354,7 +354,7 @@ bool loadSnapshotSetup(const char* path)
 	DebugScreen.SetPrintAttribute(0x3F10); // white on blue
 	DebugScreen.Clear();
 
-	showTitle("Load snapshot. ENTER, ESC, \x18, \x19, \x1A, \x1B"); // ↑, ↓, →, ←
+	showTitle("Loading files, please wait...");
 
 	FRESULT fr = mount();
 	if (fr != FR_OK)
@@ -430,6 +430,8 @@ bool loadSnapshotSetup(const char* path)
 		_loadingSnapshot = true;
 	}
 
+	showTitle("Load snapshot. ENTER, ESC, \x18, \x19, \x1A, \x1B"); // ↑, ↓, →, ←
+
 	return result;
 }
 
@@ -441,14 +443,14 @@ bool loadSnapshotLoop()
 	}
 
 	int32_t scanCode = Ps2_GetScancode();
-	if (scanCode == 0 || (scanCode & 0xFF00) != 0xF000)
+	if (scanCode == 0 || (scanCode & 0xFF00) == 0xF000)
 	{
 		return true;
 	}
 
 	uint8_t previousSelection = _selectedFile;
 
-	scanCode = ((scanCode & 0xFF0000) >> 8 | (scanCode & 0xFF));
+	scanCode &= 0xFFFF;
 	switch (scanCode)
 	{
 	case KEY_UPARROW:
