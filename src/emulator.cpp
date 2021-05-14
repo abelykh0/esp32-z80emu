@@ -225,6 +225,7 @@ case KEY_F2:
 		break;
 
 	case KEY_F10:
+		hideRegisters();
 		showKeyboardSetup();
 		break;
 
@@ -286,13 +287,16 @@ void EmulatorTaskMain(void *unused)
 	zx_setup(&Environment);
 	Environment.Initialize();
 
-    Serial.write("before ReadRomFromFiles()\r\n");
     ReadRomFromFiles();
-    Serial.write("after ReadRomFromFiles()\r\n");
 
 	Screen->Start(RESOLUTION);
 
 	showHelp();
+
+    Serial.write("before loop\r\n");
+    uint32_t freeHeap32 = heap_caps_get_free_size(MALLOC_CAP_32BIT);
+    uint32_t freeHeap8 = heap_caps_get_free_size(MALLOC_CAP_8BIT);
+    Serial.printf("Free heap 32BIT: %d, free heap 8BIT: %d\r\n", freeHeap32 - freeHeap8, freeHeap8);
 
 	// Loop
 	while (true)

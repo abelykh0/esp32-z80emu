@@ -98,7 +98,6 @@ void ScreenArea::HideCursor()
 
 void ScreenArea::Print(const char* str)
 {
-    Serial.printf("x=%d y=%d\r\n", this->getX(), this->getY());
     if (this->_isCursorVisible)
     {
     	this->SetAttribute(this->getX(), this->getY(), this->foreColor, this->backColor);
