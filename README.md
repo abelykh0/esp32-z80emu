@@ -14,7 +14,7 @@ Spectrum ZX 128K emulator on VGA-32 board
 * Not using any PSRAM
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=OEjMUaaSh-4
-" target="_blank"><img src="http://img.youtube.com/vi/PQxoNzHJnkY/0.jpg" 
+" target="_blank"><img src="https://i.ytimg.com/vi/OEjMUaaSh-4/hqdefault.jpg" 
 alt="ZX Spectrum Emulator on ESP32" width="480" height="360" border="10" /></a>
 
 ## Third party software
