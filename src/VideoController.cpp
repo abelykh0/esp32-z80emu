@@ -19,7 +19,12 @@ VideoController::VideoController(SpectrumScreenData* screenData)
 
 void VideoController::Start(char const* modeline)
 {
+#ifdef SDCARD
     this->_fontData = (uint8_t*)font8x8;
+#else
+    this->_fontData = (uint8_t*)heap_caps_malloc(256 * 8, MALLOC_CAP_8BIT);
+    memcpy(this->_fontData, font8x8, 256 * 8);
+#endif
 
     // "default" attribute (white on blue)
     this->_defaultAttribute = (uint32_t*)heap_caps_malloc(16 * 4, MALLOC_CAP_32BIT);

@@ -366,31 +366,33 @@ bool loadSnapshotSetup(const char* path)
 	_fileCount = 0;
 	bool result = true;
 
-    File root = _fileSystem->open(path);
-	if (root)
+	FF_DIR folder;
+	FILINFO fileInfo;
+	fr = f_opendir(&folder, (const TCHAR*) "/");
+	if (fr == FR_OK)
 	{
         int fileIndex = 0;
 		while (fileIndex < maxFileCount)
 		{
-			File file = root.openNextFile();
-			if (!file)
+			fr = f_readdir(&folder, &fileInfo);
+			if (fr != FR_OK || fileInfo.fname[0] == 0)
 			{
 				result = _fileCount > 0;
 				break;
 			}
 
-            if (file.isDirectory())
+            if (fileInfo.fattrib & AM_DIR)
             {
                 continue;
             }
 
             // *.z80
-            if (strncmp(FileExtension((TCHAR*)file.name()), ".z80", 4) != 0)
+            if (strncmp(FileExtension((TCHAR*)fileInfo.fname), ".z80", 4) != 0)
             {
                 continue;
             }
 
-			strncpy(_fileNames[fileIndex], file.name() + _rootFolderLength, MAX_LFN + 1);
+			strncpy(_fileNames[fileIndex], fileInfo.fname, MAX_LFN + 1);
 			_fileCount++;
             fileIndex++;
 		}
