@@ -24,8 +24,8 @@ This project uses the following libraries:
 
 Choose one of the following for Z80 CPU emulator:
 * (unsure, MIT?) Lin Ke-Fong's https://github.com/anotherlin/z80emu
-* (zlib License) Andre Weissflog's https://github.com/floooh/chips/
 * (GPL v3.0) José Luis Sánchez's https://github.com/jsanchezv/z80cpp
+* (zlib License) Andre Weissflog's https://github.com/floooh/chips/ (this one seems too slow)
 
 ## Plans for the future / issues
 * Flickering in some games
