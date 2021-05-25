@@ -51,7 +51,8 @@
         "streambuf": "cpp",
         "cinttypes": "cpp",
         "utility": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "z80_instructions.h": "c"
     },
     "cmake.configureOnOpen": false
 }

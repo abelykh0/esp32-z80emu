@@ -7,6 +7,7 @@
 #include "z80main.h"
 #include "z80Emulator.h"
 #include "z80Environment.h"
+#include "VideoController.h"
 
 /*
  Offset  Length  Description

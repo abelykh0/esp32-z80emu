@@ -3,7 +3,7 @@
 #include "ps2Input.h"
 #include "ay3-8912-state.h"
 #include "main_ROM.h"
-#include "settings.h"
+#include "VideoController.h"
 
 #define BEEPER_PIN 25
 

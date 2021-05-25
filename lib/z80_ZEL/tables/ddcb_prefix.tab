@@ -1,0 +1,256 @@
+{ RLC_I, REG_IX, INV, REG_B, 23, TYPE_OFFSET, "ld b,rlc (ix%c%02Xh)" },	// 00
+{ RLC_I, REG_IX, INV, REG_C, 23, TYPE_OFFSET, "ld c,rlc (ix%c%02Xh)" },	// 01
+{ RLC_I, REG_IX, INV, REG_D, 23, TYPE_OFFSET, "ld d,rlc (ix%c%02Xh)" },	// 02
+{ RLC_I, REG_IX, INV, REG_E, 23, TYPE_OFFSET, "ld e,rlc (ix%c%02Xh)" },	// 03
+{ RLC_I, REG_IX, INV, REG_H, 23, TYPE_OFFSET, "ld h,rlc (ix%c%02Xh)" },	// 04
+{ RLC_I, REG_IX, INV, REG_L, 23, TYPE_OFFSET, "ld l,rlc (ix%c%02Xh)" },	// 05
+{ RLC_I, REG_IX, INV, INV, 23, TYPE_OFFSET, "rlc (ix%c%02Xh)" },	// 06
+{ RLC_I, REG_IX, INV, REG_A, 23, TYPE_OFFSET, "ld a,rlc (ix%c%02Xh)" },	// 07
+{ RRC_I, REG_IX, INV, REG_B, 23, TYPE_OFFSET, "ld b,rrc (ix%c%02Xh)" },	// 08
+{ RRC_I, REG_IX, INV, REG_C, 23, TYPE_OFFSET, "ld c,rrc (ix%c%02Xh)" },	// 09
+{ RRC_I, REG_IX, INV, REG_D, 23, TYPE_OFFSET, "ld d,rrc (ix%c%02Xh)" },	// 0a
+{ RRC_I, REG_IX, INV, REG_E, 23, TYPE_OFFSET, "ld e,rrc (ix%c%02Xh)" },	// 0b
+{ RRC_I, REG_IX, INV, REG_H, 23, TYPE_OFFSET, "ld h,rrc (ix%c%02Xh)" },	// 0c
+{ RRC_I, REG_IX, INV, REG_L, 23, TYPE_OFFSET, "ld l,rrc (ix%c%02Xh)" },	// 0d
+{ RRC_I, REG_IX, INV, INV, 23, TYPE_OFFSET, "rrc (ix%c%02Xh)" },	// 0e
+{ RRC_I, REG_IX, INV, REG_A, 23, TYPE_OFFSET, "ld a,rrc (ix%c%02Xh)" },	// 0f
+{ RL_I, REG_IX, INV, REG_B, 23, TYPE_OFFSET, "ld b,rl (ix%c%02Xh)" },	// 10
+{ RL_I, REG_IX, INV, REG_C, 23, TYPE_OFFSET, "ld c,rl (ix%c%02Xh)" },	// 11
+{ RL_I, REG_IX, INV, REG_D, 23, TYPE_OFFSET, "ld d,rl (ix%c%02Xh)" },	// 12
+{ RL_I, REG_IX, INV, REG_E, 23, TYPE_OFFSET, "ld e,rl (ix%c%02Xh)" },	// 13
+{ RL_I, REG_IX, INV, REG_H, 23, TYPE_OFFSET, "ld h,rl (ix%c%02Xh)" },	// 14
+{ RL_I, REG_IX, INV, REG_L, 23, TYPE_OFFSET, "ld l,rl (ix%c%02Xh)" },	// 15
+{ RL_I, REG_IX, INV, INV, 23, TYPE_OFFSET, "rl (ix%c%02Xh)" },	// 16
+{ RL_I, REG_IX, INV, REG_A, 23, TYPE_OFFSET, "ld a,rl (ix%c%02Xh)" },	// 17
+{ RR_I, REG_IX, INV, REG_B, 23, TYPE_OFFSET, "ld b,rr (ix%c%02Xh)" },	// 18
+{ RR_I, REG_IX, INV, REG_C, 23, TYPE_OFFSET, "ld c,rr (ix%c%02Xh)" },	// 19
+{ RR_I, REG_IX, INV, REG_D, 23, TYPE_OFFSET, "ld d,rr (ix%c%02Xh)" },	// 1a
+{ RR_I, REG_IX, INV, REG_E, 23, TYPE_OFFSET, "ld e,rr (ix%c%02Xh)" },	// 1b
+{ RR_I, REG_IX, INV, REG_H, 23, TYPE_OFFSET, "ld h,rr (ix%c%02Xh)" },	// 1c
+{ RR_I, REG_IX, INV, REG_L, 23, TYPE_OFFSET, "ld l,rr (ix%c%02Xh)" },	// 1d
+{ RR_I, REG_IX, INV, INV, 23, TYPE_OFFSET, "rr (ix%c%02Xh)" },	// 1e
+{ RR_I, REG_IX, INV, REG_A, 23, TYPE_OFFSET, "ld a,rr (ix%c%02Xh)" },	// 1f
+{ SLA_I, REG_IX, INV, REG_B, 23, TYPE_OFFSET, "ld b,sla (ix%c%02Xh)" },	// 20
+{ SLA_I, REG_IX, INV, REG_C, 23, TYPE_OFFSET, "ld c,sla (ix%c%02Xh)" },	// 21
+{ SLA_I, REG_IX, INV, REG_D, 23, TYPE_OFFSET, "ld d,sla (ix%c%02Xh)" },	// 22
+{ SLA_I, REG_IX, INV, REG_E, 23, TYPE_OFFSET, "ld e,sla (ix%c%02Xh)" },	// 23
+{ SLA_I, REG_IX, INV, REG_H, 23, TYPE_OFFSET, "ld h,sla (ix%c%02Xh)" },	// 24
+{ SLA_I, REG_IX, INV, REG_L, 23, TYPE_OFFSET, "ld l,sla (ix%c%02Xh)" },	// 25
+{ SLA_I, REG_IX, INV, INV, 23, TYPE_OFFSET, "sla (ix%c%02Xh)" },	// 26
+{ SLA_I, REG_IX, INV, REG_A, 23, TYPE_OFFSET, "ld a,sla (ix%c%02Xh)" },	// 27
+{ SRA_I, REG_IX, INV, REG_B, 23, TYPE_OFFSET, "ld b,sra (ix%c%02Xh)" },	// 28
+{ SRA_I, REG_IX, INV, REG_C, 23, TYPE_OFFSET, "ld c,sra (ix%c%02Xh)" },	// 29
+{ SRA_I, REG_IX, INV, REG_D, 23, TYPE_OFFSET, "ld d,sra (ix%c%02Xh)" },	// 2a
+{ SRA_I, REG_IX, INV, REG_E, 23, TYPE_OFFSET, "ld e,sra (ix%c%02Xh)" },	// 2b
+{ SRA_I, REG_IX, INV, REG_H, 23, TYPE_OFFSET, "ld h,sra (ix%c%02Xh)" },	// 2c
+{ SRA_I, REG_IX, INV, REG_L, 23, TYPE_OFFSET, "ld l,sra (ix%c%02Xh)" },	// 2d
+{ SRA_I, REG_IX, INV, INV, 23, TYPE_OFFSET, "sra (ix%c%02Xh)" },	// 2e
+{ SRA_I, REG_IX, INV, REG_A, 23, TYPE_OFFSET, "ld a,sra (ix%c%02Xh)" },	// 2f
+{ SLL_I, REG_IX, INV, REG_B, 23, TYPE_OFFSET, "ld b,sll (ix%c%02Xh)" },	// 30
+{ SLL_I, REG_IX, INV, REG_C, 23, TYPE_OFFSET, "ld c,sll (ix%c%02Xh)" },	// 31
+{ SLL_I, REG_IX, INV, REG_D, 23, TYPE_OFFSET, "ld d,sll (ix%c%02Xh)" },	// 32
+{ SLL_I, REG_IX, INV, REG_E, 23, TYPE_OFFSET, "ld e,sll (ix%c%02Xh)" },	// 33
+{ SLL_I, REG_IX, INV, REG_H, 23, TYPE_OFFSET, "ld h,sll (ix%c%02Xh)" },	// 34
+{ SLL_I, REG_IX, INV, REG_L, 23, TYPE_OFFSET, "ld l,sll (ix%c%02Xh)" },	// 35
+{ SLL_I, REG_IX, INV, INV, 23, TYPE_OFFSET, "sll (ix%c%02Xh)" },	// 36
+{ SLL_I, REG_IX, INV, REG_A, 23, TYPE_OFFSET, "ld a,sll (ix%c%02Xh)" },	// 37
+{ SRL_I, REG_IX, INV, REG_B, 23, TYPE_OFFSET, "ld b,srl (ix%c%02Xh)" },	// 38
+{ SRL_I, REG_IX, INV, REG_C, 23, TYPE_OFFSET, "ld c,srl (ix%c%02Xh)" },	// 39
+{ SRL_I, REG_IX, INV, REG_D, 23, TYPE_OFFSET, "ld d,srl (ix%c%02Xh)" },	// 3a
+{ SRL_I, REG_IX, INV, REG_E, 23, TYPE_OFFSET, "ld e,srl (ix%c%02Xh)" },	// 3b
+{ SRL_I, REG_IX, INV, REG_H, 23, TYPE_OFFSET, "ld h,srl (ix%c%02Xh)" },	// 3c
+{ SRL_I, REG_IX, INV, REG_L, 23, TYPE_OFFSET, "ld l,srl (ix%c%02Xh)" },	// 3d
+{ SRL_I, REG_IX, INV, INV, 23, TYPE_OFFSET, "srl (ix%c%02Xh)" },	// 3e
+{ SRL_I, REG_IX, INV, REG_A, 23, TYPE_OFFSET, "ld a,srl (ix%c%02Xh)" },	// 3f
+{ BIT_I, 0, REG_IX, INV, 20, TYPE_OFFSET, "bit 0,(ix%c%02Xh)" },	// 40
+{ BIT_I, 0, REG_IX, INV, 20, TYPE_OFFSET, "bit 0,(ix%c%02Xh)" },	// 41
+{ BIT_I, 0, REG_IX, INV, 20, TYPE_OFFSET, "bit 0,(ix%c%02Xh)" },	// 42
+{ BIT_I, 0, REG_IX, INV, 20, TYPE_OFFSET, "bit 0,(ix%c%02Xh)" },	// 43
+{ BIT_I, 0, REG_IX, INV, 20, TYPE_OFFSET, "bit 0,(ix%c%02Xh)" },	// 44
+{ BIT_I, 0, REG_IX, INV, 20, TYPE_OFFSET, "bit 0,(ix%c%02Xh)" },	// 45
+{ BIT_I, 0, REG_IX, INV, 20, TYPE_OFFSET, "bit 0,(ix%c%02Xh)" },	// 46
+{ BIT_I, 0, REG_IX, INV, 20, TYPE_OFFSET, "bit 0,(ix%c%02Xh)" },	// 47
+{ BIT_I, 1, REG_IX, INV, 20, TYPE_OFFSET, "bit 1,(ix%c%02Xh)" },	// 48
+{ BIT_I, 1, REG_IX, INV, 20, TYPE_OFFSET, "bit 1,(ix%c%02Xh)" },	// 49
+{ BIT_I, 1, REG_IX, INV, 20, TYPE_OFFSET, "bit 1,(ix%c%02Xh)" },	// 4a
+{ BIT_I, 1, REG_IX, INV, 20, TYPE_OFFSET, "bit 1,(ix%c%02Xh)" },	// 4b
+{ BIT_I, 1, REG_IX, INV, 20, TYPE_OFFSET, "bit 1,(ix%c%02Xh)" },	// 4c
+{ BIT_I, 1, REG_IX, INV, 20, TYPE_OFFSET, "bit 1,(ix%c%02Xh)" },	// 4d
+{ BIT_I, 1, REG_IX, INV, 20, TYPE_OFFSET, "bit 1,(ix%c%02Xh)" },	// 4e
+{ BIT_I, 1, REG_IX, INV, 20, TYPE_OFFSET, "bit 1,(ix%c%02Xh)" },	// 4f
+{ BIT_I, 2, REG_IX, INV, 20, TYPE_OFFSET, "bit 2,(ix%c%02Xh)" },	// 50
+{ BIT_I, 2, REG_IX, INV, 20, TYPE_OFFSET, "bit 2,(ix%c%02Xh)" },	// 51
+{ BIT_I, 2, REG_IX, INV, 20, TYPE_OFFSET, "bit 2,(ix%c%02Xh)" },	// 52
+{ BIT_I, 2, REG_IX, INV, 20, TYPE_OFFSET, "bit 2,(ix%c%02Xh)" },	// 53
+{ BIT_I, 2, REG_IX, INV, 20, TYPE_OFFSET, "bit 2,(ix%c%02Xh)" },	// 54
+{ BIT_I, 2, REG_IX, INV, 20, TYPE_OFFSET, "bit 2,(ix%c%02Xh)" },	// 55
+{ BIT_I, 2, REG_IX, INV, 20, TYPE_OFFSET, "bit 2,(ix%c%02Xh)" },	// 56
+{ BIT_I, 2, REG_IX, INV, 20, TYPE_OFFSET, "bit 2,(ix%c%02Xh)" },	// 57
+{ BIT_I, 3, REG_IX, INV, 20, TYPE_OFFSET, "bit 3,(ix%c%02Xh)" },	// 58
+{ BIT_I, 3, REG_IX, INV, 20, TYPE_OFFSET, "bit 3,(ix%c%02Xh)" },	// 59
+{ BIT_I, 3, REG_IX, INV, 20, TYPE_OFFSET, "bit 3,(ix%c%02Xh)" },	// 5a
+{ BIT_I, 3, REG_IX, INV, 20, TYPE_OFFSET, "bit 3,(ix%c%02Xh)" },	// 5b
+{ BIT_I, 3, REG_IX, INV, 20, TYPE_OFFSET, "bit 3,(ix%c%02Xh)" },	// 5c
+{ BIT_I, 3, REG_IX, INV, 20, TYPE_OFFSET, "bit 3,(ix%c%02Xh)" },	// 5d
+{ BIT_I, 3, REG_IX, INV, 20, TYPE_OFFSET, "bit 3,(ix%c%02Xh)" },	// 5e
+{ BIT_I, 3, REG_IX, INV, 20, TYPE_OFFSET, "bit 3,(ix%c%02Xh)" },	// 5f
+{ BIT_I, 4, REG_IX, INV, 20, TYPE_OFFSET, "bit 4,(ix%c%02Xh)" },	// 60
+{ BIT_I, 4, REG_IX, INV, 20, TYPE_OFFSET, "bit 4,(ix%c%02Xh)" },	// 61
+{ BIT_I, 4, REG_IX, INV, 20, TYPE_OFFSET, "bit 4,(ix%c%02Xh)" },	// 62
+{ BIT_I, 4, REG_IX, INV, 20, TYPE_OFFSET, "bit 4,(ix%c%02Xh)" },	// 63
+{ BIT_I, 4, REG_IX, INV, 20, TYPE_OFFSET, "bit 4,(ix%c%02Xh)" },	// 64
+{ BIT_I, 4, REG_IX, INV, 20, TYPE_OFFSET, "bit 4,(ix%c%02Xh)" },	// 65
+{ BIT_I, 4, REG_IX, INV, 20, TYPE_OFFSET, "bit 4,(ix%c%02Xh)" },	// 66
+{ BIT_I, 4, REG_IX, INV, 20, TYPE_OFFSET, "bit 4,(ix%c%02Xh)" },	// 67
+{ BIT_I, 5, REG_IX, INV, 20, TYPE_OFFSET, "bit 5,(ix%c%02Xh)" },	// 68
+{ BIT_I, 5, REG_IX, INV, 20, TYPE_OFFSET, "bit 5,(ix%c%02Xh)" },	// 69
+{ BIT_I, 5, REG_IX, INV, 20, TYPE_OFFSET, "bit 5,(ix%c%02Xh)" },	// 6a
+{ BIT_I, 5, REG_IX, INV, 20, TYPE_OFFSET, "bit 5,(ix%c%02Xh)" },	// 6b
+{ BIT_I, 5, REG_IX, INV, 20, TYPE_OFFSET, "bit 5,(ix%c%02Xh)" },	// 6c
+{ BIT_I, 5, REG_IX, INV, 20, TYPE_OFFSET, "bit 5,(ix%c%02Xh)" },	// 6d
+{ BIT_I, 5, REG_IX, INV, 20, TYPE_OFFSET, "bit 5,(ix%c%02Xh)" },	// 6e
+{ BIT_I, 5, REG_IX, INV, 20, TYPE_OFFSET, "bit 5,(ix%c%02Xh)" },	// 6f
+{ BIT_I, 6, REG_IX, INV, 20, TYPE_OFFSET, "bit 6,(ix%c%02Xh)" },	// 70
+{ BIT_I, 6, REG_IX, INV, 20, TYPE_OFFSET, "bit 6,(ix%c%02Xh)" },	// 71
+{ BIT_I, 6, REG_IX, INV, 20, TYPE_OFFSET, "bit 6,(ix%c%02Xh)" },	// 72
+{ BIT_I, 6, REG_IX, INV, 20, TYPE_OFFSET, "bit 6,(ix%c%02Xh)" },	// 73
+{ BIT_I, 6, REG_IX, INV, 20, TYPE_OFFSET, "bit 6,(ix%c%02Xh)" },	// 74
+{ BIT_I, 6, REG_IX, INV, 20, TYPE_OFFSET, "bit 6,(ix%c%02Xh)" },	// 75
+{ BIT_I, 6, REG_IX, INV, 20, TYPE_OFFSET, "bit 6,(ix%c%02Xh)" },	// 76
+{ BIT_I, 6, REG_IX, INV, 20, TYPE_OFFSET, "bit 6,(ix%c%02Xh)" },	// 77
+{ BIT_I, 7, REG_IX, INV, 20, TYPE_OFFSET, "bit 7,(ix%c%02Xh)" },	// 78
+{ BIT_I, 7, REG_IX, INV, 20, TYPE_OFFSET, "bit 7,(ix%c%02Xh)" },	// 79
+{ BIT_I, 7, REG_IX, INV, 20, TYPE_OFFSET, "bit 7,(ix%c%02Xh)" },	// 7a
+{ BIT_I, 7, REG_IX, INV, 20, TYPE_OFFSET, "bit 7,(ix%c%02Xh)" },	// 7b
+{ BIT_I, 7, REG_IX, INV, 20, TYPE_OFFSET, "bit 7,(ix%c%02Xh)" },	// 7c
+{ BIT_I, 7, REG_IX, INV, 20, TYPE_OFFSET, "bit 7,(ix%c%02Xh)" },	// 7d
+{ BIT_I, 7, REG_IX, INV, 20, TYPE_OFFSET, "bit 7,(ix%c%02Xh)" },	// 7e
+{ BIT_I, 7, REG_IX, INV, 20, TYPE_OFFSET, "bit 7,(ix%c%02Xh)" },	// 7f
+{ RES_I, 0, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,res 0,(ix%c%02Xh)" },	// 80
+{ RES_I, 0, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,res 0,(ix%c%02Xh)" },	// 81
+{ RES_I, 0, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,res 0,(ix%c%02Xh)" },	// 82
+{ RES_I, 0, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,res 0,(ix%c%02Xh)" },	// 83
+{ RES_I, 0, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,res 0,(ix%c%02Xh)" },	// 84
+{ RES_I, 0, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,res 0,(ix%c%02Xh)" },	// 85
+{ RES_I, 0, REG_IX, INV, 23, TYPE_OFFSET, "res 0,(ix%c%02Xh)" },	// 86
+{ RES_I, 0, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,res 0,(ix%c%02Xh)" },	// 87
+{ RES_I, 1, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,res 1,(ix%c%02Xh)" },	// 88
+{ RES_I, 1, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,res 1,(ix%c%02Xh)" },	// 89
+{ RES_I, 1, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,res 1,(ix%c%02Xh)" },	// 8a
+{ RES_I, 1, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,res 1,(ix%c%02Xh)" },	// 8b
+{ RES_I, 1, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,res 1,(ix%c%02Xh)" },	// 8c
+{ RES_I, 1, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,res 1,(ix%c%02Xh)" },	// 8d
+{ RES_I, 1, REG_IX, INV, 23, TYPE_OFFSET, "res 1,(ix%c%02Xh)" },	// 8e
+{ RES_I, 1, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,res 1,(ix%c%02Xh)" },	// 8f
+{ RES_I, 2, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,res 2,(ix%c%02Xh)" },	// 90
+{ RES_I, 2, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,res 2,(ix%c%02Xh)" },	// 91
+{ RES_I, 2, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,res 2,(ix%c%02Xh)" },	// 92
+{ RES_I, 2, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,res 2,(ix%c%02Xh)" },	// 93
+{ RES_I, 2, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,res 2,(ix%c%02Xh)" },	// 94
+{ RES_I, 2, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,res 2,(ix%c%02Xh)" },	// 95
+{ RES_I, 2, REG_IX, INV, 23, TYPE_OFFSET, "res 2,(ix%c%02Xh)" },	// 96
+{ RES_I, 2, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,res 2,(ix%c%02Xh)" },	// 97
+{ RES_I, 3, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,res 3,(ix%c%02Xh)" },	// 98
+{ RES_I, 3, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,res 3,(ix%c%02Xh)" },	// 99
+{ RES_I, 3, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,res 3,(ix%c%02Xh)" },	// 9a
+{ RES_I, 3, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,res 3,(ix%c%02Xh)" },	// 9b
+{ RES_I, 3, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,res 3,(ix%c%02Xh)" },	// 9c
+{ RES_I, 3, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,res 3,(ix%c%02Xh)" },	// 9d
+{ RES_I, 3, REG_IX, INV, 23, TYPE_OFFSET, "res 3,(ix%c%02Xh)" },	// 9e
+{ RES_I, 3, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,res 3,(ix%c%02Xh)" },	// 9f
+{ RES_I, 4, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,res 4,(ix%c%02Xh)" },	// a0
+{ RES_I, 4, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,res 4,(ix%c%02Xh)" },	// a1
+{ RES_I, 4, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,res 4,(ix%c%02Xh)" },	// a2
+{ RES_I, 4, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,res 4,(ix%c%02Xh)" },	// a3
+{ RES_I, 4, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,res 4,(ix%c%02Xh)" },	// a4
+{ RES_I, 4, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,res 4,(ix%c%02Xh)" },	// a5
+{ RES_I, 4, REG_IX, INV, 23, TYPE_OFFSET, "res 4,(ix%c%02Xh)" },	// a6
+{ RES_I, 4, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,res 4,(ix%c%02Xh)" },	// a7
+{ RES_I, 5, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,res 5,(ix%c%02Xh)" },	// a8
+{ RES_I, 5, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,res 5,(ix%c%02Xh)" },	// a9
+{ RES_I, 5, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,res 5,(ix%c%02Xh)" },	// aa
+{ RES_I, 5, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,res 5,(ix%c%02Xh)" },	// ab
+{ RES_I, 5, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,res 5,(ix%c%02Xh)" },	// ac
+{ RES_I, 5, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,res 5,(ix%c%02Xh)" },	// ad
+{ RES_I, 5, REG_IX, INV, 23, TYPE_OFFSET, "res 5,(ix%c%02Xh)" },	// ae
+{ RES_I, 5, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,res 5,(ix%c%02Xh)" },	// af
+{ RES_I, 6, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,res 6,(ix%c%02Xh)" },	// b0
+{ RES_I, 6, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,res 6,(ix%c%02Xh)" },	// b1
+{ RES_I, 6, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,res 6,(ix%c%02Xh)" },	// b2
+{ RES_I, 6, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,res 6,(ix%c%02Xh)" },	// b3
+{ RES_I, 6, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,res 6,(ix%c%02Xh)" },	// b4
+{ RES_I, 6, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,res 6,(ix%c%02Xh)" },	// b5
+{ RES_I, 6, REG_IX, INV, 23, TYPE_OFFSET, "res 6,(ix%c%02Xh)" },	// b6
+{ RES_I, 6, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,res 6,(ix%c%02Xh)" },	// b7
+{ RES_I, 7, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,res 7,(ix%c%02Xh)" },	// b8
+{ RES_I, 7, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,res 7,(ix%c%02Xh)" },	// b9
+{ RES_I, 7, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,res 7,(ix%c%02Xh)" },	// ba
+{ RES_I, 7, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,res 7,(ix%c%02Xh)" },	// bb
+{ RES_I, 7, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,res 7,(ix%c%02Xh)" },	// bc
+{ RES_I, 7, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,res 7,(ix%c%02Xh)" },	// bd
+{ RES_I, 7, REG_IX, INV, 23, TYPE_OFFSET, "res 7,(ix%c%02Xh)" },	// be
+{ RES_I, 7, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,res 7,(ix%c%02Xh)" },	// bf
+{ SET_I, 0, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,set 0,(ix%c%02Xh)" },	// c0
+{ SET_I, 0, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,set 0,(ix%c%02Xh)" },	// c1
+{ SET_I, 0, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,set 0,(ix%c%02Xh)" },	// c2
+{ SET_I, 0, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,set 0,(ix%c%02Xh)" },	// c3
+{ SET_I, 0, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,set 0,(ix%c%02Xh)" },	// c4
+{ SET_I, 0, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,set 0,(ix%c%02Xh)" },	// c5
+{ SET_I, 0, REG_IX, INV, 23, TYPE_OFFSET, "set 0,(ix%c%02Xh)" },	// c6
+{ SET_I, 0, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,set 0,(ix%c%02Xh)" },	// c7
+{ SET_I, 1, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,set 1,(ix%c%02Xh)" },	// c8
+{ SET_I, 1, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,set 1,(ix%c%02Xh)" },	// c9
+{ SET_I, 1, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,set 1,(ix%c%02Xh)" },	// ca
+{ SET_I, 1, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,set 1,(ix%c%02Xh)" },	// cb
+{ SET_I, 1, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,set 1,(ix%c%02Xh)" },	// cc
+{ SET_I, 1, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,set 1,(ix%c%02Xh)" },	// cd
+{ SET_I, 1, REG_IX, INV, 23, TYPE_OFFSET, "set 1,(ix%c%02Xh)" },	// ce
+{ SET_I, 1, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,set 1,(ix%c%02Xh)" },	// cf
+{ SET_I, 2, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,set 2,(ix%c%02Xh)" },	// d0
+{ SET_I, 2, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,set 2,(ix%c%02Xh)" },	// d1
+{ SET_I, 2, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,set 2,(ix%c%02Xh)" },	// d2
+{ SET_I, 2, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,set 2,(ix%c%02Xh)" },	// d3
+{ SET_I, 2, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,set 2,(ix%c%02Xh)" },	// d4
+{ SET_I, 2, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,set 2,(ix%c%02Xh)" },	// d5
+{ SET_I, 2, REG_IX, INV, 23, TYPE_OFFSET, "set 2,(ix%c%02Xh)" },	// d6
+{ SET_I, 2, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,set 2,(ix%c%02Xh)" },	// d7
+{ SET_I, 3, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,set 3,(ix%c%02Xh)" },	// d8
+{ SET_I, 3, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,set 3,(ix%c%02Xh)" },	// d9
+{ SET_I, 3, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,set 3,(ix%c%02Xh)" },	// da
+{ SET_I, 3, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,set 3,(ix%c%02Xh)" },	// db
+{ SET_I, 3, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,set 3,(ix%c%02Xh)" },	// dc
+{ SET_I, 3, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,set 3,(ix%c%02Xh)" },	// dd
+{ SET_I, 3, REG_IX, INV, 23, TYPE_OFFSET, "set 3,(ix%c%02Xh)" },	// de
+{ SET_I, 3, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,set 3,(ix%c%02Xh)" },	// df
+{ SET_I, 4, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,set 4,(ix%c%02Xh)" },	// e0
+{ SET_I, 4, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,set 4,(ix%c%02Xh)" },	// e1
+{ SET_I, 4, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,set 4,(ix%c%02Xh)" },	// e2
+{ SET_I, 4, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,set 4,(ix%c%02Xh)" },	// e3
+{ SET_I, 4, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,set 4,(ix%c%02Xh)" },	// e4
+{ SET_I, 4, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,set 4,(ix%c%02Xh)" },	// e5
+{ SET_I, 4, REG_IX, INV, 23, TYPE_OFFSET, "set 4,(ix%c%02Xh)" },	// e6
+{ SET_I, 4, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,set 4,(ix%c%02Xh)" },	// e7
+{ SET_I, 5, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,set 5,(ix%c%02Xh)" },	// e8
+{ SET_I, 5, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,set 5,(ix%c%02Xh)" },	// e9
+{ SET_I, 5, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,set 5,(ix%c%02Xh)" },	// ea
+{ SET_I, 5, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,set 5,(ix%c%02Xh)" },	// eb
+{ SET_I, 5, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,set 5,(ix%c%02Xh)" },	// ec
+{ SET_I, 5, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,set 5,(ix%c%02Xh)" },	// ed
+{ SET_I, 5, REG_IX, INV, 23, TYPE_OFFSET, "set 5,(ix%c%02Xh)" },	// ee
+{ SET_I, 5, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,set 5,(ix%c%02Xh)" },	// ef
+{ SET_I, 6, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,set 6,(ix%c%02Xh)" },	// f0
+{ SET_I, 6, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,set 6,(ix%c%02Xh)" },	// f1
+{ SET_I, 6, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,set 6,(ix%c%02Xh)" },	// f2
+{ SET_I, 6, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,set 6,(ix%c%02Xh)" },	// f3
+{ SET_I, 6, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,set 6,(ix%c%02Xh)" },	// f4
+{ SET_I, 6, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,set 6,(ix%c%02Xh)" },	// f5
+{ SET_I, 6, REG_IX, INV, 23, TYPE_OFFSET, "set 6,(ix%c%02Xh)" },	// f6
+{ SET_I, 6, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,set 6,(ix%c%02Xh)" },	// f7
+{ SET_I, 7, REG_IX, REG_B, 23, TYPE_OFFSET, "ld b,set 7,(ix%c%02Xh)" },	// f8
+{ SET_I, 7, REG_IX, REG_C, 23, TYPE_OFFSET, "ld c,set 7,(ix%c%02Xh)" },	// f9
+{ SET_I, 7, REG_IX, REG_D, 23, TYPE_OFFSET, "ld d,set 7,(ix%c%02Xh)" },	// fa
+{ SET_I, 7, REG_IX, REG_E, 23, TYPE_OFFSET, "ld e,set 7,(ix%c%02Xh)" },	// fb
+{ SET_I, 7, REG_IX, REG_H, 23, TYPE_OFFSET, "ld h,set 7,(ix%c%02Xh)" },	// fc
+{ SET_I, 7, REG_IX, REG_L, 23, TYPE_OFFSET, "ld l,set 7,(ix%c%02Xh)" },	// fd
+{ SET_I, 7, REG_IX, INV, 23, TYPE_OFFSET, "set 7,(ix%c%02Xh)" },	// fe
+{ SET_I, 7, REG_IX, REG_A, 23, TYPE_OFFSET, "ld a,set 7,(ix%c%02Xh)" },	// ff

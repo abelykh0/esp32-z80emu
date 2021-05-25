@@ -3,7 +3,6 @@
 
 #include "settings.h"
 #include "z80Emulator.h"
-#include "VideoController.h"
 
 extern uint8_t _buffer16K_1[];
 extern uint8_t _buffer16K_2[];

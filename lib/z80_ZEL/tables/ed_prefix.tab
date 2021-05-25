@@ -1,0 +1,256 @@
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 00
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 01
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 02
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 03
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 04
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 05
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 06
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 07
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 08
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 09
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 0a
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 0b
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 0c
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 0d
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 0e
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 0f
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 10
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 11
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 12
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 13
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 14
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 15
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 16
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 17
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 18
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 19
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 1a
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 1b
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 1c
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 1d
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 1e
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 1f
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 20
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 21
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 22
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 23
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 24
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 25
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 26
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 27
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 28
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 29
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 2a
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 2b
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 2c
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 2d
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 2e
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 2f
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 30
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 31
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 32
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 33
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 34
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 35
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 36
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 37
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 38
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 39
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 3a
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 3b
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 3c
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 3d
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 3e
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 3f
+{ IN_R_R, REG_B, REG_C, INV, 12, TYPE_NONE, "in b,(c)" },	// 40
+{ OUT_R_R, REG_C, REG_B, INV, 12, TYPE_NONE, "out (c),b" },	// 41
+{ SBC_RR_RR, REG_HL, REG_BC, INV, 15, TYPE_NONE, "sbc hl,bc" },	// 42
+{ LD_MNN_RR, INV, REG_BC, INV, 20, TYPE_IMM_NN, "ld (%04hXh),bc" },	// 43
+{ NEG, INV, INV, INV, 8, TYPE_NONE, "neg" },	// 44
+{ RETN, INV, INV, INV, 14, TYPE_NONE, "retn" },	// 45
+{ IM, 0, INV, INV, 8, TYPE_NONE, "im 0" },	// 46
+{ LD_R_R, REG_I, REG_A, INV, 9, TYPE_NONE, "ld i,a" },	// 47
+{ IN_R_R, REG_C, REG_C, INV, 12, TYPE_NONE, "in c,(c)" },	// 48
+{ OUT_R_R, REG_C, REG_C, INV, 12, TYPE_NONE, "out (c),c" },	// 49
+{ ADC_RR_RR, REG_HL, REG_BC, INV, 15, TYPE_NONE, "adc hl,bc" },	// 4a
+{ LD_RR_MNN, REG_BC, INV, INV, 20, TYPE_IMM_NN, "ld bc,(%04hXh)" },	// 4b
+{ NEG, INV, INV, INV, 8, TYPE_NONE, "neg" },	// 4c
+{ RETI, INV, INV, INV, 14, TYPE_NONE, "reti" },	// 4d
+{ IM, 0, INV, INV, 8, TYPE_NONE, "im 0" },	// 4e
+{ LD_R_R, REG_R, REG_A, INV, 9, TYPE_NONE, "ld r,a" },	// 4f
+{ IN_R_R, REG_D, REG_C, INV, 12, TYPE_NONE, "in d,(c)" },	// 50
+{ OUT_R_R, REG_C, REG_D, INV, 12, TYPE_NONE, "out (c),d" },	// 51
+{ SBC_RR_RR, REG_HL, REG_DE, INV, 15, TYPE_NONE, "sbc hl,de" },	// 52
+{ LD_MNN_RR, INV, REG_DE, INV, 20, TYPE_IMM_NN, "ld (%04hXh),de" },	// 53
+{ NEG, INV, INV, INV, 8, TYPE_NONE, "neg" },	// 54
+{ RETN, INV, INV, INV, 14, TYPE_NONE, "retn" },	// 55
+{ IM, 1, INV, INV, 8, TYPE_NONE, "im 1" },	// 56
+{ LD_R_R, REG_A, REG_I, INV, 9, TYPE_NONE, "ld a,i" },	// 57
+{ IN_R_R, REG_E, REG_C, INV, 12, TYPE_NONE, "in e,(c)" },	// 58
+{ OUT_R_R, REG_C, REG_E, INV, 12, TYPE_NONE, "out (c),e" },	// 59
+{ ADC_RR_RR, REG_HL, REG_DE, INV, 15, TYPE_NONE, "adc hl,de" },	// 5a
+{ LD_RR_MNN, REG_DE, INV, INV, 20, TYPE_IMM_NN, "ld de,(%04hXh)" },	// 5b
+{ NEG, INV, INV, INV, 8, TYPE_NONE, "neg" },	// 5c
+{ RETN, INV, INV, INV, 14, TYPE_NONE, "retn" },	// 5d
+{ IM, 2, INV, INV, 8, TYPE_NONE, "im 2" },	// 5e
+{ LD_R_R, REG_A, REG_R, INV, 9, TYPE_NONE, "ld a,r" },	// 5f
+{ IN_R_R, REG_H, REG_C, INV, 12, TYPE_NONE, "in h,(c)" },	// 60
+{ OUT_R_R, REG_C, REG_H, INV, 12, TYPE_NONE, "out (c),h" },	// 61
+{ SBC_RR_RR, REG_HL, REG_HL, INV, 15, TYPE_NONE, "sbc hl,hl" },	// 62
+{ LD_MNN_RR, INV, REG_HL, INV, 16, TYPE_IMM_NN, "ld (%04hXh),hl" },	// 63
+{ NEG, INV, INV, INV, 8, TYPE_NONE, "neg" },	// 64
+{ RETN, INV, INV, INV, 14, TYPE_NONE, "retn" },	// 65
+{ IM, 0, INV, INV, 8, TYPE_NONE, "im 0" },	// 66
+{ RRD, INV, INV, INV, 18, TYPE_NONE, "rrd" },	// 67
+{ IN_R_R, REG_L, REG_C, INV, 12, TYPE_NONE, "in l,(c)" },	// 68
+{ OUT_R_R, REG_C, REG_L, INV, 12, TYPE_NONE, "out (c),l" },	// 69
+{ ADC_RR_RR, REG_HL, REG_HL, INV, 15, TYPE_NONE, "adc hl,hl" },	// 6a
+{ LD_RR_MNN, REG_HL, INV, INV, 16, TYPE_IMM_NN, "ld hl,(%04hXh)" },	// 6b
+{ NEG, INV, INV, INV, 8, TYPE_NONE, "neg" },	// 6c
+{ RETN, INV, INV, INV, 14, TYPE_NONE, "retn" },	// 6d
+{ IM, 0, INV, INV, 8, TYPE_NONE, "im 0" },	// 6e
+{ RLD, INV, INV, INV, 18, TYPE_NONE, "rld" },	// 6f
+{ IN_R_R, REG_F, REG_C, INV, 12, TYPE_NONE, "in f,(c)" },	// 70
+{ OUT_R, REG_C, 0, INV, 12, TYPE_NONE, "out (c),0" },	// 71
+{ SBC_RR_RR, REG_HL, REG_SP, INV, 15, TYPE_NONE, "sbc hl,sp" },	// 72
+{ LD_MNN_RR, INV, REG_SP, INV, 20, TYPE_IMM_NN, "ld (%04hXh),sp" },	// 73
+{ NEG, INV, INV, INV, 8, TYPE_NONE, "neg" },	// 74
+{ RETN, INV, INV, INV, 14, TYPE_NONE, "retn" },	// 75
+{ IM, 1, INV, INV, 8, TYPE_NONE, "im 1" },	// 76
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 77
+{ IN_R_R, REG_A, REG_C, INV, 12, TYPE_NONE, "in a,(c)" },	// 78
+{ OUT_R_R, REG_C, REG_A, INV, 12, TYPE_NONE, "out (c),a" },	// 79
+{ ADC_RR_RR, REG_HL, REG_SP, INV, 15, TYPE_NONE, "adc hl,sp" },	// 7a
+{ LD_RR_MNN, REG_SP, INV, INV, 20, TYPE_IMM_NN, "ld sp,(%04hXh)" },	// 7b
+{ NEG, INV, INV, INV, 8, TYPE_NONE, "neg" },	// 7c
+{ RETN, INV, INV, INV, 14, TYPE_NONE, "retn" },	// 7d
+{ IM, 2, INV, INV, 8, TYPE_NONE, "im 2" },	// 7e
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 7f
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 80
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 81
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 82
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 83
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 84
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 85
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 86
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 87
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 88
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 89
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 8a
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 8b
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 8c
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 8d
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 8e
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 8f
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 90
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 91
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 92
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 93
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 94
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 95
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 96
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 97
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 98
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 99
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 9a
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 9b
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 9c
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 9d
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 9e
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// 9f
+{ LDI, INV, INV, INV, 16, TYPE_NONE, "ldi" },	// a0
+{ CPI, INV, INV, INV, 16, TYPE_NONE, "cpi" },	// a1
+{ INI, INV, INV, INV, 16, TYPE_NONE, "ini" },	// a2
+{ OUTI, INV, INV, INV, 16, TYPE_NONE, "outi" },	// a3
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// a4
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// a5
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// a6
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// a7
+{ LDD, INV, INV, INV, 16, TYPE_NONE, "ldd" },	// a8
+{ CPD, INV, INV, INV, 16, TYPE_NONE, "cpd" },	// a9
+{ IND, INV, INV, INV, 16, TYPE_NONE, "ind" },	// aa
+{ OUTD, INV, INV, INV, 16, TYPE_NONE, "outd" },	// ab
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// ac
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// ad
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// ae
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// af
+{ LDIR, INV, INV, 16, 21, TYPE_NONE, "ldir" },	// b0
+{ CPIR, INV, INV, 16, 21, TYPE_NONE, "cpir" },	// b1
+{ INIR, INV, INV, 16, 21, TYPE_NONE, "inir" },	// b2
+{ OTIR, INV, INV, 16, 21, TYPE_NONE, "otir" },	// b3
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// b4
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// b5
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// b6
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// b7
+{ LDDR, INV, INV, 16, 21, TYPE_NONE, "lddr" },	// b8
+{ CPDR, INV, INV, 16, 21, TYPE_NONE, "cpdr" },	// b9
+{ INDR, INV, INV, 16, 21, TYPE_NONE, "indr" },	// ba
+{ OTDR, INV, INV, 16, 21, TYPE_NONE, "otdr" },	// bb
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// bc
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// bd
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// be
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// bf
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// c0
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// c1
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// c2
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// c3
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// c4
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// c5
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// c6
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// c7
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// c8
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// c9
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// ca
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// cb
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// cc
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// cd
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// ce
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// cf
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// d0
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// d1
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// d2
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// d3
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// d4
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// d5
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// d6
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// d7
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// d8
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// d9
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// da
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// db
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// dc
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// dd
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// de
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// df
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// e0
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// e1
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// e2
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// e3
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// e4
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// e5
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// e6
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// e7
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// e8
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// e9
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// ea
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// eb
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// ec
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// ed
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// ee
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// ef
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// f0
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// f1
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// f2
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// f3
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// f4
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// f5
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// f6
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// f7
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// f8
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// f9
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// fa
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// fb
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// fc
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// fd
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// fe
+{ NOP, INV, INV, INV, 8, TYPE_NONE, "nop" },	// ff

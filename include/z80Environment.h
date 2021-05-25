@@ -7,7 +7,6 @@
 #include "MemoryPage.h"
 #include "RamPage.h"
 #include "ClassProperties.h"
-#include "VideoController.h"
 #include "RamVideoPage.h"
 
 typedef struct 
@@ -25,6 +24,8 @@ typedef struct
         } __attribute__((packed));
     };
 } MemorySelect;
+
+class VideoController;
 
 class Z80Environment
 {

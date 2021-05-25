@@ -4,6 +4,7 @@
 #include "z80main.h"
 #include "z80input.h"
 #include "z80Environment.h"
+#include "VideoController.h"
 #include "ps2Input.h"
 #include "ay3-8912-state.h"
 
