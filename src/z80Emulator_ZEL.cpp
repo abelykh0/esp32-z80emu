@@ -52,6 +52,8 @@ void z80Emulator::reset()
 
     // after power-on or reset, R is set to 0
     this->set_R(0);
+
+    Z80_ClearHalt(_zxCpu);
 }
 
 int z80Emulator::emulate(int number_cycles)
