@@ -37,6 +37,7 @@ public:
 
     VideoController(SpectrumScreenData* screenData);
     void Start(char const* modeline);
+    void SetMode(uint8_t mode);
 
     // Mode 1
 	void Print(const char* str);

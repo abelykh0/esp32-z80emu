@@ -40,6 +40,7 @@ void VideoController::Start(char const* modeline)
     this->setDrawScanlineCallback(drawScanline, this);
 
     this->begin();
+    this->setScanlinesPerCallBack(2);
     this->setResolution(modeline);
 
     this->InitAttribute(this->_defaultAttribute, FORE_COLOR, BACK_COLOR);
@@ -359,6 +360,12 @@ uint8_t* IRAM_ATTR GetPixelPointer(uint8_t* pixels, uint16_t line)
 	uint32_t y345 = ((line & 0B00111000) << 2);
 	uint32_t y67 =  ((line & 0B11000000) << 5);
 	return &pixels[y012 | y345 | y67];
+}
+
+void VideoController::SetMode(uint8_t mode)
+{
+    //this->setScanlinesPerCallBack(mode == 1 ? 2 : 1);
+    this->_mode = mode;
 }
 
 void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)

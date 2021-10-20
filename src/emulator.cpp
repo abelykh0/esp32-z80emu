@@ -80,7 +80,7 @@ void saveState()
 {
 	_ay3_8912.StopSound();
 	Screen->ShowScreenshot();
-	Screen->_mode = 1;
+	Screen->SetMode(1);
 }
 
 static void showHelp()
@@ -103,7 +103,7 @@ static void showHelp()
 
 void restoreState()
 {
-	Screen->_mode = 2;
+	Screen->SetMode(2);
 	_ay3_8912.ResumeSound();
 }
 
@@ -168,7 +168,7 @@ static void ResetSystem()
 static void showKeyboardSetup()
 {
 	Screen->ShowScreenshot(spectrumKeyboard, 0);
-	Screen->_mode = 1;
+	Screen->SetMode(1);
 	DebugScreen.Clear();
 }
 
