@@ -722,7 +722,6 @@ void GetPageInfo(uint8_t* buffer, bool is128Mode, uint8_t pagingState, int8_t* p
 	*pageSize |= buffer[1] << 8;
 	*pageNumber = buffer[2];
 
-#ifdef ZX128K
 	if (!is128Mode)
 	{
         // 48K snapshot
@@ -747,11 +746,9 @@ void GetPageInfo(uint8_t* buffer, bool is128Mode, uint8_t pagingState, int8_t* p
     {
         // 128K snapshot
 
+#ifdef ZX128K
         *pageNumber -= 3;
-    }
 #else
-	if (is128Mode)
-	{
 		switch (*pageNumber)
 		{
 		case 8:
@@ -774,8 +771,8 @@ void GetPageInfo(uint8_t* buffer, bool is128Mode, uint8_t pagingState, int8_t* p
 			}
 			break;
 		}
-	}
 #endif
+    }
 }
 
 uint8_t CountEqualBytes(uint8_t* address, uint8_t* maxAddress)

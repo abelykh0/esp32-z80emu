@@ -2,7 +2,7 @@
 #ifndef __SETTINGS_H__
 #define __SETTINGS_H__
 
-#define ZX128K
+//#define ZX128K
 
 ///////////////////////////////////////////////////////////////////////////////
 // CPU core selection
@@ -13,9 +13,9 @@
 // - CPU_STEVECHECKOWAY: use Steve Checkoway's core  https://github.com/stevecheckoway/libzel
 // - CPU_ANDREWEISSFLOG: use Andre Weissflog's core  https://github.com/floooh/chips
 ///////////////////////////////////////////////////////////////////////////////
-//#define CPU_LINKEFONG
+#define CPU_LINKEFONG
 //#define CPU_JLSANCHEZ
-#define CPU_STEVECHECKOWAY
+//#define CPU_STEVECHECKOWAY
 //#define CPU_ANDREWEISSFLOG
 
 #define SDCARD
