@@ -8,6 +8,7 @@
 #include "z80Emulator.h"
 #include "z80Environment.h"
 #include "VideoController.h"
+#include "File.h"
 
 /*
  Offset  Length  Description
@@ -111,7 +112,7 @@ void SaveState(FileHeader* header);
 void GetPageInfo(uint8_t* buffer, bool is128Mode, uint8_t pagingState, int8_t* pageNumber, uint16_t* pageSize);
 void ShowScreenshot(uint8_t* buffer, uint8_t borderColor);
 
-bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4000])
+bool zx::SaveZ80Snapshot(File* file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4000])
 {
 	// Note: this requires little-endian processor
 	FileHeader* header = (FileHeader*)buffer1;
@@ -143,7 +144,7 @@ bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4
 
 	UINT bytesWritten;
 	UINT bytesToWrite = sizeof(FileHeader) + header->AdditionalBlockLength - 4;
-	bytesWritten = file.write(buffer1, bytesToWrite);
+	bytesWritten = file->write(buffer1, bytesToWrite);
 	if (bytesWritten != bytesToWrite)
 	{
 		return false;
@@ -209,7 +210,7 @@ bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4
 		    *buffer = pageNumber + 3;
         }
 
-		bytesWritten = file.write(buffer2, 3);
+		bytesWritten = file->write(buffer2, 3);
 		if (bytesWritten != 3)
 		{
 			return false;
@@ -218,7 +219,7 @@ bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4
 		buffer = buffer1;
 
         bytesToWrite = pageSize;
-        bytesWritten = file.write(buffer, bytesToWrite);
+        bytesWritten = file->write(buffer, bytesToWrite);
         if (bytesWritten != bytesToWrite)
         {
             return false;
@@ -228,14 +229,14 @@ bool zx::SaveZ80Snapshot(File file, uint8_t buffer1[0x4000], uint8_t buffer2[0x4
 	return true;
 }
 
-bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
+bool zx::LoadZ80Snapshot(File* file, uint8_t buffer1[0x4000],
 		uint8_t buffer2[0x4000])
 {
 	size_t bytesRead;
 	UINT bytesToRead;
 
 	bytesToRead = 30;
-	bytesRead = file.read(buffer1, bytesToRead);
+	bytesRead = file->read(buffer1, bytesToRead);
 	if (bytesRead != bytesToRead)
 	{
 		return false;
@@ -259,7 +260,7 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
     else
     {
         bytesToRead = 6;
-        bytesRead = file.read(&buffer1[30], bytesToRead);
+        bytesRead = file->read(&buffer1[30], bytesToRead);
         if (bytesRead != bytesToRead)
         {
             return false;
@@ -286,7 +287,7 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
     	ReadState(header);
 
         bytesToRead = header->AdditionalBlockLength - 4 + 3;
-        bytesRead = file.read(buffer1, bytesToRead);
+        bytesRead = file->read(buffer1, bytesToRead);
         if (bytesRead != bytesToRead)
         {
             return false;
@@ -316,7 +317,7 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
         {
             uint8_t* memory= buffer2;
 
-            bytesRead = file.read(buffer, bytesToRead);
+            bytesRead = file->read(buffer, bytesToRead);
             if (!isCompressed && bytesRead != bytesToRead)
             {
                 return false;
@@ -397,7 +398,7 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
                 // Read page into tempBuffer
                 uint8_t* buffer = buffer1;
                 bytesToRead = pageSize;
-                bytesRead = file.read(buffer, bytesToRead);
+                bytesRead = file->read(buffer, bytesToRead);
                 if (bytesRead != bytesToRead)
                 {
                     return false;
@@ -409,14 +410,14 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
             else
             {
                 // Move forward without reading
-                bool readResult = file.seek(file.position() + pageSize);
+                bool readResult = file->seek(pageSize, ios_base::cur);
                 if (readResult != true)
                 {
                     return false;
                 }
             }
 
-            bytesRead = file.read(buffer1, 3);
+            bytesRead = file->read(buffer1, 3);
             if (bytesRead <= 0)
             {
                 return false;
@@ -437,13 +438,13 @@ bool zx::LoadZ80Snapshot(File file, uint8_t buffer1[0x4000],
 	return true;
 }
 
-bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
+bool zx::LoadScreenFromZ80Snapshot(File* file, uint8_t buffer1[0x4000])
 {
 	size_t bytesRead;
 	UINT bytesToRead;
 
 	bytesToRead = 30;
-	bytesRead = file.read(buffer1, bytesToRead);
+	bytesRead = file->read(buffer1, bytesToRead);
 	if (bytesRead != bytesToRead)
 	{
 		return false;
@@ -460,7 +461,7 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 
         isCompressed = (header->Flags1 & 0x20) != 0;
         int bytesToRead = 0x1B00;
-        bytesRead = file.read(buffer1, bytesToRead);
+        bytesRead = file->read(buffer1, bytesToRead);
         if (!isCompressed && bytesRead != bytesToRead)
         {
             return false;
@@ -476,7 +477,7 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
         uint8_t pagingState;
 
         bytesToRead = 6;
-        bytesRead = file.read(&buffer1[30], bytesToRead);
+        bytesRead = file->read(&buffer1[30], bytesToRead);
         if (bytesRead != bytesToRead)
         {
             return false;
@@ -501,7 +502,7 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
         pagingState = header->PagingState;
 
         bytesToRead = header->AdditionalBlockLength - 4 + 3;
-        bytesRead = file.read(buffer1, bytesToRead);
+        bytesRead = file->read(buffer1, bytesToRead);
         if (bytesRead != bytesToRead)
         {
             return false;
@@ -527,7 +528,7 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
                 // Read page into buffer1
                 uint8_t* buffer = buffer1;
                 UINT bytesToRead = pageSize;
-                bytesRead = file.read(buffer, bytesToRead);
+                bytesRead = file->read(buffer, bytesToRead);
                 if (bytesRead != bytesToRead)
                 {
                     return false;
@@ -542,14 +543,14 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
             else
             {
                 // Move forward without reading
-                bool readResult = file.seek(file.position() + pageSize);
+                bool readResult = file->seek(pageSize, ios_base::cur);
                 if (readResult != true)
                 {
                     return false;
                 }
             }
 
-            bytesRead = file.read(buffer1, 3);
+            bytesRead = file->read(buffer1, 3);
             if (bytesRead <= 0)
             {
                 return false;
@@ -570,12 +571,12 @@ bool zx::LoadScreenFromZ80Snapshot(File file, uint8_t buffer1[0x4000])
 	return true;
 }
 
-bool zx::LoadScreenshot(File file, uint8_t buffer1[0x4000])
+bool zx::LoadScreenshot(File* file, uint8_t buffer1[0x4000])
 {
 	size_t bytesRead;
 	uint8_t* buffer = buffer1;
     UINT bytesToRead = 0x1B00;
-    bytesRead = file.read(buffer, bytesToRead);
+    bytesRead = file->read(buffer, bytesToRead);
     if (bytesRead != bytesToRead)
     {
         return false;
@@ -614,7 +615,6 @@ uint16_t DecompressPage(uint8_t *page, uint16_t pageLength, bool isCompressed,
 					size++;
 					if (maxSize > 0 && size >= maxSize)
 					{
-Serial.println("in the middle of repeat");
 						return i + 1;
 					}
 				}

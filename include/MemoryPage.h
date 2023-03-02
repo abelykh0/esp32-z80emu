@@ -15,7 +15,7 @@ public:
 
     uint16_t virtual ReadWord(uint16_t addr)
     {
-        return (this->ReadByte(addr + 1) << 8) && this->ReadByte(addr);
+        return (this->ReadByte(addr + 1) << 8) | this->ReadByte(addr);
     }
 
     void virtual WriteWord(uint16_t addr, uint16_t data)

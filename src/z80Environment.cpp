@@ -1,11 +1,12 @@
+#include "esp_log.h"
+
+#include "settings.h"
 #include "z80Environment.h"
 #include "z80input.h"
 #include "ps2Input.h"
 #include "ay3-8912-state.h"
 #include "main_ROM.h"
 #include "VideoController.h"
-
-#define BEEPER_PIN 25
 
 Sound::Ay3_8912_state _ay3_8912;
 static uint8_t zx_data = 0;
@@ -37,7 +38,7 @@ Z80Environment::Z80Environment(VideoController* screen)
 
 void Z80Environment::Initialize()
 {
-    Serial.printf("Z80Environment::Initialize()\r\n");
+    ESP_LOGI(TAG, "Z80Environment::Initialize()");
 
     // Due to a technical limitation, the maximum statically allocated DRAM usage is 160KB
     // The remaining 160KB (for a total of 320KB of DRAM) can only be allocated at runtime as heap
@@ -56,7 +57,6 @@ void Z80Environment::Initialize()
     this->_ram5.Initialize(&this->_mainScreenData, _ram5Buffer);
 
 #ifdef ZX128K
-    Serial.printf("ZX128K\r\n");
     this->_ram1 = (uint8_t*)malloc(0x4000);
     this->_ram3 = (uint8_t*)malloc(0x4000);
     this->_ram4 = (uint8_t*)malloc(0x4000);
@@ -68,9 +68,13 @@ void Z80Environment::Initialize()
 #endif
 
 #ifdef BEEPER
-    pinMode(BEEPER_PIN, OUTPUT);
-    digitalWrite(BEEPER_PIN, LOW);
+    gpio_config_t io_conf = {};
+    io_conf.intr_type = GPIO_INTR_DISABLE;
+    io_conf.mode = GPIO_MODE_OUTPUT;
+    io_conf.pin_bit_mask = BEEPER_PIN;
+    gpio_config(&io_conf);
 #endif
+
     _ay3_8912.Initialize();
 }
 
@@ -105,7 +109,7 @@ uint8_t Z80Environment::ReadByte(uint16_t addr)
 
 uint16_t Z80Environment::ReadWord(uint16_t addr)
 {
-    return ((this->ReadByte(addr + 1) << 8) | this->ReadByte(addr));
+    return this->ReadByte(addr) | (this->ReadByte(addr + 1) << 8);
 }
 
 void Z80Environment::WriteByte(uint16_t addr, uint8_t data)
@@ -230,7 +234,7 @@ void Z80Environment::Output(uint8_t portLow, uint8_t portHigh, uint8_t data)
         uint8_t sound = (data & 0x10);
     	if ((indata[0x20] & 0x10) != sound)
     	{
-            digitalWrite(BEEPER_PIN, sound >> 4); 
+             gpio_set_level(BEEPER_PIN, sound >> 4 ? 1 : 0);
     	}
 #endif
 

@@ -32,7 +32,6 @@ void zx_setup(Z80Environment* environment)
 	_attributeCount = SPECTRUM_HEIGHT * SPECTRUM_WIDTH;
 
     Z80cpu.setup(environment);
-    Serial.write("before zx_reset()\r\n");
     zx_reset();
 }
 

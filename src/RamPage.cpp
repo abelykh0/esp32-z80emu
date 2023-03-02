@@ -1,7 +1,6 @@
 #include "RamPage.h"
 
 #include <string.h>
-#include "HardwareSerial.h"
 
 RamPage& RamPage::operator=(void* allocatedRam)
 {

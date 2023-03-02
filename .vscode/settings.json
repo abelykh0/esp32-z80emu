@@ -54,5 +54,6 @@
         "typeinfo": "cpp",
         "z80_instructions.h": "c"
     },
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "idf.adapterTargetName": "esp32"
 }

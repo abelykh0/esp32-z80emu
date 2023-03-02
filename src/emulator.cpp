@@ -1,10 +1,11 @@
-#include "Emulator.h"
-#include "VideoController.h"
-
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "SD.h"
+#include "esp_log.h"
+
+#include "settings.h"
+#include "Emulator.h"
+#include "VideoController.h"
 #include "z80Environment.h"
 #include "ps2Input.h"
 #include "z80main.h"
@@ -270,17 +271,7 @@ static bool pausedLoop()
 
 void EmulatorTaskMain(void *unused)
 {
-#ifdef SDCARD
-    SPI.begin(14, 2, 12);
-    FileSystemInitialize(&SD);
-#else
-    if (!FFat.begin())
-    {
-        Serial.println("FFat Mount Failed");
-        return;
-    }
-    FileSystemInitialize(&FFat);
-#endif
+    FileSystemInitialize();
 
 	// Setup
 	startKeyboard();
@@ -293,10 +284,9 @@ void EmulatorTaskMain(void *unused)
 
 	showHelp();
 
-    Serial.write("before loop\r\n");
     uint32_t freeHeap32 = heap_caps_get_free_size(MALLOC_CAP_32BIT);
     uint32_t freeHeap8 = heap_caps_get_free_size(MALLOC_CAP_8BIT);
-    Serial.printf("Free heap 32BIT: %d, free heap 8BIT: %d\r\n", freeHeap32 - freeHeap8, freeHeap8);
+    ESP_LOGI(TAG, "Free heap 32BIT: %d, free heap 8BIT: %d", freeHeap32 - freeHeap8, freeHeap8);
 
 	// Loop
 	while (true)

@@ -1,9 +1,7 @@
 #ifndef __SDCARD_H__
 #define __SDCARD_H__
 
-#include "FS.h"
-
-void FileSystemInitialize(fs::FS* fileSystem);
+void FileSystemInitialize();
 
 bool loadSnapshotSetup(const char* path);
 bool loadSnapshotLoop();

@@ -1,16 +1,18 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "Ff.h"
+#include "esp_vfs_fat.h"
+#include "esp_log.h"
 
+#include "settings.h"
 #include "FileSystem.h"
 #include "Emulator.h"
 #include "ps2Input.h"
 #include "z80main.h"
 #include "z80snapshot.h"
-#include "SD.h"
 #include "ScreenArea.h"
 #include "errorReadingFile.h"
+#include "File.h"
 
 using namespace zx;
 
@@ -34,24 +36,56 @@ static bool _loadingSnapshot = false;
 static bool _savingSnapshot = false;
 static char* _snapshotName = ((char*)_buffer16K_1) + MAX_LFN;
 
-static fs::FS* _fileSystem;
-static const char* _rootFolder;
+static char _rootFolder[MAX_LFN];
 static int _rootFolderLength;
+
+static esp_vfs_fat_sdmmc_mount_config_t _mount_config;
+static sdmmc_host_t _host = SDSPI_HOST_DEFAULT();
+static sdspi_device_config_t _slot_config;
+static sdmmc_card_t* _card = nullptr;
+
+void FileSystemInitialize()
+{
+    ESP_LOGI(TAG, "Initializing SD card");
+
+    _mount_config = {
+        .format_if_mount_failed = false,
+        .max_files = 1,
+        .allocation_unit_size = 16 * 1024
+    };
+
+    spi_host_device_t hostID = spi_host_device_t(_host.slot);
+
+    spi_bus_config_t bus_cfg = {};
+    bus_cfg.mosi_io_num = PIN_NUM_MOSI;
+    bus_cfg.miso_io_num = PIN_NUM_MISO;
+    bus_cfg.sclk_io_num = PIN_NUM_CLK;
+    bus_cfg.quadwp_io_num = -1;
+    bus_cfg.quadhd_io_num = -1;
+    bus_cfg.max_transfer_sz = 4000;
+
+    esp_err_t ret = spi_bus_initialize(SPI2_HOST, &bus_cfg, SDSPI_DEFAULT_DMA);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize bus.");
+    }
+
+    _slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
+    _slot_config.gpio_cs = PIN_NUM_CS;
+    _slot_config.host_id = hostID;
+}
 
 static FRESULT mount()
 {
-#ifdef SDCARD
-	return SD.begin(13, SPI, 20000000U, "/sd", 1) ? FR_OK : FR_NOT_READY;
-#else
-	return FR_OK;
-#endif
+	return esp_vfs_fat_sdspi_mount(SDCARD_PATH, &_host, &_slot_config, &_mount_config, &_card) == ESP_OK ? FR_OK : FR_NOT_READY;
 }
 
 static void unmount()
 {
-#ifdef SDCARD
-	SD.end();
-#endif
+	if (_card != nullptr)
+	{
+	    esp_vfs_fat_sdcard_unmount(SDCARD_PATH, _card);
+		_card = nullptr;
+	}
 }
 
 static void GetFileCoord(uint16_t fileIndex, uint8_t* x, uint8_t* y)
@@ -72,7 +106,8 @@ static TCHAR* GetFileName(TCHAR* fileName)
 static TCHAR* FileExtension(TCHAR* fileName)
 {
 	TCHAR* result = (TCHAR*)_buffer16K_1;
-	strncpy(result, fileName, MAX_LFN);
+	memcpy(result, fileName, MAX_LFN);
+	result[MAX_LFN] = '\0';
 
 	result[MAX_LFN - 1] = '\0';
 	char* extension = strrchr(result, '.');
@@ -147,28 +182,25 @@ static void SetSelection(uint8_t selectedFile)
 		TCHAR* extension = strrchr(scrFileName, '.');
 		if (extension != nullptr)
 		{
-			strncpy(extension, ".scr", 4);
-            if (_fileSystem->exists(scrFileName))
-            {
-                file = _fileSystem->open(scrFileName, FILE_READ);
-                if (file)
-                {
-                    if (!LoadScreenshot(file, _buffer16K_1))
-                    {
-                        noScreenshot();
-                    }
-                    file.close();
-                    scrFileFound = true;
-                }
-            }
+			strncpy(extension, ".scr", 5);
+			file.open(scrFileName, ios_base::in);
+			if (file.is_open())
+			{
+				if (!LoadScreenshot(&file, _buffer16K_1))
+				{
+					noScreenshot();
+				}
+				file.close();
+				scrFileFound = true;
+			}
 		}
 
 		if (!scrFileFound)
 		{
-			file = _fileSystem->open(fileName, FILE_READ);
-			if (file)
+			file.open(fileName, ios_base::in);
+			if (file.is_open())
 			{
-				if (!LoadScreenFromZ80Snapshot(file, _buffer16K_1))
+				if (!LoadScreenFromZ80Snapshot(&file, _buffer16K_1))
 				{
 					noScreenshot();
 				}
@@ -186,9 +218,13 @@ static void loadSnapshot(const TCHAR* fileName)
 	FRESULT fr = mount();
 	if (fr == FR_OK)
 	{
-		File file = _fileSystem->open(fileName, FILE_READ);
-		LoadZ80Snapshot(file, _buffer16K_1, _buffer16K_2);
-		file.close();
+		File file;
+		file.open(fileName, ios_base::in);
+		if (file.is_open())
+		{
+			LoadZ80Snapshot(&file, _buffer16K_1, _buffer16K_2);
+			file.close();
+		}
 
 		unmount();
 	}
@@ -200,20 +236,11 @@ static bool saveSnapshot(const TCHAR* fileName)
 	FRESULT fr = mount();
 	if (fr == FR_OK)
 	{
-		File file = _fileSystem->open(fileName, FILE_WRITE);
-/*
-		if (fr == FR_EXIST)
+		File file;
+		file.open(fileName, ios_base::out);
+		if (file.is_open())
 		{
-			fr = f_unlink(fileName);
-			if (fr == FR_OK)
-			{
-				fr = f_open(&file, fileName, FA_WRITE | FA_CREATE_NEW);
-			}
-		}
-*/
-		if (fr == FR_OK)
-		{
-			result = SaveZ80Snapshot(file, _buffer16K_1, _buffer16K_2);
+			result = SaveZ80Snapshot(&file, _buffer16K_1, _buffer16K_2);
 			file.close();
 		}
 
@@ -238,15 +265,12 @@ static int fileCompare(const void* a, const void* b)
 	return strncmp(file1, file2, MAX_LFN + 1);
 }
 
-void FileSystemInitialize(fs::FS* fileSystem)
-{
-    _fileSystem = fileSystem;
-}
-
 bool saveSnapshotSetup(const char* path)
 {
-    _rootFolder = path;
-    _rootFolderLength = strlen(path);
+	string rootFolder = string(SDCARD_PATH);
+	rootFolder.append(path);
+	strcpy(_rootFolder, rootFolder.c_str());
+    _rootFolderLength = rootFolder.length();
 
 	DebugScreen.SetPrintAttribute(FORE_COLOR, BACK_COLOR);
 	DebugScreen.Clear();
@@ -346,8 +370,10 @@ bool saveSnapshotLoop()
 
 bool loadSnapshotSetup(const char* path)
 {
-    _rootFolder = path;
-    _rootFolderLength = strlen(path);
+	string rootFolder = string(SDCARD_PATH);
+	rootFolder.append(path);
+	strcpy(_rootFolder, rootFolder.c_str());
+    _rootFolderLength = rootFolder.length();
 
 	saveState();
 
@@ -392,7 +418,8 @@ bool loadSnapshotSetup(const char* path)
                 continue;
             }
 
-			strncpy(_fileNames[fileIndex], fileInfo.fname, MAX_LFN + 1);
+			memcpy(_fileNames[fileIndex], fileInfo.fname, MAX_LFN + 1);
+
 			_fileCount++;
             fileIndex++;
 		}
@@ -406,7 +433,6 @@ bool loadSnapshotSetup(const char* path)
 	if (_fileCount > 0)
 	{
 		qsort(_fileNames, _fileCount, MAX_LFN + 1, fileCompare);
-		Serial.printf("file count=%d\r\n", _fileCount);
 
         for (int y = 1; y < DEBUG_ROWS; y++)
         {
@@ -521,9 +547,15 @@ bool ReadFromFile(const char* fileName, uint8_t* buffer, size_t size)
 		return false;
 	}
 
+	string rootFolder = string(SDCARD_PATH);
+	strcpy(_rootFolder, rootFolder.c_str());
+    _rootFolderLength = rootFolder.length();
+	TCHAR* filePath = GetFileName((TCHAR*)fileName);
+
     bool result = false;
-    File file = _fileSystem->open(fileName, FILE_READ);
-    if (file)
+    File file;
+	file.open(filePath, ios_base::in);
+    if (file.is_open())
     {
         size_t bytesRead = file.read(buffer, size);
         result = (bytesRead == size);
