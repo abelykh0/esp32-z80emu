@@ -405,6 +405,14 @@ void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)
     {
         // Spectrum screen
 
+        if (scanLine % 2 == 1)
+        {
+            // Do not redraw every second line
+            const void* previousLineBuffer = (const void*)controller->getScanlineBuffer(scanLine - 1);
+            memcpy(dest, previousLineBuffer, controller->getScreenWidth());
+            return;
+        }
+
         unsigned scaledLine = scanLine / 2;
         uint16_t* dest16 = (uint16_t*)dest;
 
