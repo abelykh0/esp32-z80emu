@@ -362,7 +362,36 @@ uint8_t* IRAM_ATTR GetPixelPointer(uint8_t* pixels, uint16_t line)
 
 void VideoController::SetMode(uint8_t mode)
 {
+    if (this->_mode == mode)
+    {
+        return;
+    }
+
     this->_mode = mode;
+
+    auto evenLineBuffer = this->getDefaultScanlineBuffer(0);
+    auto oddLineBuffer = this->getDefaultScanlineBuffer(1);
+
+    if (mode == 1)
+    {
+        // restore defaults
+        for (int scanline = 0; scanline < this->m_viewPortHeight; scanline += 2)
+        {
+            this->setScanlineBuffer(scanline, evenLineBuffer);
+            this->setScanlineBuffer(scanline + 1, oddLineBuffer);
+        }
+    }
+    else
+    {
+        // Do not redraw every second line
+        for (int scanline = 0; scanline < this->m_viewPortHeight; scanline += 4)
+        {
+            this->setScanlineBuffer(scanline, evenLineBuffer);
+            this->setScanlineBuffer(scanline + 1, evenLineBuffer);
+            this->setScanlineBuffer(scanline + 2, oddLineBuffer);
+            this->setScanlineBuffer(scanline + 3, oddLineBuffer);
+        }
+    }
 }
 
 void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)
@@ -404,6 +433,12 @@ void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)
     else
     {
         // Spectrum screen
+
+        if (scanLine % 2 == 0)
+        {
+            // Do not redraw every second line
+            return;
+        }
 
         unsigned scaledLine = scanLine / 2;
         uint16_t* dest16 = (uint16_t*)dest;
