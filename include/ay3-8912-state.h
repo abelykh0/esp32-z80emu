@@ -2,6 +2,7 @@
 #define _AY3_8912_STATE_H
 
 #include <stdint.h>
+#include "fabgl.h"
 
 namespace Sound
 {
@@ -39,6 +40,8 @@ public:
     void StopSound();
     void ResumeSound();
     void Clear();
+
+	void AttachSoundGenerator(WaveformGenerator* soundGenerator);
 
 private:
 	void updated();

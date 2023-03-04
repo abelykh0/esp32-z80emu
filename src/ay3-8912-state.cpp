@@ -1,6 +1,5 @@
 #include "ay3-8912-state.h"
 #include "volume.h"
-#include "fabgl.h"
 #include "settings.h"
 
 using namespace fabgl;
@@ -36,6 +35,11 @@ void Ay3_8912_state::Initialize()
         _channel[channel].enable(true);
         _channel[channel].setVolume(0);
 	}
+}
+
+void Ay3_8912_state::AttachSoundGenerator(WaveformGenerator* soundGenerator)
+{
+	_soundGenerator.attach(soundGenerator);
 }
 
 void Ay3_8912_state::StopSound()

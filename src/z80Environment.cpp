@@ -1,4 +1,5 @@
 #include "esp_log.h"
+#include "fabgl.h"
 
 #include "settings.h"
 #include "z80Environment.h"
@@ -16,6 +17,8 @@ static uint8_t _ram2Buffer[0x4000];
 static uint8_t _ram5Pixels[SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8];
 static uint16_t _ram5Attributes[SPECTRUM_WIDTH * SPECTRUM_HEIGHT];
 static uint8_t _ram5Buffer[0x2500];
+
+static SquareWaveformGenerator _beeperGenerator;
 
 Z80Environment::Z80Environment(VideoController* screen)
     : BorderColor(this)
@@ -67,15 +70,13 @@ void Z80Environment::Initialize()
     this->_ram7.Initialize(&this->_shadowScreenData, (uint8_t*)malloc(0x2500));
 #endif
 
-#ifdef BEEPER
-    gpio_config_t io_conf = {};
-    io_conf.intr_type = GPIO_INTR_DISABLE;
-    io_conf.mode = GPIO_MODE_OUTPUT;
-    io_conf.pin_bit_mask = BEEPER_PIN;
-    gpio_config(&io_conf);
-#endif
-
     _ay3_8912.Initialize();
+
+#ifdef BEEPER
+    _ay3_8912.AttachSoundGenerator(&_beeperGenerator);
+    _beeperGenerator.enable(true);
+    _beeperGenerator.setVolume(127);
+#endif
 }
 
 uint8_t Z80Environment::ReadByte(uint16_t addr)
@@ -234,7 +235,7 @@ void Z80Environment::Output(uint8_t portLow, uint8_t portHigh, uint8_t data)
         uint8_t sound = (data & 0x10);
     	if ((indata[0x20] & 0x10) != sound)
     	{
-             gpio_set_level(BEEPER_PIN, sound >> 4 ? 1 : 0);
+            _beeperGenerator.setFrequency(sound >> 4 ? 200 : 100);
     	}
 #endif
 
