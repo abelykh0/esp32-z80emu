@@ -841,10 +841,7 @@ void Z80::bitTest(uint8_t mask, uint8_t reg) {
  */
 void Z80::interrupt(void) {
     // Si estaba en un HALT esperando una INT, lo saca de la espera
-    if (halted) {
-        halted = false;
-        REG_PC++;
-    }
+    halted = false;
 
     Z80opsImpl->interruptHandlingTime(7);
 
@@ -866,15 +863,12 @@ void Z80::interrupt(void) {
  * M3: 3 T-Estados -> escribe byte bajo de PC y PC=0x0066
  */
 void Z80::nmi(void) {
+    halted = false;
     // Esta lectura consigue dos cosas:
     //      1.- La lectura del opcode del M1 que se descarta
     //      2.- Si estaba en un HALT esperando una INT, lo saca de la espera
     Z80opsImpl->fetchOpcode(REG_PC);
     Z80opsImpl->interruptHandlingTime(1);
-    if (halted) {
-        halted = false;
-        REG_PC++;
-    }
     regR++;
     ffIFF1 = false;
     push(REG_PC); // 3+3 t-estados + contended si procede
@@ -891,42 +885,44 @@ void Z80::execute(void) {
         opCode = Z80opsImpl->breakpoint(REG_PC, opCode);
     }
 #endif
-    REG_PC++;
+    if (!halted) {
+        REG_PC++;
 
-    // El prefijo 0xCB no cuenta para esta guerra.
-    // En CBxx todas las xx producen un código válido
-    // de instrucción, incluyendo CBCB.
-    switch (prefixOpcode) {
-        case 0x00:
-            flagQ = pendingEI = false;
-            decodeOpcode(opCode);
-            break;
-        case 0xDD:
-            prefixOpcode = 0;
-            decodeDDFD(opCode, regIX);
-            break;
-        case 0xED:
-            prefixOpcode = 0;
-            decodeED(opCode);
-            break;
-        case 0xFD:
-            prefixOpcode = 0;
-            decodeDDFD(opCode, regIY);
-            break;
-        default:
+        // El prefijo 0xCB no cuenta para esta guerra.
+        // En CBxx todas las xx producen un código válido
+        // de instrucción, incluyendo CBCB.
+        switch (prefixOpcode) {
+            case 0x00:
+                flagQ = pendingEI = false;
+                decodeOpcode(opCode);
+                break;
+            case 0xDD:
+                prefixOpcode = 0;
+                decodeDDFD(opCode, regIX);
+                break;
+            case 0xED:
+                prefixOpcode = 0;
+                decodeED(opCode);
+                break;
+            case 0xFD:
+                prefixOpcode = 0;
+                decodeDDFD(opCode, regIY);
+                break;
+            default:
+                return;
+        }
+
+        if (prefixOpcode != 0)
             return;
-    }
 
-    if (prefixOpcode != 0)
-        return;
-
-    lastFlagQ = flagQ;
+        lastFlagQ = flagQ;
 
 #ifdef WITH_EXEC_DONE
-    if (execDone) {
-        Z80opsImpl->execDone();
-    }
+        if (execDone) {
+            Z80opsImpl->execDone();
+        }
 #endif
+    }
 
     // Primero se comprueba NMI
     // Si se activa NMI no se comprueba INT porque la siguiente
@@ -1654,7 +1650,6 @@ void Z80::decodeOpcode(uint8_t opCode) {
         }
         case 0x76:
         { /* HALT */
-            REG_PC--;
             halted = true;
             break;
         }
@@ -5320,6 +5315,10 @@ void Z80::decodeED(uint8_t opCode) {
                 REG_PC = REG_PC - 2;
                 REG_WZ = REG_PC + 1;
                 Z80opsImpl->addressOnBus(REG_DE - 1, 5);
+                if (ffIFF1 && !pendingEI && Z80opsImpl->isActiveINT()) {
+                    sz5h3pnFlags &= ~FLAG_53_MASK;
+                    sz5h3pnFlags |= (REG_PCh & FLAG_53_MASK);
+                }
             }
             break;
         }
@@ -5331,6 +5330,10 @@ void Z80::decodeED(uint8_t opCode) {
                 REG_PC = REG_PC - 2;
                 REG_WZ = REG_PC + 1;
                 Z80opsImpl->addressOnBus(REG_HL - 1, 5);
+                if (ffIFF1 && !pendingEI && Z80opsImpl->isActiveINT()) {
+                    sz5h3pnFlags &= ~FLAG_53_MASK;
+                    sz5h3pnFlags |= (REG_PCh & FLAG_53_MASK);
+                }
             }
             break;
         }
@@ -5340,6 +5343,17 @@ void Z80::decodeED(uint8_t opCode) {
             if (REG_B != 0) {
                 REG_PC = REG_PC - 2;
                 Z80opsImpl->addressOnBus(REG_HL - 1, 5);
+                if (ffIFF1 && !pendingEI && Z80opsImpl->isActiveINT()) {
+                    sz5h3pnFlags &= ~FLAG_53_MASK;
+                    sz5h3pnFlags |= (REG_PCh & FLAG_53_MASK);
+                    if (carryFlag) {
+                        uint8_t cpyB = REG_B;
+                        sz5h3pnFlags &= ~(HALFCARRY_MASK | PARITY_MASK);
+                        cpyB += (sz5h3pnFlags & ADDSUB_MASK) != 0 ? 0 : 1;
+                        sz5h3pnFlags |= ((cpyB ^ REG_B) & HALFCARRY_MASK);
+                        sz5h3pnFlags |= (sz53pn_addTable[(cpyB & 0x07)] & PARITY_MASK);
+                    }
+                }
             }
             break;
         }
@@ -5349,6 +5363,17 @@ void Z80::decodeED(uint8_t opCode) {
             if (REG_B != 0) {
                 REG_PC = REG_PC - 2;
                 Z80opsImpl->addressOnBus(REG_BC, 5);
+                if (ffIFF1 && !pendingEI && Z80opsImpl->isActiveINT()) {
+                    sz5h3pnFlags &= ~FLAG_53_MASK;
+                    sz5h3pnFlags |= (REG_PCh & FLAG_53_MASK);
+                    if (carryFlag) {
+                        uint8_t cpyB = REG_B;
+                        sz5h3pnFlags &= ~(HALFCARRY_MASK | PARITY_MASK);
+                        cpyB += (sz5h3pnFlags & ADDSUB_MASK) != 0 ? -1 : 1;
+                        sz5h3pnFlags |= ((cpyB ^ REG_B) & HALFCARRY_MASK);
+                        sz5h3pnFlags |= (sz53pn_addTable[(cpyB & 0x07)] & PARITY_MASK);
+                    }
+                }
             }
             break;
         }
@@ -5359,6 +5384,10 @@ void Z80::decodeED(uint8_t opCode) {
                 REG_PC = REG_PC - 2;
                 REG_WZ = REG_PC + 1;
                 Z80opsImpl->addressOnBus(REG_DE + 1, 5);
+                if (ffIFF1 && !pendingEI && Z80opsImpl->isActiveINT()) {
+                    sz5h3pnFlags &= ~FLAG_53_MASK;
+                    sz5h3pnFlags |= (REG_PCh & FLAG_53_MASK);
+                }
             }
             break;
         }
@@ -5370,6 +5399,10 @@ void Z80::decodeED(uint8_t opCode) {
                 REG_PC = REG_PC - 2;
                 REG_WZ = REG_PC + 1;
                 Z80opsImpl->addressOnBus(REG_HL + 1, 5);
+                if (ffIFF1 && !pendingEI && Z80opsImpl->isActiveINT()) {
+                    sz5h3pnFlags &= ~FLAG_53_MASK;
+                    sz5h3pnFlags |= (REG_PCh & FLAG_53_MASK);
+                }
             }
             break;
         }
@@ -5379,6 +5412,17 @@ void Z80::decodeED(uint8_t opCode) {
             if (REG_B != 0) {
                 REG_PC = REG_PC - 2;
                 Z80opsImpl->addressOnBus(REG_HL + 1, 5);
+                if (ffIFF1 && !pendingEI && Z80opsImpl->isActiveINT()) {
+                    sz5h3pnFlags &= ~FLAG_53_MASK;
+                    sz5h3pnFlags |= (REG_PCh & FLAG_53_MASK);
+                    if (carryFlag) {
+                        uint8_t cpyB = REG_B;
+                        sz5h3pnFlags &= ~(HALFCARRY_MASK | PARITY_MASK);
+                        cpyB += (sz5h3pnFlags & ADDSUB_MASK) != 0 ? -1 : 1;
+                        sz5h3pnFlags |= ((cpyB ^ REG_B) & HALFCARRY_MASK);
+                        sz5h3pnFlags |= (sz53pn_addTable[(cpyB & 0x07)] & PARITY_MASK);
+                    }
+                }
             }
             break;
         }
@@ -5388,6 +5432,17 @@ void Z80::decodeED(uint8_t opCode) {
             if (REG_B != 0) {
                 REG_PC = REG_PC - 2;
                 Z80opsImpl->addressOnBus(REG_BC, 5);
+                if (ffIFF1 && !pendingEI && Z80opsImpl->isActiveINT()) {
+                    sz5h3pnFlags &= ~FLAG_53_MASK;
+                    sz5h3pnFlags |= (REG_PCh & FLAG_53_MASK);
+                    if (carryFlag) {
+                        uint8_t cpyB = REG_B;
+                        sz5h3pnFlags &= ~(HALFCARRY_MASK | PARITY_MASK);
+                        cpyB += (sz5h3pnFlags & ADDSUB_MASK) != 0 ? -1 : 1;
+                        sz5h3pnFlags |= ((cpyB ^ REG_B) & HALFCARRY_MASK);
+                        sz5h3pnFlags |= (sz53pn_addTable[(cpyB & 0x07)] & PARITY_MASK);
+                    }
+                }
             }
             break;
         }
