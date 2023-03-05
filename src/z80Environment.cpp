@@ -8,6 +8,7 @@
 #include "ay3-8912-state.h"
 #include "main_ROM.h"
 #include "VideoController.h"
+#include "BeeperWaveformGenerator.h"
 
 Sound::Ay3_8912_state _ay3_8912;
 static uint8_t zx_data = 0;
@@ -18,7 +19,7 @@ static uint8_t _ram5Pixels[SPECTRUM_WIDTH * SPECTRUM_HEIGHT * 8];
 static uint16_t _ram5Attributes[SPECTRUM_WIDTH * SPECTRUM_HEIGHT];
 static uint8_t _ram5Buffer[0x2500];
 
-static SquareWaveformGenerator _beeperGenerator;
+static Sound::BeeperWaveformGenerator _beeperGenerator;
 
 Z80Environment::Z80Environment(VideoController* screen)
     : BorderColor(this)
@@ -235,7 +236,7 @@ void Z80Environment::Output(uint8_t portLow, uint8_t portHigh, uint8_t data)
         uint8_t sound = (data & 0x10);
     	if ((indata[0x20] & 0x10) != sound)
     	{
-            _beeperGenerator.setFrequency(sound >> 4 ? 200 : 100);
+            _beeperGenerator.setState(sound >> 4 ? true : false);
     	}
 #endif
 
