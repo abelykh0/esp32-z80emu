@@ -74,6 +74,7 @@ void Z80Environment::Initialize()
     _ay3_8912.Initialize();
 
 #ifdef BEEPER
+    this->Screen->BeeperGenerator = &_beeperGenerator; 
     _ay3_8912.AttachSoundGenerator(&_beeperGenerator);
     _beeperGenerator.enable(true);
     _beeperGenerator.setVolume(127);

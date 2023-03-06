@@ -371,6 +371,10 @@ void IRAM_ATTR drawScanline(void* arg, uint8_t* dest, int scanLine)
     if (scanLine == 0)
     {
         controller->Frames++;
+        if (controller->BeeperGenerator != nullptr)
+        {
+            controller->BeeperGenerator->newFrame(controller->Frames);
+        }
     }
 
     uint8_t mode = controller->_mode;

@@ -6,6 +6,7 @@
 #include "fabgl.h"
 #include "Settings.h"
 #include "SpectrumScreenData.h"
+#include "BeeperWaveformGenerator.h"
 
 #define SPECTRUM_WIDTH_WITH_BORDER  36
 #define SPECTRUM_HEIGHT_WITH_BORDER 26
@@ -16,6 +17,7 @@ class VideoController : public fabgl::VGADirectController
 {
 public:
     uint8_t _mode = 2;
+    Sound::BeeperWaveformGenerator* BeeperGenerator = nullptr;
 
     // Mode 1
     uint8_t IRAM_ATTR createRawPixel(uint8_t color);

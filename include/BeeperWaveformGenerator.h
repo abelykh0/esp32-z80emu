@@ -14,9 +14,11 @@ public:
   int getSample() override;
 
   void setState(bool state);
+  void newFrame(int frame);
 
 private:
   int _state;
+  int _index;
 };
 
 }
