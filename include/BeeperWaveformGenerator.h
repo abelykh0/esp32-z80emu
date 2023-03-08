@@ -14,11 +14,15 @@ public:
   int getSample() override;
 
   void setState(bool state);
-  void newFrame(int frame);
+  void newFrame();
 
 private:
-  int _state;
+  int8_t* _buffer1;
+  int8_t* _buffer2;
+  int8_t* _currentBuffer;
+  int8_t* _shadowBuffer;
   int _index;
+  int8_t _state;
 };
 
 }
