@@ -17,12 +17,6 @@ public:
   void newFrame();
 
 private:
-  int8_t* _buffer1;
-  int8_t* _buffer2;
-  int8_t* _currentBuffer;
-  int8_t* _shadowBuffer;
-
-  int _index = 0; 
   bool _state = false;
   uint32_t _countChangeOrSample = 0;
   int _accumZero = 0;
