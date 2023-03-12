@@ -14,7 +14,7 @@ BeeperWaveformGenerator::BeeperWaveformGenerator()
 
 IRAM_ATTR int BeeperWaveformGenerator::getSample()
 {
-    uint32_t count = (uint32_t)XTHAL_GET_CCOUNT();
+    int64_t count = esp_timer_get_time();
 
     if (this->_state)
     {
@@ -37,7 +37,7 @@ IRAM_ATTR int BeeperWaveformGenerator::getSample()
 
 IRAM_ATTR void BeeperWaveformGenerator::setState(bool state)
 {
-    uint32_t count = (uint32_t)XTHAL_GET_CCOUNT();
+    int64_t count = esp_timer_get_time();
 
     if (this->_state)
     {
