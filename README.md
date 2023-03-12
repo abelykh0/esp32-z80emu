@@ -8,7 +8,7 @@ Spectrum ZX 128K emulator on VGA-32 board
 * Emulate Spectrum ZX 128K
 * Load snapshot in .Z80 format from SD card
 * Save snapshot in .Z80 format to SD card
-* Output some sounds (beeper and partial support for AY3-8912)
+* Output some sounds (partial support for AY3-8912)
 * Kempston mouse
 * Load ROMs from SD card (`/roms/128-0.rom`; `/roms/128-1.rom`. Fall back to OpenSE Basic if not present)
 * Not using any PSRAM
@@ -30,5 +30,7 @@ Choose one of the following for Z80 CPU emulator:
 
 ## Plans for the future / issues
 * Flickering in some games
+* Beeper
+* Support noise and envelope for AY3-8912 sound
 * The speed is 12% faster than it is supposed to be
-* Load files from https://spectrumcomputing.co.uk/
+
