@@ -40,4 +40,10 @@
 // ESP_LOGx
 #define TAG "z80emu"
 
+#ifdef ZX128K
+#define TSTATES_PER_FRAME 70908
+#else
+#define TSTATES_PER_FRAME 69888
+#endif
+
 #endif

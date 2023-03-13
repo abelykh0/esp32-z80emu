@@ -10,12 +10,6 @@
 
 //#define BEEPER
 
-#ifdef ZX128K
-#define CYCLES_PER_STEP 70908
-#else
-#define CYCLES_PER_STEP 69888
-#endif
-
 z80Emulator Z80cpu;
 extern Sound::Ay3_8912_state _ay3_8912;
 
@@ -51,7 +45,7 @@ int32_t zx_loop()
 
     if (_total >= _next_total)
     {
-        _next_total += CYCLES_PER_STEP;
+        _next_total += TSTATES_PER_FRAME;
 
         // flash every 32 frames
         frames++;

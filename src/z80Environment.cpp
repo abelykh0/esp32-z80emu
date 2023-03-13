@@ -237,7 +237,7 @@ void Z80Environment::Output(uint8_t portLow, uint8_t portHigh, uint8_t data)
         uint8_t sound = (data & 0x10);
     	if ((indata[0x20] & 0x10) != sound)
     	{
-            _beeperGenerator.setState(sound != 0);
+            _beeperGenerator.setState(sound != 0, this->TStates);
     	}
 #endif
 

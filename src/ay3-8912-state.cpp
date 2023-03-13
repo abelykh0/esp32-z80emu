@@ -4,7 +4,7 @@
 
 using namespace fabgl;
 
-static SoundGenerator _soundGenerator;
+static SoundGenerator _soundGenerator(TSTATES_PER_FRAME * 60 / 256, GPIO_AUTO, SoundGenMethod::Auto);
 static SquareWaveformGenerator _channel[3];
 
 #ifdef ZX128K
