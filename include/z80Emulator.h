@@ -12,6 +12,11 @@
 struct z80Emulator
 {
 private:
+    Z80Environment* _environment;
+
+    uint32_t get_TStates() { return this->_environment->TStates; }
+    void set_TStates(uint32_t value) { this->_environment->TStates = value; }
+
     uint8_t get_A(); void set_A(uint8_t);
     uint8_t get_F(); void set_F(uint8_t);
     uint8_t get_B(); void set_B(uint8_t);
@@ -49,8 +54,10 @@ public:
     void reset();
     int emulate(int number_cycles);
     void interrupt();
-
+    
     CLASS(z80Emulator);
+
+    PROPERTY(uint32_t, TStates);
 
     // 8 bit registers
     PROPERTY(uint8_t, A); // Accumulator 
@@ -91,7 +98,7 @@ public:
     PROPERTY(uint8_t, IFF2); // Interrupt flip-flop 2
     PROPERTY(uint8_t, IM);   // Interrupt mode
 
-    z80Emulator() :
+    z80Emulator() : TStates(0),
         A(this), F(this), B(this), C(this), D(this), E(this), H(this), L(this),
         I(this), R(this), AF(this), BC(this), DE(this), HL(this),
         AFx(this), BCx(this), DEx(this), HLx(this),

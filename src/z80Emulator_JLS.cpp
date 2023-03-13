@@ -16,6 +16,8 @@ private:
     static uint8_t delayContention(uint32_t currentTstates);    
 
 public:
+    Z80Environment* _environment;
+
     uint8_t fetchOpcode(uint16_t address) override;
     uint8_t peek8(uint16_t address) override;
     void poke8(uint16_t address, uint8_t value) override;
@@ -30,16 +32,12 @@ public:
 
 static Operations z80Operations;
 static Z80 z80(&z80Operations);
-static Z80Environment* env;
 
 static bool interruptPending = false;
 
-// CPU Tstates elapsed in current frame
-static uint32_t tstates;
-
 void z80Emulator::setup(Z80Environment* environment)
 {
-    env = environment;
+    z80Operations._environment = environment;
 }
 
 void z80Emulator::reset()
@@ -49,8 +47,8 @@ void z80Emulator::reset()
 
 int z80Emulator::emulate(int number_cycles)
 {
-    tstates = 0;
-	while (tstates < number_cycles)
+    z80Operations._environment->TStates = 0;
+	while (z80Operations._environment->TStates < number_cycles)
 	{
 		z80.execute();
 	}  
@@ -175,11 +173,11 @@ uint8_t Operations::fetchOpcode(uint16_t address) {
     // 3 clocks to fetch opcode from RAM and 1 execution clock
     if (ADDRESS_IN_LOW_RAM(address))
     {
-        tstates += Operations::delayContention(tstates);
+        this->_environment->TStates += Operations::delayContention(this->_environment->TStates);
     }
 
-    tstates += 4;
-    return env->ReadByte(address);
+    this->_environment->TStates += 4;
+    return this->_environment->ReadByte(address);
 }
 
 /* Read/Write byte from/to RAM */
@@ -187,21 +185,21 @@ uint8_t Operations::peek8(uint16_t address) {
     // 3 clocks for read byte from RAM
     if (ADDRESS_IN_LOW_RAM(address))
     {
-        tstates += Operations::delayContention(tstates);
+        this->_environment->TStates += Operations::delayContention(this->_environment->TStates);
     }
 
-    tstates += 3;
-    return env->ReadByte(address);
+    this->_environment->TStates += 3;
+    return this->_environment->ReadByte(address);
 }
 void Operations::poke8(uint16_t address, uint8_t value) {
     // 3 clocks for write byte to RAM
     if (ADDRESS_IN_LOW_RAM(address))
     {
-        tstates += Operations::delayContention(tstates);
+        this->_environment->TStates += Operations::delayContention(this->_environment->TStates);
     }
 
-    tstates += 3;
-    env->WriteByte(address, value);
+    this->_environment->TStates += 3;
+    this->_environment->WriteByte(address, value);
 }
 
 /* Read/Write word from/to RAM */
@@ -220,17 +218,17 @@ void Operations::poke16(uint16_t address, RegisterPair word) {
 /* In/Out byte from/to IO Bus */
 uint8_t Operations::inPort(uint16_t port) {
     // 3 clocks for read byte from bus
-    tstates += 3;
+    this->_environment->TStates += 3;
     uint8_t hiport = port >> 8;
     uint8_t loport = port & 0xFF;
-    return env->Input(loport, hiport);
+    return this->_environment->Input(loport, hiport);
 }
 void Operations::outPort(uint16_t port, uint8_t value) {
     // 4 clocks for write byte to bus
-    tstates += 4;
+    this->_environment->TStates += 4;
     uint8_t hiport = port >> 8;
     uint8_t loport = port & 0xFF;
-    env->Output(loport, hiport, value);
+    this->_environment->Output(loport, hiport, value);
 }
 
 /* Put an address on bus lasting 'tstates' cycles */
@@ -240,19 +238,19 @@ void Operations::addressOnBus(uint16_t address, int32_t wstates){
     {
         for (int idx = 0; idx < wstates; idx++) 
         {
-            tstates += Operations::delayContention(tstates) + 1;
+            this->_environment->TStates += Operations::delayContention(this->_environment->TStates) + 1;
         }
     }
     else
     {
-        tstates += wstates;
+        this->_environment->TStates += wstates;
     }
 }
 
 /* Clocks needed for processing INT and NMI */
 void Operations::interruptHandlingTime(int32_t wstates) 
 {
-    tstates += wstates;
+    this->_environment->TStates += wstates;
 }
 
 /* Callback to know when the INT signal is active */

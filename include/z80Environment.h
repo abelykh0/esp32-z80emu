@@ -53,6 +53,9 @@ public:
     MemoryPage* Ram[8];
     MemorySelect MemoryState;
 
+    // CPU Tstates elapsed in current frame
+    uint32_t TStates;
+
     CLASS(Z80Environment);
     PROPERTY(uint8_t, BorderColor);
 
