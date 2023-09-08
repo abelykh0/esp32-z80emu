@@ -2,7 +2,7 @@
 Spectrum ZX 128K emulator on VGA-32 board
 
 ## Hardware
-[VGA32 v1.4 Board](http://www.lilygo.cn/prod_view.aspx?TypeId=50033&Id=1083)
+[VGA32 v1.4 Board](https://www.lilygo.cc/en-ca/products/fabgl-vga32)
 
 ## What it can do
 * Emulate Spectrum ZX 128K
