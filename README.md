@@ -23,7 +23,7 @@ This project uses the following libraries:
 * (GPL v2.0) OpenSE Basic: https://spectrumcomputing.co.uk/index.php?cat=96&id=27510
 
 Choose one of the following for Z80 CPU emulator:
-* (unsure, MIT?) Lin Ke-Fong's https://github.com/anotherlin/z80emu
+* (One liner, for those who don't like reading long legal documents) Lin Ke-Fong's https://github.com/anotherlin/z80emu
 * (GPL v3.0) José Luis Sánchez's https://github.com/jsanchezv/z80cpp
 * (MIT) Steve Checkoway's https://github.com/stevecheckoway/libzel  
 * (zlib License) Andre Weissflog's https://github.com/floooh/chips (this one seems too slow)
